@@ -61,7 +61,7 @@ def find_version(fname):
 setup(
     name=PACKAGE_NAME,
     version=find_version("bin/num2words2"),
-    description='Enhanced modules to convert numbers to words. Fork of num2words with additional language support and fixes.',
+    description='Modern, actively maintained fork of num2words optimized for LLM/AI/speech applications.',
     long_description=LONG_DESC,
     long_description_content_type="text/markdown",
     license='LGPL',

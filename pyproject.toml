@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "num2words2"
 dynamic = ["version", "dependencies"]
-description = "Enhanced modules to convert numbers to words. Fork of num2words with additional language support and fixes."
+description = "Modern, actively maintained fork of num2words optimized for LLM/AI/speech applications."
 readme = "README.rst"
 requires-python = ">=3.8"
 license = "LGPL-2.1-or-later"

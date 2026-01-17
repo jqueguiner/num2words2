@@ -4,16 +4,30 @@
 [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1)
 [![Python Versions](https://img.shields.io/pypi/pyversions/num2words2.svg)](https://pypi.org/project/num2words2/)
 
-`num2words2` is an enhanced fork of the original `num2words` library that converts numbers like `42` to words like `forty-two`. It supports multiple languages and provides various improvements and bug fixes over the original package.
+`num2words2` is a modern, actively maintained fork of the original `num2words` library, optimized for LLM/AI/speech applications. It converts numbers like `42` to words like `forty-two` across 50+ languages. This fork was created because the original Savoir-faire Linux repository was no longer being maintained at the pace required for the rapidly evolving AI, machine learning, and speech synthesis ecosystem.
+
+## Why num2words2?
+
+The original `num2words` library by Savoir-faire Linux became unmaintained and couldn't keep up with the rapid pace of innovation in the AI/LLM/speech technology space. Modern applications like:
+
+- **Large Language Models (LLMs)** requiring robust text preprocessing
+- **Speech synthesis systems** needing accurate number-to-word conversion
+- **Voice assistants and chatbots** processing numerical data
+- **AI training pipelines** requiring consistent text normalization
+- **Multilingual AI applications** spanning 50+ languages
+
+...needed a more actively maintained solution with faster bug fixes, enhanced language support, and compatibility with modern Python ecosystems.
 
 ## Features
 
 - Convert numbers to words in 50+ languages
 - Support for cardinal, ordinal, currency, and year conversion
-- Enhanced language support including recent additions
-- Bug fixes for decimal handling, negative numbers, and float conversions
-- Actively maintained with regular updates
+- Enhanced language support including recent additions (Armenian, Mongolian, Shona)
+- Critical bug fixes for decimal handling, negative numbers, and float conversions
+- Optimized for modern AI/ML/speech applications
+- Actively maintained with regular updates and community contributions
 - Drop-in replacement for the original num2words
+- Modern CI/CD pipeline with comprehensive testing
 
 ## Installation
 
@@ -126,11 +140,23 @@ And many regional variations like es_CO (Colombian Spanish), pt_BR (Brazilian Po
 
 ## Improvements over Original num2words
 
-- **Bug Fixes**: Fixed issues with negative decimal handling, float comparisons, and type conversions
-- **Enhanced Language Support**: Added support for Armenian (hy), Mongolian (mn), Shona (sn), and other languages
-- **Better Maintenance**: Regular updates and active issue resolution
-- **Improved CI/CD**: Comprehensive testing across multiple Python versions
-- **Type Safety**: Better type handling and error messages
+### Maintenance & Community
+- **Active Maintenance**: Regular updates aligned with AI/ML ecosystem needs
+- **Rapid Bug Resolution**: Issues are addressed promptly, not left open for months/years
+- **Modern Development**: Updated CI/CD, comprehensive testing, automated dependency management
+- **Community-Driven**: Open to contributions and feature requests from the AI/speech community
+
+### Technical Improvements
+- **Critical Bug Fixes**: Resolved issues with negative decimal handling, float comparisons, and type conversions affecting ML pipelines
+- **Enhanced Language Support**: Added Armenian (hy), Mongolian (mn), Shona (sn) and improved existing language modules
+- **LLM Optimization**: Better handling of edge cases common in large-scale text processing
+- **Type Safety**: Improved type handling and error messages for better integration with ML frameworks
+- **Performance**: Optimizations for batch processing scenarios common in AI applications
+
+### AI/ML Specific Features
+- **Consistent Output**: More predictable text generation for training datasets
+- **Edge Case Handling**: Better support for unusual number formats found in real-world data
+- **Multilingual Robustness**: Enhanced support for code-switching and multilingual AI models
 
 ## Migration from num2words
 
