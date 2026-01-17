@@ -39,8 +39,8 @@ class Num2WordsENINTest(TestCase):
         self.assertEqual(num2words(100000, lang="en_IN"), "one lakh")
         self.assertEqual(num2words(200000, lang="en_IN"), "two lakh")
         self.assertEqual(num2words(550000, lang="en_IN"), "five lakh, fifty thousand")
-        self.assertEqual(num2words(999999, lang="en_IN"), 
-                        "nine lakh, ninety-nine thousand, nine hundred and ninety-nine")
+        self.assertEqual(num2words(999999, lang="en_IN"),
+                         "nine lakh, ninety-nine thousand, nine hundred and ninety-nine")
         
         # Crores (1 crore = 10,000,000)
         self.assertEqual(num2words(10000000, lang="en_IN"), "one crore")
@@ -49,8 +49,8 @@ class Num2WordsENINTest(TestCase):
         
         # Mixed amounts showing typical Indian number grouping
         self.assertEqual(num2words(123456789, lang="en_IN"),
-                        "twelve crore, thirty-four lakh, fifty-six thousand, "
-                        "seven hundred and eighty-nine")
+                         "twelve crore, thirty-four lakh, fifty-six thousand, "
+                         "seven hundred and eighty-nine")
     
     def test_basic_numbers(self):
         """Test basic numbers to ensure compatibility with Indian English."""
@@ -77,8 +77,8 @@ class Num2WordsENINTest(TestCase):
         # Thousands (before lakh threshold)
         self.assertEqual(num2words(1000, lang="en_IN"), "one thousand")
         self.assertEqual(num2words(15000, lang="en_IN"), "fifteen thousand")
-        self.assertEqual(num2words(99999, lang="en_IN"), 
-                        "ninety-nine thousand, nine hundred and ninety-nine")
+        self.assertEqual(num2words(99999, lang="en_IN"),
+                         "ninety-nine thousand, nine hundred and ninety-nine")
     
     def test_ordinals(self):
         """Test ordinal numbers in Indian English."""
