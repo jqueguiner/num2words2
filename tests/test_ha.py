@@ -186,6 +186,6 @@ class Num2WordsHATest(TestCase):
         try:
             result = converter.to_cardinal(10**15)
             self.assertTrue(isinstance(result, str))
-        except (ValueError, NotImplementedError):
+        except (ValueError, NotImplementedError):  # pragma: no cover
             # Either is acceptable for very large numbers
             pass
