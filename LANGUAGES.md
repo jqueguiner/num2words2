@@ -35,7 +35,7 @@ This document tracks the implementation status of all languages for the num2word
 | English (India) | en_in | ✅ Implemented | lang_EN_IN.py |
 | English (Nigeria) | en_ng | ✅ Implemented | lang_EN_NG.py |
 | Esperanto | eo | ✅ Implemented | lang_EO.py |
-| Estonian | et | ❌ Not Implemented | - |
+| Estonian | et | ✅ Implemented | lang_ET.py |
 | Faroese | fo | ❌ Not Implemented | - |
 | Finnish | fi | ✅ Implemented | lang_FI.py |
 | French | fr | ✅ Implemented | lang_FR.py |
@@ -128,8 +128,8 @@ This document tracks the implementation status of all languages for the num2word
 ## Statistics
 
 - **Total Languages**: 104
-- **Implemented**: 61 (59%)
-- **Not Implemented**: 43 (41%)
+- **Implemented**: 62 (60%)
+- **Not Implemented**: 42 (40%)
 
 ## Missing Languages to Implement
 
@@ -139,8 +139,7 @@ The following languages are not yet implemented:
 2. Bashkir (ba)
 3. Bosnian (bs)
 4. Breton (br)
-5. Estonian (et)
-7. Faroese (fo)
+5. Faroese (fo)
 8. Galician (gl)
 9. Georgian (ka)
 10. Gujarati (gu)
