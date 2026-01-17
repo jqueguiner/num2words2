@@ -5,3 +5,5 @@ isort
 pep8<1.6
 coverage
 delegator.py
+pytest
+pytest-cov

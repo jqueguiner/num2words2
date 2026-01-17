@@ -120,8 +120,9 @@ class Num2Word_SN(Num2Word_Base):
             if units == 0:
                 return "makumi " + self.tens_forms[tens]
             else:
-                return "makumi " + \
-                    self.tens_forms[tens] + " ne" + self.ones[units]
+                return ("makumi " + self.tens_forms[tens] + " ne" +
+                        self.ones[units])
+
 
         # Numbers 100-999
         if number < 1000:
@@ -135,9 +136,9 @@ class Num2Word_SN(Num2Word_Base):
                 if remainder == 0:
                     return "mazana " + self.tens_forms[hundreds]
                 else:
-                    return "mazana " + \
-                        self.tens_forms[hundreds] + " ne" + \
-                        self._int_to_sn_word(remainder)
+                    return ("mazana " + self.tens_forms[hundreds] + " ne" +
+                            self._int_to_sn_word(remainder))
+
 
         # Numbers 1000-9999
         if number < 10000:
@@ -150,19 +151,20 @@ class Num2Word_SN(Num2Word_Base):
             else:
                 if remainder == 0:
                     if thousands < 10:
-                        return "zvuru zvi" + \
-                            self._get_thousands_form(thousands)
+                        return ("zvuru zvi" +
+                                self._get_thousands_form(thousands))
+
                     else:
                         return "zvuru " + self._int_to_sn_word(thousands)
                 else:
                     if thousands < 10:
-                        return "zvuru zvi" + \
-                            self._get_thousands_form(
-                                thousands) + " ne" + self._int_to_sn_word(remainder)
+                        return ("zvuru zvi" +
+                                self._get_thousands_form(thousands) +
+                                " ne" + self._int_to_sn_word(remainder))
                     else:
-                        return "zvuru " + \
-                            self._int_to_sn_word(
-                                thousands) + " ne" + self._int_to_sn_word(remainder)
+                        return ("zvuru " + self._int_to_sn_word(thousands) +
+                                " ne" + self._int_to_sn_word(remainder))
+
 
         # Numbers 10000-99999
         if number < 100000:
@@ -170,9 +172,9 @@ class Num2Word_SN(Num2Word_Base):
             if remainder == 0:
                 return "zvuru " + self._int_to_sn_word(ten_thousands)
             else:
-                return "zvuru " + \
-                    self._int_to_sn_word(ten_thousands) + \
-                    " ne" + self._int_to_sn_word(remainder)
+                return ("zvuru " + self._int_to_sn_word(ten_thousands) +
+                        " ne" + self._int_to_sn_word(remainder))
+
 
         # Numbers 100000-999999
         if number < 1000000:
@@ -180,9 +182,9 @@ class Num2Word_SN(Num2Word_Base):
             if remainder == 0:
                 return "zvuru " + self._int_to_sn_word(hundred_thousands)
             else:
-                return "zvuru " + \
-                    self._int_to_sn_word(hundred_thousands) + \
-                    " ne" + self._int_to_sn_word(remainder)
+                return ("zvuru " + self._int_to_sn_word(hundred_thousands) +
+                        " ne" + self._int_to_sn_word(remainder))
+
 
         # Millions
         if number < 1000000000:
@@ -197,22 +199,25 @@ class Num2Word_SN(Num2Word_Base):
                     if millions == 2:
                         return "miriyoni mbiri"
                     elif millions < 10:
-                        return "miriyoni " + \
-                            self.ones[millions] if millions in self.ones else "miriyoni " + \
-                            self._int_to_sn_word(millions)
+                        base = (self.ones[millions] if millions in self.ones
+                                else self._int_to_sn_word(millions))
+                        return "miriyoni " + base
+
                     else:
                         return "miriyoni " + self._int_to_sn_word(millions)
                 else:
                     if millions == 2:
-                        return "miriyoni mbiri ne" + \
-                            self._int_to_sn_word(remainder)
+                        return ("miriyoni mbiri ne" +
+                                self._int_to_sn_word(remainder))
                     elif millions < 10:
-                        return "miriyoni " + (self.ones[millions] if millions in self.ones else self._int_to_sn_word(
-                            millions)) + " ne" + self._int_to_sn_word(remainder)
+                        base = (self.ones[millions] if millions in self.ones
+                                else self._int_to_sn_word(millions))
+                        return ("miriyoni " + base + " ne" +
+                                self._int_to_sn_word(remainder))
                     else:
-                        return "miriyoni " + \
-                            self._int_to_sn_word(
-                                millions) + " ne" + self._int_to_sn_word(remainder)
+                        return ("miriyoni " + self._int_to_sn_word(millions) +
+                                " ne" + self._int_to_sn_word(remainder))
+
 
         # Billions
         if number < 1000000000000:
@@ -223,13 +228,15 @@ class Num2Word_SN(Num2Word_Base):
                 else:
                     return "bhiriyoni ne" + self._int_to_sn_word(remainder)
             else:
+                base = ("mbiri" if billions == 2
+                        else self.ones[billions] if billions < 10
+                        else self._int_to_sn_word(billions))
                 if remainder == 0:
-                    return "bhiriyoni " + \
-                        ("mbiri" if billions == 2 else self.ones[billions] if billions < 10 else self._int_to_sn_word(
-                            billions))
+                    return "bhiriyoni " + base
                 else:
-                    return "bhiriyoni " + ("mbiri" if billions == 2 else self.ones[billions] if billions < 10 else self._int_to_sn_word(
-                        billions)) + " ne" + self._int_to_sn_word(remainder)
+                    return ("bhiriyoni " + base + " ne" +
+                            self._int_to_sn_word(remainder))
+
 
         # Trillions
         trillions, remainder = divmod(number, 1000000000000)
@@ -239,13 +246,15 @@ class Num2Word_SN(Num2Word_Base):
             else:
                 return "tiriyoni ne" + self._int_to_sn_word(remainder)
         else:
+            base = ("mbiri" if trillions == 2
+                    else self.ones[trillions] if trillions < 10
+                    else self._int_to_sn_word(trillions))
             if remainder == 0:
-                return "tiriyoni " + \
-                    ("mbiri" if trillions == 2 else self.ones[trillions] if trillions < 10 else self._int_to_sn_word(
-                        trillions))
+                return "tiriyoni " + base
             else:
-                return "tiriyoni " + ("mbiri" if trillions == 2 else self.ones[trillions] if trillions < 10 else self._int_to_sn_word(
-                    trillions)) + " ne" + self._int_to_sn_word(remainder)
+                return ("tiriyoni " + base + " ne" +
+                        self._int_to_sn_word(remainder))
+
 
     def _get_thousands_form(self, number):
         """Get the special form for thousands (zvuru zvi...)"""
@@ -372,12 +381,10 @@ class Num2Word_SN(Num2Word_Base):
             if decimal_part == 1:
                 result.append(separator + minor_singular + " rimwe")
             else:
-                # For cents, just use the minor_singular without "ma" prefix
-                result.append(
-                    separator +
-                    minor_singular +
-                    " " +
-                    self._int_to_sn_word(decimal_part))
+                # For cents, use minor_singular without "ma" prefix
+                result.append(separator + minor_singular + " " +
+                              self._int_to_sn_word(decimal_part))
+
 
         return " ".join(result)
 

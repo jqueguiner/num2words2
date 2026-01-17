@@ -145,8 +145,8 @@ class Num2Word_SQ(Num2Word_Base):
 
         # For compound ordinals, use pattern "i + cardinal + suffix"
         if value <= 10:
-            return self.ordinal_forms.get(
-                value, "i " + self.to_cardinal(value))
+            return self.ordinal_forms.get(value, "i " + self.to_cardinal(value))
+
         elif value == 20:
             return "i njezeti"
         elif value == 100:
@@ -211,10 +211,8 @@ class Num2Word_SQ(Num2Word_Base):
             # Add the main currency
             if whole > 0:
                 result.append(self.to_cardinal(whole))
-                result.append(
-                    self.pluralize(
-                        whole,
-                        self.CURRENCY_FORMS[currency][0]))
+                result.append(self.pluralize(whole, self.CURRENCY_FORMS[currency][0]))
+
 
             # Add cents if present and cents=True
             if cents_value > 0 and cents:
@@ -223,10 +221,8 @@ class Num2Word_SQ(Num2Word_Base):
                     main_part = ' '.join(result)
                     result = [main_part + separator]
                 result.append(self.to_cardinal(cents_value))
-                result.append(
-                    self.pluralize(
-                        cents_value,
-                        self.CURRENCY_FORMS[currency][1]))
+                result.append(self.pluralize(cents_value, self.CURRENCY_FORMS[currency][1]))
+
 
             if is_negative:
                 result.insert(0, self.negword.strip())

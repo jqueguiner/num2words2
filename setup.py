@@ -15,7 +15,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301 USA
 
-import re
 from io import open
 
 from setuptools import find_packages, setup
@@ -25,8 +24,6 @@ PACKAGE_NAME = "num2words2"
 CLASSIFIERS = [
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
-    'License :: OSI Approved :: GNU Library or Lesser General Public License '
-    '(LGPL)',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
@@ -43,42 +40,24 @@ LONG_DESC = open('README.rst', 'rt', encoding="utf-8").read() + '\n\n' + \
             open('CHANGES.rst', 'rt', encoding="utf-8").read()
 
 
-def find_version(fname):
-    """Parse file & return version number matching 0.0.1 regex
-    Returns str or raises RuntimeError
-    """
-    version = ''
-    with open(fname, 'r', encoding="utf-8") as fp:
-        reg = re.compile(r'__version__ = [\'"]([^\'"]*)[\'"]')
-        for line in fp:
-            m = reg.match(line)
-            if m:
-                version = m.group(1)
-                break
-    if not version:
-        raise RuntimeError('Cannot find version information')
-    return version
-
-
 setup(
     name=PACKAGE_NAME,
-    version=find_version("bin/num2words"),
-    description='Modules to convert numbers to words. Easily extensible.',
+    use_scm_version=True,
+    setup_requires=['setuptools_scm'],
+    description=('Modern, actively maintained fork of num2words optimized '
+                 'for LLM/AI/speech applications.'),
     long_description=LONG_DESC,
     long_description_content_type="text/markdown",
-    license='LGPL',
-    author='Taro Ogawa <tso at users sourceforge net>',
-    author_email='tos@users.sourceforge.net',
-    maintainer='Savoir-faire Linux inc.',
-    maintainer_email='support@savoirfairelinux.com',
+    license='LGPL-2.1',
+    author='Jean-Louis Queguiner',
+    author_email='jean-louis.queguiner@gmail.com',
+    maintainer='Jean-Louis Queguiner',
+    maintainer_email='jean-louis.queguiner@gmail.com',
     keywords=' number word numbers words convert conversion i18n '
              'localisation localization internationalisation '
              'internationalization',
-    url='https://github.com/savoirfairelinux/num2words',
+    url='https://github.com/jqueguiner/num2words',
     packages=find_packages(exclude=['tests']),
-    test_suite='tests',
     classifiers=CLASSIFIERS,
-    scripts=['bin/num2words'],
-    install_requires=["docopt>=0.6.2"],
-    tests_require=['delegator.py'],
+    scripts=['bin/num2words2'],
 )

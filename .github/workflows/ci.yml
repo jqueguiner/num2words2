@@ -11,9 +11,9 @@ jobs:
         python-version: [3.8, 3.9, '3.10', '3.11', '3.12', '3.13']
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -23,13 +23,14 @@ jobs:
         pip install -r requirements-test.txt
     - name: Test with tox
       run: |
-        tox
+        tox -v || (echo "Tox failed. Here's the log:" && cat .tox/*/log/*.log 2>/dev/null && exit 1)
     - name: Upload coverage data to coveralls.io
       run: coveralls --service=github
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         COVERALLS_FLAG_NAME: ${{ matrix.python-version }}
         COVERALLS_PARALLEL: true
+      continue-on-error: true
 
   coveralls:
     name: Indicate completion to coveralls.io

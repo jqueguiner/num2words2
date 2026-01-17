@@ -257,24 +257,27 @@ class Num2WordsAFTest(TestCase):
         # Test with decimal format (will still show cents part)
         result = num2words(100.00, lang='af', to='currency', currency='ZAR', cents=False)
         self.assertEqual(result, "een honderd rand en 00 sent")
-        
+
         # Test with integer (no cents shown)
         result = num2words(100, lang='af', to='currency', currency='ZAR', cents=False)
         self.assertEqual(result, "een rand")
-        
+
+
         result = num2words(50.25, lang='af', to='currency', currency='EUR', cents=False)
         self.assertEqual(result, "vyftig euro en 25 sent")
 
     def test_currency_with_different_separator(self):
         """Test currency conversion with different separator"""
-        result = num2words(15.75, lang='af', to='currency', currency='USD', 
-                          separator=' plus ')
+        result = num2words(15.75, lang='af', to='currency', currency='USD',
+                           separator=' plus ')
+
         self.assertEqual(result, "vyftien dollar plus  vyf-en-sewentig sent")
 
     def test_pluralize_method(self):
         """Test pluralization method"""
         converter = Num2Word_AF()
-        
+
+
         # Test ZAR currency forms
         zar_major, zar_minor = converter.CURRENCY_FORMS['ZAR']
         self.assertEqual(converter.pluralize(1, zar_major), 'rand')
@@ -294,16 +297,18 @@ class Num2WordsAFTest(TestCase):
         # Test zero variations
         self.assertEqual(num2words(0, lang='af'), "nul")
         self.assertEqual(num2words(0.0, lang='af'), "nul")
-        
+
         # Test very large numbers
-        self.assertEqual(num2words(999999999, lang='af'), 
-                        "nege honderd nege-en-negentig miljoen nege honderd nege-en-negentig duisend nege honderd nege-en-negentig")
+        self.assertEqual(num2words(999999999, lang='af'),
+                         "nege honderd nege-en-negentig miljoen nege honderd nege-en-negentig duisend nege honderd nege-en-negentig")
+
 
     def test_special_ordinal_cases(self):
         """Test special cases for ordinals"""
         # Test 0th
         self.assertEqual(num2words(0, ordinal=True, lang='af'), "nullde")
-        
+
         # Test compound ordinals with specific formatting
         self.assertEqual(num2words(81, ordinal=True, lang='af'), "een-en-tagtigste")
         self.assertEqual(num2words(101, ordinal=True, lang='af'), "een honderd eerste")
+

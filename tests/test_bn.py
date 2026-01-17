@@ -28,7 +28,7 @@ class Num2WordsBNTest(TestCase):
     maxDiff = None
 
     def test_negative(self):
-        self.assertEqual(num2words(-1, lang="bn"), u'এক')
+        self.assertEqual(num2words(-1, lang="bn"), u'ঋণাত্মক এক')
 
     def test_0(self):
         self.assertEqual(num2words(0, lang="bn"), u'শূন্য')

@@ -1,5 +1,5 @@
 [run]
 branch = true
 source =
-    num2words
+    num2words2
     tests

@@ -22,12 +22,10 @@ from .base import Num2Word_Base
 
 class Num2Word_SW(Num2Word_Base):
     CURRENCY_FORMS = {
-        # Tanzanian Shilling
-        'TZS': (('shilingi', 'shilingi'), ('senti', 'senti')),
-        # Kenyan Shilling
-        'KES': (('shilingi', 'shilingi'), ('senti', 'senti')),
-        # Ugandan Shilling
-        'UGX': (('shilingi', 'shilingi'), ('senti', 'senti')),
+        'TZS': (('shilingi', 'shilingi'), ('senti', 'senti')),  # Tanzanian Shilling
+        'KES': (('shilingi', 'shilingi'), ('senti', 'senti')),  # Kenyan Shilling
+        'UGX': (('shilingi', 'shilingi'), ('senti', 'senti')),  # Ugandan Shilling
+
         'USD': (('dola', 'dola'), ('senti', 'senti')),          # US Dollar
         'EUR': (('yuro', 'yuro'), ('senti', 'senti')),          # Euro
         'GBP': (('pauni', 'pauni'), ('peni', 'peni')),          # British Pound
@@ -175,8 +173,8 @@ class Num2Word_SW(Num2Word_Base):
         from .currency import parse_currency_parts
 
         # For Swahili, treat integers as whole currency units, not cents
-        left, right, is_negative = parse_currency_parts(
-            val, is_int_with_cents=False)
+        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False)
+
 
         try:
             cr1, cr2 = self.CURRENCY_FORMS[currency]
