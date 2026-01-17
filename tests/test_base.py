@@ -86,3 +86,7 @@ class Num2WordBaseTest(TestCase):
     def test_pluralize_not_implemented(self):
         with self.assertRaises(NotImplementedError):
             self.base.pluralize(n=None, forms=None)
+
+    def test_force_ci_run(self):
+        # Simple test to force CI execution
+        self.assertTrue(True)
