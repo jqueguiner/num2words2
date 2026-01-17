@@ -103,7 +103,7 @@ AND = u'ו'
 
 DEF = u'ה'
 
-MAXVAL = int('1' + '0'*66)
+MAXVAL = int('1' + '0' * 66)
 
 
 def chunk2word(n, i, x, gender='f', construct=False,
@@ -124,7 +124,8 @@ def chunk2word(n, i, x, gender='f', construct=False,
 
     if i == 0 or x >= 11:
         male = gender == 'm' or i > 0
-        cop = (2*(construct and i == 0)+4*ordinal+2*plural) * (n < 11)
+        cop = (2 * (construct and i == 0) + 4 *
+               ordinal + 2 * plural) * (n < 11)
         if n2 == 1:
             if n1 == 0:
                 words.append(TENS[n1][male + cop])
@@ -151,12 +152,12 @@ def chunk2word(n, i, x, gender='f', construct=False,
         if x >= 11:
             words[-1] = words[-1] + ' ' + LARGE[i - 1][construct_last]
         elif n1 == 0:
-            words.append(TENS[0][1 + 2*construct_last] + ' ' +
+            words.append(TENS[0][1 + 2 * construct_last] + ' ' +
                          LARGE[i - 1][construct_last])
         elif n1 == 1:
             words.append(LARGE[i - 1][0])
         else:
-            words.append(ONES[n1][1 + 2*(construct_last or x == 2)] + ' ' +
+            words.append(ONES[n1][1 + 2 * (construct_last or x == 2)] + ' ' +
                          LARGE[i - 1][construct_last])
 
     return words
@@ -231,7 +232,7 @@ class Num2Word_HE(Num2Word_Base):
         pre, post = self.float2tuple(float_value)
 
         post = str(post)
-        post = '0'*(self.precision - len(post)) + post
+        post = '0' * (self.precision - len(post)) + post
 
         out = [self.to_cardinal(pre, gender=gender)]
         # Handle negative decimals when integer part is 0

@@ -32,3 +32,64 @@ class Num2WordsENINTest(TestCase):
         self.assertEqual(num2words(-0.5, lang="en_IN"), "minus zero point five")
         self.assertEqual(num2words(-1.4, lang="en_IN"), "minus one point four")
         self.assertEqual(num2words(-10.25, lang="en_IN"), "minus ten point two five")
+    
+    def test_indian_numbering_system(self):
+        """Test the unique lakh/crore system used in Indian subcontinent."""
+        # Basic lakhs (1 lakh = 100,000)
+        self.assertEqual(num2words(100000, lang="en_IN"), "one lakh")
+        self.assertEqual(num2words(200000, lang="en_IN"), "two lakh")
+        self.assertEqual(num2words(550000, lang="en_IN"), "five lakh, fifty thousand")
+        self.assertEqual(num2words(999999, lang="en_IN"),
+                         "nine lakh, ninety-nine thousand, nine hundred and ninety-nine")
+        
+        # Crores (1 crore = 10,000,000)
+        self.assertEqual(num2words(10000000, lang="en_IN"), "one crore")
+        self.assertEqual(num2words(50000000, lang="en_IN"), "five crore")
+        self.assertEqual(num2words(12500000, lang="en_IN"), "one crore, twenty-five lakh")
+        
+        # Mixed amounts showing typical Indian number grouping
+        self.assertEqual(num2words(123456789, lang="en_IN"),
+                         "twelve crore, thirty-four lakh, fifty-six thousand, "
+                         "seven hundred and eighty-nine")
+    
+    def test_basic_numbers(self):
+        """Test basic numbers to ensure compatibility with Indian English."""
+        # Single digits
+        self.assertEqual(num2words(0, lang="en_IN"), "zero")
+        self.assertEqual(num2words(5, lang="en_IN"), "five")
+        self.assertEqual(num2words(9, lang="en_IN"), "nine")
+        
+        # Teens (same as standard English but important to verify)
+        self.assertEqual(num2words(11, lang="en_IN"), "eleven")
+        self.assertEqual(num2words(15, lang="en_IN"), "fifteen")
+        self.assertEqual(num2words(19, lang="en_IN"), "nineteen")
+        
+        # Tens
+        self.assertEqual(num2words(20, lang="en_IN"), "twenty")
+        self.assertEqual(num2words(50, lang="en_IN"), "fifty")
+        self.assertEqual(num2words(99, lang="en_IN"), "ninety-nine")
+        
+        # Hundreds (using 'and' as per British/Indian convention)
+        self.assertEqual(num2words(100, lang="en_IN"), "one hundred")
+        self.assertEqual(num2words(101, lang="en_IN"), "one hundred and one")
+        self.assertEqual(num2words(555, lang="en_IN"), "five hundred and fifty-five")
+        
+        # Thousands (before lakh threshold)
+        self.assertEqual(num2words(1000, lang="en_IN"), "one thousand")
+        self.assertEqual(num2words(15000, lang="en_IN"), "fifteen thousand")
+        self.assertEqual(num2words(99999, lang="en_IN"),
+                         "ninety-nine thousand, nine hundred and ninety-nine")
+    
+    def test_ordinals(self):
+        """Test ordinal numbers in Indian English."""
+        self.assertEqual(num2words(1, lang="en_IN", to="ordinal"), "first")
+        self.assertEqual(num2words(2, lang="en_IN", to="ordinal"), "second")
+        self.assertEqual(num2words(3, lang="en_IN", to="ordinal"), "third")
+        self.assertEqual(num2words(11, lang="en_IN", to="ordinal"), "eleventh")
+        self.assertEqual(num2words(21, lang="en_IN", to="ordinal"), "twenty-first")
+        self.assertEqual(num2words(100, lang="en_IN", to="ordinal"), "one hundredth")
+        self.assertEqual(num2words(101, lang="en_IN", to="ordinal"), "one hundred and first")
+        
+        # Ordinals with Indian numbers
+        self.assertEqual(num2words(100000, lang="en_IN", to="ordinal"), "one lakhth")
+        self.assertEqual(num2words(10000000, lang="en_IN", to="ordinal"), "one croreth")

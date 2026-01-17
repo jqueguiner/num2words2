@@ -41,16 +41,16 @@ class Num2Word_DE(Num2Word_EU):
         self.errmsg_floatord = (
             "Die Gleitkommazahl %s kann nicht in eine Ordnungszahl " +
             "konvertiert werden."
-            )
+        )
         # "type(((type(%s)) ) not in [long, int, float]"
         self.errmsg_nonnum = (
             "Nur Zahlen (type(%s)) können in Wörter konvertiert werden."
-            )
+        )
         # "Cannot treat negative num %s as ordinal."
         self.errmsg_negord = (
             "Die negative Zahl %s kann nicht in eine Ordnungszahl " +
             "konvertiert werden."
-            )
+        )
         # "abs(%s) must be less than %s."
         self.errmsg_toobig = "Die Zahl %s muss kleiner als %s sein."
         self.exclude_title = []

@@ -151,6 +151,7 @@ class Num2Word_SN(Num2Word_Base):
                     if thousands < 10:
                         return ("zvuru zvi" +
                                 self._get_thousands_form(thousands))
+
                     else:
                         return "zvuru " + self._int_to_sn_word(thousands)
                 else:
@@ -196,6 +197,7 @@ class Num2Word_SN(Num2Word_Base):
                         base = (self.ones[millions] if millions in self.ones
                                 else self._int_to_sn_word(millions))
                         return "miriyoni " + base
+
                     else:
                         return "miriyoni " + self._int_to_sn_word(millions)
                 else:

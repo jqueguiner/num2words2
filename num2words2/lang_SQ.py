@@ -146,6 +146,7 @@ class Num2Word_SQ(Num2Word_Base):
         # For compound ordinals, use pattern "i + cardinal + suffix"
         if value <= 10:
             return self.ordinal_forms.get(value, "i " + self.to_cardinal(value))
+
         elif value == 20:
             return "i njezeti"
         elif value == 100:

@@ -80,7 +80,7 @@ class Num2Word_Base(object):
                 out.append((self.cards[1], 1))
             else:
                 if div == value:  # The system tallies, eg Roman Numerals
-                    return [(div * self.cards[elem], div*elem)]
+                    return [(div * self.cards[elem], div * elem)]
                 out.append(self.splitnum(div))
 
             out.append((self.cards[elem], elem))

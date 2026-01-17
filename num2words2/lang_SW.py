@@ -25,6 +25,7 @@ class Num2Word_SW(Num2Word_Base):
         'TZS': (('shilingi', 'shilingi'), ('senti', 'senti')),  # Tanzanian Shilling
         'KES': (('shilingi', 'shilingi'), ('senti', 'senti')),  # Kenyan Shilling
         'UGX': (('shilingi', 'shilingi'), ('senti', 'senti')),  # Ugandan Shilling
+
         'USD': (('dola', 'dola'), ('senti', 'senti')),          # US Dollar
         'EUR': (('yuro', 'yuro'), ('senti', 'senti')),          # Euro
         'GBP': (('pauni', 'pauni'), ('peni', 'peni')),          # British Pound

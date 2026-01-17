@@ -185,6 +185,7 @@ class Num2Word_HR(Num2Word_Base):
             elif digit_right > 0:
                 # Skip "jedna/jedan" for thousands, millions etc. when it's the leading digit
                 if not (chunk_len > 0 and digit_left == 0 and digit_mid == 0 and digit_right == 1):
+
                     is_feminine = feminine or SCALE[chunk_len][-1]
                     gender_idx = int(is_feminine)
                     words.append(

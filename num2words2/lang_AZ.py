@@ -174,7 +174,7 @@ class Num2Word_AZ(Num2Word_Base):
             remainder_to_3 = index % 3
             if remainder_to_3 == 0:
                 if index > 0:
-                    if set(reversed_str[index:index+3]) != {'0'}:
+                    if set(reversed_str[index:index + 3]) != {'0'}:
                         words.insert(0, self.POWERS_OF_TEN[index])
                 if digit_int > 0:
                     # we say "min" not "bir min"

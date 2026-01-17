@@ -53,7 +53,7 @@ from __future__ import print_function, unicode_literals
 import os
 import sys
 from docopt import docopt
-import num2words
+import num2words2 as num2words
 
 __version__ = "0.5.14"
 __license__ = "LGPL"

@@ -181,6 +181,7 @@ class Num2Word_HA(Num2Word_Base):
     def to_ordinal_num(self, value):
         """Convert a number to its ordinal representation with Arabic numerals."""
         # Using English-style ordinal suffixes as commonly used in Hausa contexts
+
         if 10 <= value % 100 <= 20:
             suffix = "th"
         else:
@@ -232,6 +233,7 @@ class Num2Word_HA(Num2Word_Base):
             minor_name = currency_forms[1][0]  # Use singular form
             if major_units > 0:
                 result.append("da " + minor_name + " " + self.to_cardinal(minor_units))
+
             else:
                 result.append(minor_name + " " + self.to_cardinal(minor_units))
 

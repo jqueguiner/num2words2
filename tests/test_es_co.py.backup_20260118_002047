@@ -1,0 +1,67 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2003, Taro Ogawa.  All Rights Reserved.
+# Copyright (c) 2013, Savoir-faire Linux inc.  All Rights Reserved.
+
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+# MA 02110-1301 USA
+
+from __future__ import unicode_literals
+
+from num2words2 import num2words
+
+from . import test_es
+
+TEST_CASES_TO_CURRENCY = (
+    (1, 'un peso'),
+    (2, 'dos pesos'),
+    (8, 'ocho pesos'),
+    (12, 'doce pesos'),
+    (21, 'veintiun pesos'),
+    (81.25, 'ochenta y un pesos y veinticinco centavos'),
+    (100, 'cien pesos'),
+)
+
+
+class Num2WordsESCOTest(test_es.Num2WordsESTest):
+
+    def test_number(self):
+        for test in test_es.TEST_CASES_CARDINAL:
+            self.assertEqual(num2words(test[0], lang='es_CO'), test[1])
+
+    def test_ordinal(self):
+        for test in test_es.TEST_CASES_ORDINAL:
+            self.assertEqual(
+                num2words(test[0], lang='es_CO', ordinal=True),
+                test[1]
+            )
+
+    def test_ordinal_num(self):
+        for test in test_es.TEST_CASES_ORDINAL_NUM:
+            self.assertEqual(
+                num2words(test[0], lang='es', to='ordinal_num'),
+                test[1]
+            )
+
+    def test_currency(self):
+        for test in TEST_CASES_TO_CURRENCY:
+            self.assertEqual(
+                num2words(test[0], lang='es_CO', to='currency'),
+                test[1]
+            )
+
+    def test_negative_decimals(self):
+        # Comprehensive test for negative decimals including -0.4
+        self.assertEqual(num2words(-0.4, lang="es_CO"), "menos cero punto cuatro")
+        self.assertEqual(num2words(-0.5, lang="es_CO"), "menos cero punto cinco")
+        self.assertEqual(num2words(-1.4, lang="es_CO"), "menos uno punto cuatro")
+        self.assertEqual(num2words(-10.25, lang="es_CO"), "menos diez punto dos cinco")

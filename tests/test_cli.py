@@ -72,12 +72,12 @@ class CliTestCase(unittest.TestCase):
         """
         output = self.cli.run_cmd('--list-converters')
         self.assertEqual(
-            sorted(list(num2words.CONVERTES_TYPES)),
+            sorted(list(num2words.CONVERTER_TYPES)),
             [out for out in output.out.strip().splitlines() if out]
         )
         output = self.cli.run_cmd('-C')
         self.assertEqual(
-            sorted(list(num2words.CONVERTES_TYPES)),
+            sorted(list(num2words.CONVERTER_TYPES)),
             [out for out in output.out.strip().splitlines() if out]
         )
 

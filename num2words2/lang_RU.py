@@ -368,7 +368,7 @@ class Num2Word_RU(Num2Word_Base):
 
         if n == 0:
             return get_num_element(ONES, 0, **kwargs) if cardinal else \
-                   get_num_element(ONES_ORD, 0, **kwargs)
+                get_num_element(ONES_ORD, 0, **kwargs)
 
         words = []
         chunks = list(splitbyx(str(n), 3))
