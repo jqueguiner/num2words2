@@ -447,7 +447,7 @@ class Num2Word_TR(Num2Word_Base):
         # Handle negative floats
         is_negative = value < 0
         abs_value = abs(value)
-        
+
         self.to_splitnum(abs_value)
         wrd = ""
         wrd += self.pointword
@@ -461,7 +461,7 @@ class Num2Word_TR(Num2Word_Base):
             wrd = self.ZERO + wrd
         else:
             wrd = self.to_cardinal(int(self.integers_to_read[0])) + wrd
-            
+
         if is_negative:
             wrd = self.negword + " " + wrd
         return wrd

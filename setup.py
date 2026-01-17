@@ -44,7 +44,8 @@ setup(
     name=PACKAGE_NAME,
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
-    description='Modern, actively maintained fork of num2words optimized for LLM/AI/speech applications.',
+    description=('Modern, actively maintained fork of num2words optimized '
+                 'for LLM/AI/speech applications.'),
     long_description=LONG_DESC,
     long_description_content_type="text/markdown",
     license='LGPL-2.1',

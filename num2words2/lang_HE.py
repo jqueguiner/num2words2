@@ -237,7 +237,7 @@ class Num2Word_HE(Num2Word_Base):
         # Handle negative decimals when integer part is 0
         if float_value < 0 and pre == 0:
             out = [self.negword.strip()] + out
-            
+
         if self.precision:
             out.append(self.title(self.pointword))
 
