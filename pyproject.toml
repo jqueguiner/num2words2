@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "num2words2"
-dynamic = ["version", "dependencies"]
+dynamic = ["version"]
 description = "Modern, actively maintained fork of num2words optimized for LLM/AI/speech applications."
 readme = "README.rst"
 requires-python = ">=3.8"
 license = "LGPL-2.1-or-later"
+dependencies = ["docopt>=0.6.2"]
 authors = [
     {name = "Jean-Louis Queguiner", email = "jean-louis.queguiner@gmail.com"}
 ]
@@ -47,3 +48,6 @@ packages = ["num2words2"]
 
 [tool.setuptools.package-data]
 num2words2 = ["*.py"]
+
+[tool.setuptools_scm]
+write_to = "num2words2/_version.py"
