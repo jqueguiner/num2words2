@@ -227,14 +227,15 @@ class Num2Word_HE(Num2Word_Base):
         except (ValueError, TypeError, AssertionError, AttributeError):
             raise TypeError(self.errmsg_nonnum % value)
 
-        pre, post = self.float2tuple(float(value))
+        float_value = float(value)
+        pre, post = self.float2tuple(float_value)
 
         post = str(post)
         post = '0'*(self.precision - len(post)) + post
 
         out = [self.to_cardinal(pre, gender=gender)]
         # Handle negative decimals when integer part is 0
-        if value < 0 and pre == 0:
+        if float_value < 0 and pre == 0:
             out = [self.negword.strip()] + out
             
         if self.precision:

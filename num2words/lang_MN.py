@@ -157,7 +157,7 @@ class Num2Word_MN(Num2Word_Base):
 
             # Бутархай хэсэг нь тэг бол бүхэл тоо шиг хувирна
             if int(right) == 0:
-                return self._int2word(int(n), all_suffixed=all_suffixed)
+                return self._int2word(int(float(n)), all_suffixed=all_suffixed)
 
             fractional_length = len(right)
             if fractional_length > 6:
