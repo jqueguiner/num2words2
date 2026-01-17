@@ -18,7 +18,7 @@
 from decimal import Decimal
 from unittest import TestCase
 
-from num2words.currency import parse_currency_parts
+from num2words2.currency import parse_currency_parts
 
 
 class CurrencyTestCase(TestCase):

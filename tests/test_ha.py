@@ -19,8 +19,8 @@ from __future__ import unicode_literals
 
 from unittest import TestCase
 
-from num2words import num2words
-from num2words.lang_HA import Num2Word_HA
+from num2words2 import num2words
+from num2words2.lang_HA import Num2Word_HA
 
 
 class Num2WordsHATest(TestCase):

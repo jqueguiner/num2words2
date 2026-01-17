@@ -19,7 +19,7 @@ from __future__ import division, print_function, unicode_literals
 
 from unittest import TestCase
 
-from num2words import num2words
+from num2words2 import num2words
 
 
 def n2zh_cn(*args, **kwargs):

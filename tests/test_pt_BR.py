@@ -20,8 +20,8 @@ from __future__ import unicode_literals
 from decimal import Decimal
 from unittest import TestCase
 
-from num2words import num2words
-from num2words.lang_PT_BR import Num2Word_PT_BR
+from num2words2 import num2words
+from num2words2.lang_PT_BR import Num2Word_PT_BR
 
 
 class Num2WordsPTBRTest(TestCase):

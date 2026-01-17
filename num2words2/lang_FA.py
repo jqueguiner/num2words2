@@ -153,7 +153,7 @@ class Num2Word_FA(object):
 
     @staticmethod
     def to_ordinal_num(value):
-        return str(value)+"م"
+        return str(value) + "م"
 
     def to_cardinal(self, number):
         if number < 0:

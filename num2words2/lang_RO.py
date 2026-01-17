@@ -139,7 +139,7 @@ fi convertit în cuvinte (abs(%s) > %s)."
         # romanian currency has a particularity for numeral: one
         self.gen_numwords[1] = "una"
         result = super(Num2Word_RO, self).to_currency(
-            int(round(val*100)),
+            int(round(val * 100)),
             currency,
             True,
             separator,

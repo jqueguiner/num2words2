@@ -704,7 +704,7 @@ class Num2Word_FI(lang_EU.Num2Word_EU):
                 out.append((elems[1], 1))
             else:
                 if div == value:  # The system tallies, eg Roman Numerals
-                    return [(div * elems[elem], div*elem)]
+                    return [(div * elems[elem], div * elem)]
                 out.append(self.splitnum(div, options))
 
             out.append((elems[elem], elem))

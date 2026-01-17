@@ -130,7 +130,7 @@ class Num2Word_HR(Num2Word_Base):
         """
         Croatian pluralization rules:
         - 1: singular form (1 kuna)
-        - 2,3,4: paucal form (2,3,4 kune) 
+        - 2,3,4: paucal form (2,3,4 kune)
         - 5+ and numbers ending in 11,12,13,14: plural form (5 kuna, 11 kuna)
         """
         if number % 100 in [11, 12, 13, 14]:
@@ -183,8 +183,10 @@ class Num2Word_HR(Num2Word_Base):
             if digit_mid == 1:
                 words.append(TENS[digit_right][0])
             elif digit_right > 0:
-                # Skip "jedna/jedan" for thousands, millions etc. when it's the leading digit
-                if not (chunk_len > 0 and digit_left == 0 and digit_mid == 0 and digit_right == 1):
+                # Skip "jedna/jedan" for thousands, millions etc. when it's the
+                # leading digit
+                if not (chunk_len > 0 and digit_left ==
+                        0 and digit_mid == 0 and digit_right == 1):
                     is_feminine = feminine or SCALE[chunk_len][-1]
                     gender_idx = int(is_feminine)
                     words.append(

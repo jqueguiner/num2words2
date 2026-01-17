@@ -23,7 +23,7 @@ import unittest
 
 import delegator
 
-import num2words
+import num2words2
 
 
 class CliCaller(object):

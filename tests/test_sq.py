@@ -19,8 +19,8 @@ from __future__ import unicode_literals
 
 from unittest import TestCase
 
-from num2words import num2words
-from num2words.lang_SQ import Num2Word_SQ
+from num2words2 import num2words
+from num2words2.lang_SQ import Num2Word_SQ
 
 
 class Num2WordsSQTest(TestCase):

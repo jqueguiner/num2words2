@@ -23,7 +23,7 @@ from . import lang_PT
 
 class Num2Word_PT_BR(lang_PT.Num2Word_PT):
     def set_high_numwords(self, high):
-        max = 3 + 3*len(high)
+        max = 3 + 3 * len(high)
         for word, n in zip(high, range(max, 3, -3)):
             self.cards[10**n] = word + "ilhão"
 

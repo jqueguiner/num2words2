@@ -23,7 +23,7 @@ from .base import Num2Word_Base
 class Num2Word_HA(Num2Word_Base):
     """
     Hausa number-to-words converter.
-    
+
     Supports cardinal numbers, ordinal numbers, currency conversion,
     and year representation in Hausa language.
     """
@@ -128,7 +128,7 @@ class Num2Word_HA(Num2Word_Base):
                 result = "ɗari"
             else:
                 result = "ɗari " + self.ONES[hundreds]
-            
+
             if remainder > 0:
                 if remainder < 10:
                     result += " da " + self._int_to_hausa(remainder)
@@ -141,7 +141,7 @@ class Num2Word_HA(Num2Word_Base):
             if number >= scale_value:
                 quotient, remainder = divmod(number, scale_value)
                 result = ""
-                
+
                 if scale_value == 100:
                     if quotient == 1:
                         result = "ɗari"
@@ -158,14 +158,15 @@ class Num2Word_HA(Num2Word_Base):
                     if quotient == 1:
                         result = scale_name
                     else:
-                        result = scale_name + " " + self._int_to_hausa(quotient)
-                
+                        result = scale_name + " " + \
+                            self._int_to_hausa(quotient)
+
                 if remainder > 0:
                     if remainder < 10:
                         result += " da " + self._int_to_hausa(remainder)
                     else:
                         result += " " + self._int_to_hausa(remainder)
-                
+
                 return result
 
         return str(number)  # Fallback for very large numbers
@@ -174,13 +175,14 @@ class Num2Word_HA(Num2Word_Base):
         """Convert a number to its Hausa ordinal representation."""
         if value == 1:
             return "na farko"
-        
+
         cardinal = self.to_cardinal(value)
         return "na " + cardinal
 
     def to_ordinal_num(self, value):
         """Convert a number to its ordinal representation with Arabic numerals."""
-        # Using English-style ordinal suffixes as commonly used in Hausa contexts
+        # Using English-style ordinal suffixes as commonly used in Hausa
+        # contexts
         if 10 <= value % 100 <= 20:
             suffix = "th"
         else:
@@ -193,7 +195,7 @@ class Num2Word_HA(Num2Word_Base):
                 suffix = "rd"
             else:
                 suffix = "th"
-        
+
         return str(value) + suffix
 
     def to_year(self, value):
@@ -231,7 +233,8 @@ class Num2Word_HA(Num2Word_Base):
         if minor_units > 0:
             minor_name = currency_forms[1][0]  # Use singular form
             if major_units > 0:
-                result.append("da " + minor_name + " " + self.to_cardinal(minor_units))
+                result.append("da " + minor_name + " " +
+                              self.to_cardinal(minor_units))
             else:
                 result.append(minor_name + " " + self.to_cardinal(minor_units))
 
@@ -263,10 +266,10 @@ class Num2Word_HA(Num2Word_Base):
 
         # Get decimal digits
         decimal_str = str(decimal_part)[2:]  # Remove "0."
-        
+
         result = self.to_cardinal(integer_part)
         result += " " + self.pointword + " "
-        
+
         # Convert decimal digits
         decimal_num = int(decimal_str)
         result += self.to_cardinal(decimal_num)

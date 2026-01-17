@@ -22,9 +22,12 @@ from .base import Num2Word_Base
 
 class Num2Word_SW(Num2Word_Base):
     CURRENCY_FORMS = {
-        'TZS': (('shilingi', 'shilingi'), ('senti', 'senti')),  # Tanzanian Shilling
-        'KES': (('shilingi', 'shilingi'), ('senti', 'senti')),  # Kenyan Shilling  
-        'UGX': (('shilingi', 'shilingi'), ('senti', 'senti')),  # Ugandan Shilling
+        # Tanzanian Shilling
+        'TZS': (('shilingi', 'shilingi'), ('senti', 'senti')),
+        # Kenyan Shilling
+        'KES': (('shilingi', 'shilingi'), ('senti', 'senti')),
+        # Ugandan Shilling
+        'UGX': (('shilingi', 'shilingi'), ('senti', 'senti')),
         'USD': (('dola', 'dola'), ('senti', 'senti')),          # US Dollar
         'EUR': (('yuro', 'yuro'), ('senti', 'senti')),          # Euro
         'GBP': (('pauni', 'pauni'), ('peni', 'peni')),          # British Pound
@@ -39,7 +42,7 @@ class Num2Word_SW(Num2Word_Base):
 
         self.mid_numwords = [
             (1000000000, "bilioni"),
-            (1000000, "milioni"), 
+            (1000000, "milioni"),
             (100000, "laki"),
             (1000, "elfu"),
             (100, "mia"),
@@ -52,7 +55,7 @@ class Num2Word_SW(Num2Word_Base):
             (30, "thelathini"),
             (20, "ishirini")
         ]
-        
+
         self.low_numwords = [
             "kumi na tisa",  # 19
             "kumi na nane",  # 18
@@ -61,7 +64,7 @@ class Num2Word_SW(Num2Word_Base):
             "kumi na tano",  # 15
             "kumi na nne",   # 14
             "kumi na tatu",  # 13
-            "kumi na mbili", # 12
+            "kumi na mbili",  # 12
             "kumi na moja",  # 11
             "kumi",          # 10
             "tisa",          # 9
@@ -81,7 +84,7 @@ class Num2Word_SW(Num2Word_Base):
             "moja": "kwanza",
             "mbili": "pili",
             "tatu": "tatu",
-            "nne": "nne", 
+            "nne": "nne",
             "tano": "tano",
             "sita": "sita",
             "saba": "saba",
@@ -100,7 +103,7 @@ class Num2Word_SW(Num2Word_Base):
         """Merge two number parts using Swahili grammar rules."""
         ltext, lnum = lpair
         rtext, rnum = rpair
-        
+
         if lnum == 1 and rnum < 100:
             return (rtext, rnum)
         elif 100 > lnum > rnum:
@@ -132,11 +135,11 @@ class Num2Word_SW(Num2Word_Base):
         """Convert number to ordinal form."""
         self.verify_ordinal(value)
         cardinal_text = self.to_cardinal(value)
-        
+
         # Check if we have a special ordinal form
         if cardinal_text in self.ordinal_words:
             return f"wa {self.ordinal_words[cardinal_text]}"
-        
+
         # For ordinals, prefix with "wa" (of/the)
         return f"wa {cardinal_text}"
 
@@ -170,9 +173,10 @@ class Num2Word_SW(Num2Word_Base):
         """
         # Import the parse function from the base currency module
         from .currency import parse_currency_parts
-        
+
         # For Swahili, treat integers as whole currency units, not cents
-        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False)
+        left, right, is_negative = parse_currency_parts(
+            val, is_int_with_cents=False)
 
         try:
             cr1, cr2 = self.CURRENCY_FORMS[currency]
@@ -186,7 +190,7 @@ class Num2Word_SW(Num2Word_Base):
 
         # Check if input is explicitly a decimal number or has non-zero cents
         has_decimal = isinstance(val, float) or str(val).find('.') != -1
-        
+
         # Only include cents if there are actual cents or explicitly decimal
         if has_decimal or right > 0:
             cents_str = self.to_cardinal(right) if cents else "%02d" % right

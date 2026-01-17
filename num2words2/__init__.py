@@ -17,15 +17,20 @@
 
 from __future__ import unicode_literals
 
-from . import (lang_AF, lang_AM, lang_AR, lang_AZ, lang_BE, lang_BN, lang_CA, lang_CE,
+from . import (lang_AF, lang_AM, lang_AR, lang_AZ, lang_BE, lang_BN,
+               lang_CA, lang_CE,
                lang_CS, lang_CY, lang_DA, lang_DE, lang_EN, lang_EN_IN,
                lang_EN_NG, lang_EO, lang_ES, lang_ES_CO, lang_ES_CR,
                lang_ES_GT, lang_ES_NI, lang_ES_VE, lang_FA, lang_FI, lang_FR,
-               lang_FR_BE, lang_FR_CH, lang_FR_DZ, lang_HA, lang_HE, lang_HI,
-               lang_HR, lang_HU, lang_HY, lang_ID, lang_IS, lang_IT, lang_JA, lang_KN,
+               lang_FR_BE, lang_FR_CH, lang_FR_DZ, lang_HA, lang_HE,
+               lang_HI,
+               lang_HR, lang_HU, lang_HY, lang_ID, lang_IS, lang_IT,
+               lang_JA, lang_KN,
                lang_KO, lang_KZ, lang_LT, lang_LV, lang_MN, lang_NL, lang_NO,
-               lang_PL, lang_PT, lang_PT_BR, lang_RO, lang_RU, lang_SK, lang_SL,
-               lang_SN, lang_SQ, lang_SR, lang_SV, lang_SW, lang_TE, lang_TET, lang_TG, lang_TH,
+               lang_PL, lang_PT, lang_PT_BR, lang_RO, lang_RU, lang_SK,
+               lang_SL,
+               lang_SN, lang_SQ, lang_SR, lang_SV, lang_SW, lang_TE,
+               lang_TET, lang_TG, lang_TH,
                lang_TR, lang_UK, lang_VI, lang_ZH, lang_ZH_CN, lang_ZH_HK,
                lang_ZH_TW)
 

@@ -151,7 +151,7 @@ class Num2Word_TE(Num2Word_EU):
             if ltext[-1] in self.modifiers:
                 return ("%s %s" % (ltext[:-1], rtext), lnum + rnum)
             else:
-                return ("%s %s" % (ltext+"ల", rtext), lnum + rnum)
+                return ("%s %s" % (ltext + "ల", rtext), lnum + rnum)
         elif rnum > lnum:
             return ("%s %s" % (ltext, rtext), lnum * rnum)
         return ("%s %s" % (ltext, rtext), lnum + rnum)

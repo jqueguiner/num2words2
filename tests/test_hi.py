@@ -17,7 +17,7 @@
 
 from unittest import TestCase
 
-from num2words import num2words
+from num2words2 import num2words
 
 # number, hindi number, pronounced form
 TEST_CASES_CARDINAL = (

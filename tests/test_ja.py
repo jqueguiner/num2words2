@@ -19,8 +19,8 @@ from __future__ import division, print_function, unicode_literals
 
 from unittest import TestCase
 
-from num2words import num2words
-from num2words.lang_JA import rendaku_merge_pairs
+from num2words2 import num2words
+from num2words2.lang_JA import rendaku_merge_pairs
 
 
 def n2j(*args, **kwargs):

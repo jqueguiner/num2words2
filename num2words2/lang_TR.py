@@ -329,7 +329,7 @@ class Num2Word_TR(Num2Word_Base):
                     last_read_digit_order = reading_triplet_order * 3
                 else:
                     last_read_digit_order = (reading_triplet_order - 1) * 3 +\
-                                            self.total_digits_outside_triplets
+                        self.total_digits_outside_triplets
 
                 if not self.integers_to_read[0][
                         last_read_digit_order: last_read_digit_order + 3
@@ -354,7 +354,7 @@ class Num2Word_TR(Num2Word_Base):
                             wrd += self.CARDINAL_HUNDRED[0]
 
                     if not self.integers_to_read[0][
-                                last_read_digit_order + 1] == "0":
+                            last_read_digit_order + 1] == "0":
                         if self.order_of_last_zero_digit == len(
                                 self.integers_to_read[0]) - (
                                 last_read_digit_order) - 2:
@@ -378,7 +378,7 @@ class Num2Word_TR(Num2Word_Base):
                             )
 
                     if not self.integers_to_read[0][
-                                last_read_digit_order + 2] == "0":
+                            last_read_digit_order + 2] == "0":
                         if self.order_of_last_zero_digit == len(
                                 self.integers_to_read[0]) - (
                                 last_read_digit_order) - 3:
@@ -392,13 +392,13 @@ class Num2Word_TR(Num2Word_Base):
                                 if not self.integers_to_read[0][
                                         last_read_digit_order:
                                         last_read_digit_order + 2
-                                        ] == "00":
+                                ] == "00":
                                     wrd += self.CARDINAL_ONES.get(
                                         self.integers_to_read[0][
                                             last_read_digit_order + 2], ""
                                     )
                                 elif not self.integers_to_read[0][
-                                            last_read_digit_order + 2] == "1":
+                                        last_read_digit_order + 2] == "1":
                                     wrd += self.CARDINAL_ONES.get(
                                         self.integers_to_read[0][
                                             last_read_digit_order + 2], ""
@@ -424,15 +424,15 @@ class Num2Word_TR(Num2Word_Base):
                             else:
                                 if i == 2:
                                     if not self.integers_to_read[0][
-                                           last_read_digit_order:
-                                           last_read_digit_order + 2
+                                        last_read_digit_order:
+                                        last_read_digit_order + 2
                                     ] == "00":
                                         wrd += self.CARDINAL_ONES.get(
                                             self.integers_to_read[0][
                                                 last_read_digit_order + 2], ""
                                         )
                                     elif not self.integers_to_read[0][
-                                                last_read_digit_order + 2
+                                        last_read_digit_order + 2
                                     ] == "1":
                                         wrd += self.CARDINAL_ONES.get(
                                             self.integers_to_read[0][
@@ -447,7 +447,7 @@ class Num2Word_TR(Num2Word_Base):
         # Handle negative floats
         is_negative = value < 0
         abs_value = abs(value)
-        
+
         self.to_splitnum(abs_value)
         wrd = ""
         wrd += self.pointword
@@ -461,7 +461,7 @@ class Num2Word_TR(Num2Word_Base):
             wrd = self.ZERO + wrd
         else:
             wrd = self.to_cardinal(int(self.integers_to_read[0])) + wrd
-            
+
         if is_negative:
             wrd = self.negword + " " + wrd
         return wrd
@@ -705,8 +705,8 @@ class Num2Word_TR(Num2Word_Base):
                             self.total_digits_outside_triplets
 
                     if not self.integers_to_read[0][
-                           last_read_digit_order: last_read_digit_order + 3
-                           ] == "000":
+                        last_read_digit_order: last_read_digit_order + 3
+                    ] == "000":
                         if not self.integers_to_read[0][
                             last_read_digit_order
                         ] == "0":
@@ -732,7 +732,7 @@ class Num2Word_TR(Num2Word_Base):
                                 wrd += self.CARDINAL_HUNDRED[0]
 
                         if not self.integers_to_read[0][
-                                    last_read_digit_order + 1
+                            last_read_digit_order + 1
                         ] == "0":
                             if self.order_of_last_zero_digit == len(
                                     self.integers_to_read[0]) - (
@@ -757,7 +757,7 @@ class Num2Word_TR(Num2Word_Base):
                                 )
 
                         if not self.integers_to_read[0][
-                                    last_read_digit_order + 2
+                            last_read_digit_order + 2
                         ] == "0":
                             if self.order_of_last_zero_digit == len(
                                     self.integers_to_read[0]) - (
@@ -777,7 +777,7 @@ class Num2Word_TR(Num2Word_Base):
                                                 last_read_digit_order + 2], ""
                                         )
                                     elif not self.integers_to_read[0][
-                                                last_read_digit_order + 2
+                                        last_read_digit_order + 2
                                     ] == "1":
                                         wrd += self.CARDINAL_ONES.get(
                                             self.integers_to_read[0][
@@ -838,7 +838,7 @@ class Num2Word_TR(Num2Word_Base):
             ]
         if len(self.integers_to_read[0]) % 3 > 0:
             self.total_triplets_to_read = (len(self.integers_to_read[0]) // 3)\
-                                          + 1
+                + 1
         elif len(self.integers_to_read[0]) % 3 == 0:
             self.total_triplets_to_read = len(self.integers_to_read[0]) // 3
         self.total_digits_outside_triplets = len(self.integers_to_read[0]) % 3
@@ -860,4 +860,4 @@ class Num2Word_TR(Num2Word_Base):
             return valueparts[0] + self.CURRENCY_UNIT
         if len(valueparts) == 2:
             return self.CURRENCY_UNIT.join(valueparts) + \
-                   self.CURRENCY_SUBUNIT
+                self.CURRENCY_SUBUNIT

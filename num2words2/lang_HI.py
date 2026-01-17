@@ -19,7 +19,7 @@ from __future__ import unicode_literals
 
 import string
 
-from num2words.base import Num2Word_Base
+from num2words2.base import Num2Word_Base
 
 
 class Num2Word_HI(Num2Word_Base):

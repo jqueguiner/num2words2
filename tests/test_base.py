@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 from decimal import Decimal
 from unittest import TestCase
 
-from num2words.base import Num2Word_Base
+from num2words2.base import Num2Word_Base
 
 
 class Num2WordBaseTest(TestCase):
@@ -34,19 +34,19 @@ class Num2WordBaseTest(TestCase):
             self.base.to_currency(Decimal('1.00'), currency='EUR')
 
     def test_error_to_cardinal_float(self):
-        from num2words.base import Num2Word_Base
+        from num2words2.base import Num2Word_Base
         self.base = Num2Word_Base()
         with self.assertRaises(TypeError):
             self.base.to_cardinal_float("a")
 
     def test_error_merge(self):
-        from num2words.base import Num2Word_Base
+        from num2words2.base import Num2Word_Base
         self.base = Num2Word_Base()
         with self.assertRaises(NotImplementedError):
             self.base.merge(2, 3)
 
     def test_is_title(self):
-        from num2words.base import Num2Word_Base
+        from num2words2.base import Num2Word_Base
         self.base = Num2Word_Base()
         self.assertEqual(
             self.base.title("one"),
@@ -68,7 +68,7 @@ class Num2WordBaseTest(TestCase):
             self.base.set_high_numwords()
 
     def test_to_ordinal_num(self):
-        from num2words.base import Num2Word_Base
+        from num2words2.base import Num2Word_Base
         self.base = Num2Word_Base()
         self.assertEqual(
             self.base.to_ordinal_num(1),

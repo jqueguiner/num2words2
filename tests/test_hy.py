@@ -19,8 +19,8 @@ from __future__ import unicode_literals
 
 from unittest import TestCase
 
-from num2words import num2words
-from num2words.lang_HY import Num2Word_HY
+from num2words2 import num2words
+from num2words2.lang_HY import Num2Word_HY
 
 
 class Num2WordsHYTest(TestCase):

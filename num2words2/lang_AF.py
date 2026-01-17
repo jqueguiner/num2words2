@@ -37,7 +37,7 @@ class Num2Word_AF(Num2Word_EU):
 
         self.negword = "minus "
         self.pointword = "komma"
-        
+
         # Error messages in Afrikaans
         self.errmsg_floatord = (
             "Kan nie die desimale getal %s as 'n ordinale getal behandel nie."
@@ -81,7 +81,7 @@ class Num2Word_AF(Num2Word_EU):
             "een": "eerst",
             "twee": "tweed",
             "drie": "derd",
-            "vier": "vierd", 
+            "vier": "vierd",
             "vyf": "vyfd",
             "ses": "sesd",
             "sewe": "sewend",
@@ -90,7 +90,7 @@ class Num2Word_AF(Num2Word_EU):
             "tien": "tiend",
             "elf": "elfd",
             "twaalf": "twaalfd",
-            
+
             # Compound endings
             "ig": "igst",
             "erd": "erdst",
@@ -135,13 +135,13 @@ class Num2Word_AF(Num2Word_EU):
     def to_ordinal(self, value):
         self.verify_ordinal(value)
         outword = self.to_cardinal(value)
-        
+
         # Handle special compound ordinals
         for key in self.ords:
             if outword.endswith(key):
                 outword = outword[:len(outword) - len(key)] + self.ords[key]
                 break
-        
+
         return outword + "e"
 
     def to_ordinal_num(self, value):
@@ -175,7 +175,8 @@ class Num2Word_AF(Num2Word_EU):
                 return self.to_cardinal(val)
             elif val < 2010:
                 # 2001-2009: "twee duisend een", etc.
-                return self.to_cardinal(2000) + " " + self.to_cardinal(val - 2000)
+                return self.to_cardinal(2000) + " " + \
+                    self.to_cardinal(val - 2000)
             else:
                 # 2010+: "twintig tien", "twintig elf", etc.
                 century = val // 100
@@ -183,9 +184,11 @@ class Num2Word_AF(Num2Word_EU):
                 if year_part == 0:
                     return self.to_cardinal(century) + " honderd"
                 else:
-                    return self.to_cardinal(century) + " " + self.to_cardinal(year_part)
+                    return self.to_cardinal(
+                        century) + " " + self.to_cardinal(year_part)
         else:
-            # Pre-2000 years: "negentien nege-en-negentig" not "negentien honderd nege-en-negentig"
+            # Pre-2000 years: "negentien nege-en-negentig" not "negentien
+            # honderd nege-en-negentig"
             if val < 1000:
                 return self.to_cardinal(val)
             elif not (val // 100) % 10:
@@ -197,4 +200,5 @@ class Num2Word_AF(Num2Word_EU):
                 if year_part == 0:
                     return self.to_cardinal(century) + " honderd"
                 else:
-                    return self.to_cardinal(century) + " " + self.to_cardinal(year_part)
+                    return self.to_cardinal(
+                        century) + " " + self.to_cardinal(year_part)

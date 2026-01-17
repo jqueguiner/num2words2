@@ -56,7 +56,7 @@ class NumberTooLargeError(Exception):
 
 
 class Num2Word_BN:
-    
+
     def __init__(self):
         self.negword = "ঋণাত্মক"  # Bengali word for "negative"
 
@@ -179,7 +179,7 @@ class Num2Word_BN:
             result = (words + dosomik_word).strip()
         else:
             result = words.strip()
-            
+
         if is_negative:
             result = self.negword + ' ' + result
         return result

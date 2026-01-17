@@ -19,8 +19,8 @@ import decimal
 from decimal import Decimal
 from unittest import TestCase
 
-from num2words import num2words
-from num2words.lang_TET import Num2Word_TET
+from num2words2 import num2words
+from num2words2.lang_TET import Num2Word_TET
 
 
 class Num2WordsTETTest(TestCase):

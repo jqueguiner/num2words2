@@ -67,7 +67,7 @@ class Num2Word_SL(Num2Word_EU):
         ctext, cnum, ntext, nnum = curr + next
 
         if ctext.endswith("dve") and self.ordflag and nnum <= 1000000:
-            ctext = ctext[:len(ctext)-1] + "a"
+            ctext = ctext[:len(ctext) - 1] + "a"
 
         if ctext == "dve" and not self.ordflag and nnum < 1000000000:
             ctext = "dva"
@@ -166,6 +166,6 @@ class Num2Word_SL(Num2Word_EU):
                                                     longval=longval)
 
     def to_year(self, val, longval=True):
-        if not (val//100) % 10:
+        if not (val // 100) % 10:
             return self.to_cardinal(val)
         return self.to_splitnum(val, hightxt="hundert", longval=longval)

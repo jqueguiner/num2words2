@@ -18,7 +18,7 @@
 
 from __future__ import unicode_literals
 
-from num2words import num2words
+from num2words2 import num2words
 
 from . import test_es
 

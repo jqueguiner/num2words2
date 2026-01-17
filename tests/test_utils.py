@@ -17,7 +17,7 @@
 
 from unittest import TestCase
 
-from num2words.utils import splitbyx
+from num2words2.utils import splitbyx
 
 
 class TestUtils(TestCase):

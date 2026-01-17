@@ -96,7 +96,7 @@ class Num2Word_ID():
         else:
             spelling = (
                 self.ratus(first_block[0][0]) + self.puluh(first_block[0][1:3])
-                )
+            )
 
         word_blocks += (first_block[0], spelling),
 

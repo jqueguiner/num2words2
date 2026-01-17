@@ -236,7 +236,7 @@ class Num2Word_CY(Num2Word_EU):
         # Check if negative
         is_negative = float_number < 0
         abs_float = abs(float_number)
-        
+
         # if ordinal:
         #     prefix = self.to_ordinal(int(abs_float))
         # else:
@@ -247,7 +247,7 @@ class Num2Word_CY(Num2Word_EU):
             [self.to_cardinal(int(c)) for c in float_part]
         )
         result = prefix + Num2Word_CY.FLOAT_INFIX_WORD + postfix
-        
+
         if is_negative:
             result = "meinws " + result
         return result
@@ -374,7 +374,7 @@ class Num2Word_CY(Num2Word_EU):
         # Handle floats first, including negative floats
         if isinstance(number, float):
             return self.float_to_words(number)
-            
+
         negative = False
         if number < 0:
             negative = True
