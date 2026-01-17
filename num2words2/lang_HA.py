@@ -160,7 +160,6 @@ class Num2Word_HA(Num2Word_Base):
                     else:
                         result = scale_name + " " + self._int_to_hausa(quotient)
 
-
                 if remainder > 0:
                     if remainder < 10:
                         result += " da " + self._int_to_hausa(remainder)

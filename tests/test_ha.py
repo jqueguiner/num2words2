@@ -149,7 +149,6 @@ class Num2WordsHATest(TestCase):
         # Large numbers
         self.assertEqual(num2words(1000000000, lang="ha"), "biliyan")
 
-
         # Complex combinations
         self.assertEqual(num2words(1234, lang="ha"), "dubu ɗari biyu talatin da huɗu")
         self.assertEqual(num2words(5678, lang="ha"), "dubu biyar ɗari shida saba'in da takwas")
@@ -157,7 +156,6 @@ class Num2WordsHATest(TestCase):
     def test_class_instance(self):
         """Test direct class instance usage."""
         converter = Num2Word_HA()
-
 
         # Basic functionality
         self.assertEqual(converter.to_cardinal(5), "biyar")
@@ -168,7 +166,6 @@ class Num2WordsHATest(TestCase):
         self.assertEqual(converter.to_ordinal(1), "na farko")
         self.assertEqual(converter.to_ordinal(5), "na biyar")
 
-
         # Currency functionality
         self.assertEqual(converter.to_currency(10), "naira goma")
 
@@ -178,7 +175,6 @@ class Num2WordsHATest(TestCase):
         self.assertEqual(num2words(456, lang="ha"), "ɗari huɗu hamsin da shida")
         self.assertEqual(num2words(789, lang="ha"), "ɗari bakwai tamanin da tara")
 
-
         # Complex thousands
         self.assertEqual(num2words(2345, lang="ha"), "dubu biyu ɗari uku arba'in da biyar")
         self.assertEqual(num2words(9876, lang="ha"), "dubu tara ɗari takwas saba'in da shida")
@@ -187,7 +183,6 @@ class Num2WordsHATest(TestCase):
         """Test error handling for invalid inputs."""
         converter = Num2Word_HA()
 
-
         # Very large numbers should still work or raise appropriate errors
         try:
             result = converter.to_cardinal(10**15)
@@ -195,4 +190,3 @@ class Num2WordsHATest(TestCase):
         except (ValueError, NotImplementedError):  # pragma: no cover
             # Either is acceptable for very large numbers
             pass
-

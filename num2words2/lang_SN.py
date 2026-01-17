@@ -123,7 +123,6 @@ class Num2Word_SN(Num2Word_Base):
                 return ("makumi " + self.tens_forms[tens] + " ne" +
                         self.ones[units])
 
-
         # Numbers 100-999
         if number < 1000:
             hundreds, remainder = divmod(number, 100)
@@ -138,7 +137,6 @@ class Num2Word_SN(Num2Word_Base):
                 else:
                     return ("mazana " + self.tens_forms[hundreds] + " ne" +
                             self._int_to_sn_word(remainder))
-
 
         # Numbers 1000-9999
         if number < 10000:
@@ -165,7 +163,6 @@ class Num2Word_SN(Num2Word_Base):
                         return ("zvuru " + self._int_to_sn_word(thousands) +
                                 " ne" + self._int_to_sn_word(remainder))
 
-
         # Numbers 10000-99999
         if number < 100000:
             ten_thousands, remainder = divmod(number, 1000)
@@ -175,7 +172,6 @@ class Num2Word_SN(Num2Word_Base):
                 return ("zvuru " + self._int_to_sn_word(ten_thousands) +
                         " ne" + self._int_to_sn_word(remainder))
 
-
         # Numbers 100000-999999
         if number < 1000000:
             hundred_thousands, remainder = divmod(number, 1000)
@@ -184,7 +180,6 @@ class Num2Word_SN(Num2Word_Base):
             else:
                 return ("zvuru " + self._int_to_sn_word(hundred_thousands) +
                         " ne" + self._int_to_sn_word(remainder))
-
 
         # Millions
         if number < 1000000000:
@@ -218,7 +213,6 @@ class Num2Word_SN(Num2Word_Base):
                         return ("miriyoni " + self._int_to_sn_word(millions) +
                                 " ne" + self._int_to_sn_word(remainder))
 
-
         # Billions
         if number < 1000000000000:
             billions, remainder = divmod(number, 1000000000)
@@ -237,7 +231,6 @@ class Num2Word_SN(Num2Word_Base):
                     return ("bhiriyoni " + base + " ne" +
                             self._int_to_sn_word(remainder))
 
-
         # Trillions
         trillions, remainder = divmod(number, 1000000000000)
         if trillions == 1:
@@ -254,7 +247,6 @@ class Num2Word_SN(Num2Word_Base):
             else:
                 return ("tiriyoni " + base + " ne" +
                         self._int_to_sn_word(remainder))
-
 
     def _get_thousands_form(self, number):
         """Get the special form for thousands (zvuru zvi...)"""
@@ -384,7 +376,6 @@ class Num2Word_SN(Num2Word_Base):
                 # For cents, use minor_singular without "ma" prefix
                 result.append(separator + minor_singular + " " +
                               self._int_to_sn_word(decimal_part))
-
 
         return " ".join(result)
 

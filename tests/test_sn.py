@@ -21,7 +21,7 @@ from num2words2 import num2words
 
 
 class Num2WordsSNTest(TestCase):
-    
+
     def test_cardinal_numbers(self):
         """Test cardinal numbers 0-20 in Shona"""
         self.assertEqual(num2words(0, lang='sn'), 'zero')

@@ -200,4 +200,3 @@ class Num2Word_AF(Num2Word_EU):
                     return self.to_cardinal(century) + " honderd"
                 else:
                     return self.to_cardinal(century) + " " + self.to_cardinal(year_part)
-

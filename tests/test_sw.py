@@ -163,7 +163,7 @@ class Num2WordsSWTest(TestCase):
             num2words(100, lang='sw', to='currency', currency='TZS'),
             "mia moja shilingi"
         )
-        
+
         # Test with decimal amounts
         self.assertEqual(
             num2words(1.50, lang='sw', to='currency', currency='TZS'),
@@ -208,7 +208,7 @@ class Num2WordsSWTest(TestCase):
         # Test zero in different contexts
         self.assertEqual(num2words(0, lang='sw'), "sifuri")
         self.assertEqual(num2words(0.0, lang='sw'), "sifuri")
-        
+
         # Test large round numbers
         self.assertEqual(num2words(1000000, lang='sw'), "milioni moja")
         self.assertEqual(num2words(2000000, lang='sw'), "milioni mbili")

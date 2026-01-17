@@ -213,7 +213,6 @@ class Num2Word_SQ(Num2Word_Base):
                 result.append(self.to_cardinal(whole))
                 result.append(self.pluralize(whole, self.CURRENCY_FORMS[currency][0]))
 
-
             # Add cents if present and cents=True
             if cents_value > 0 and cents:
                 if whole > 0:
@@ -222,7 +221,6 @@ class Num2Word_SQ(Num2Word_Base):
                     result = [main_part + separator]
                 result.append(self.to_cardinal(cents_value))
                 result.append(self.pluralize(cents_value, self.CURRENCY_FORMS[currency][1]))
-
 
             if is_negative:
                 result.insert(0, self.negword.strip())

@@ -55,7 +55,6 @@ TEST_CASES_TO_CURRENCY_USD = (
     (100.00, 'een honderd dollar en nul sent'),
 )
 
-
 class Num2WordsAFTest(TestCase):
 
     def test_cardinal_basic_numbers(self):
@@ -262,7 +261,6 @@ class Num2WordsAFTest(TestCase):
         result = num2words(100, lang='af', to='currency', currency='ZAR', cents=False)
         self.assertEqual(result, "een rand")
 
-
         result = num2words(50.25, lang='af', to='currency', currency='EUR', cents=False)
         self.assertEqual(result, "vyftig euro en 25 sent")
 
@@ -276,7 +274,6 @@ class Num2WordsAFTest(TestCase):
     def test_pluralize_method(self):
         """Test pluralization method"""
         converter = Num2Word_AF()
-
 
         # Test ZAR currency forms
         zar_major, zar_minor = converter.CURRENCY_FORMS['ZAR']
@@ -302,7 +299,6 @@ class Num2WordsAFTest(TestCase):
         self.assertEqual(num2words(999999999, lang='af'),
                          "nege honderd nege-en-negentig miljoen nege honderd nege-en-negentig duisend nege honderd nege-en-negentig")
 
-
     def test_special_ordinal_cases(self):
         """Test special cases for ordinals"""
         # Test 0th
@@ -311,4 +307,3 @@ class Num2WordsAFTest(TestCase):
         # Test compound ordinals with specific formatting
         self.assertEqual(num2words(81, ordinal=True, lang='af'), "een-en-tagtigste")
         self.assertEqual(num2words(101, ordinal=True, lang='af'), "een honderd eerste")
-

@@ -175,7 +175,6 @@ class Num2Word_SW(Num2Word_Base):
         # For Swahili, treat integers as whole currency units, not cents
         left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False)
 
-
         try:
             cr1, cr2 = self.CURRENCY_FORMS[currency]
         except KeyError:

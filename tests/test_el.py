@@ -190,7 +190,7 @@ TEST_CASES_CURRENCY_GBP = (
 
 
 class Num2WordsELTest(TestCase):
-    
+
     def test_cardinal(self):
         for number, expected in TEST_CASES_CARDINAL:
             with self.subTest(number=number):

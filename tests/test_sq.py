@@ -210,7 +210,7 @@ class Num2WordsSQTest(TestCase):
 
         # Large numbers edge cases
         converter = Num2Word_SQ()
-        
+
         # Test very large numbers (within MAXVAL limits)
         result = converter.to_cardinal(10**14)
         self.assertTrue(isinstance(result, str))
@@ -268,7 +268,7 @@ class Num2WordsSQTest(TestCase):
         self.assertEqual(num2words(21, lang="sq"), "njëzet e një")
         self.assertEqual(num2words(101, lang="sq"), "një qind e një")
         self.assertEqual(num2words(1001, lang="sq"), "një mijë e një")
-        
+
         # Test without connectors where appropriate
         self.assertEqual(num2words(20, lang="sq"), "njëzet")
         self.assertEqual(num2words(100, lang="sq"), "një qind")
@@ -281,7 +281,7 @@ class Num2WordsSQTest(TestCase):
         self.assertEqual(num2words(33, lang="sq"), "tridhjetë e tre")
         self.assertEqual(num2words(44, lang="sq"), "dyzet e katër")
         self.assertEqual(num2words(77, lang="sq"), "shtatëdhjetë e shtatë")
-        
+
         # Complex numbers
         self.assertEqual(num2words(1234, lang="sq"), "një mijë e dy qind e tridhjetë e katër")
         self.assertEqual(num2words(5678, lang="sq"), "pesë mijë e gjashtë qind e shtatëdhjetë e tetë")
