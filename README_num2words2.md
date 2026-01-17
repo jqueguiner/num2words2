@@ -206,6 +206,12 @@ This project is licensed under the GNU Lesser General Public License v2.1 - see 
 
 `num2words2` is based on the original [num2words](https://github.com/savoirfairelinux/num2words) project by Savoir-faire Linux inc.
 
+**Original Library History:**
+- **pynum2word** (2003) - Created by Taro Ogawa
+- **Lithuanian support** (2011) - Added by Marius Grigaitis  
+- **num2words** - Re-published by Virgil Dupras, Savoir-faire Linux
+- **num2words2** (2025) - Modern fork by Jean-Louis Queguiner for AI/ML applications
+
 ## Author
 
 Maintained by Jean-Louis Queguiner

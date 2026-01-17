@@ -1,31 +1,32 @@
-num2words library - Convert numbers to words in multiple languages
-==================================================================
+num2words2 library - Convert numbers to words in multiple languages
+===================================================================
 
-.. image:: https://img.shields.io/pypi/v/num2words.svg
-   :target: https://pypi.python.org/pypi/num2words
+.. image:: https://img.shields.io/pypi/v/num2words2.svg
+   :target: https://pypi.python.org/pypi/num2words2
 
-.. image:: https://travis-ci.org/savoirfairelinux/num2words.svg?branch=master
-    :target: https://travis-ci.org/savoirfairelinux/num2words
+.. image:: https://github.com/jqueguiner/num2words/workflows/CI/badge.svg
+    :target: https://github.com/jqueguiner/num2words/actions
 
-.. image:: https://coveralls.io/repos/github/savoirfairelinux/num2words/badge.svg?branch=master
-    :target: https://coveralls.io/github/savoirfairelinux/num2words?branch=master
+.. image:: https://coveralls.io/repos/github/jqueguiner/num2words/badge.svg?branch=master
+    :target: https://coveralls.io/github/jqueguiner/num2words?branch=master
 
 
-``num2words`` is a library that converts numbers like ``42`` to words like ``forty-two``.
-It supports multiple languages (see the list below for full list
-of languages) and can even generate ordinal numbers like ``forty-second``
-(although this last feature is a bit buggy for some languages at the moment).
+``num2words2`` is a modern, actively maintained fork of the original num2words library 
+that converts numbers like ``42`` to words like ``forty-two``. It supports multiple 
+languages (see the list below for full list of languages) and can even generate 
+ordinal numbers like ``forty-second``. This fork was created to address the maintenance 
+gap in the original project and optimize for modern AI/LLM/speech applications.
 
 The project is hosted on GitHub_. Contributions are welcome.
 
-.. _GitHub: https://github.com/savoirfairelinux/num2words
+.. _GitHub: https://github.com/jqueguiner/num2words
 
 Installation
 ------------
 
-The easiest way to install ``num2words`` is to use pip::
+The easiest way to install ``num2words2`` is to use pip::
 
-    pip install num2words
+    pip install num2words2
 
 Otherwise, you can download the source package and then execute::
 
@@ -44,18 +45,18 @@ Usage
 -----
 Command line::
 
-    $ num2words 10001
+    $ num2words2 10001
     ten thousand and one
-    $ num2words 24,120.10
+    $ num2words2 24,120.10
     twenty-four thousand, one hundred and twenty point one
-    $ num2words 24,120.10 -l es
+    $ num2words2 24,120.10 -l es
     veinticuatro mil ciento veinte punto uno
-    $num2words 2.14 -l es --to currency
+    $ num2words2 2.14 -l es --to currency
     dos euros con catorce céntimos
 
 In code there's only one function to use::
 
-    >>> from num2words import num2words
+    >>> from num2words2 import num2words
     >>> num2words(42)
     forty-two
     >>> num2words(42, to='ordinal')
@@ -157,7 +158,7 @@ Wiki
 For additional information on some localization please check the Wiki_.
 And feel free to propose wiki enhancement.
 
-.. _Wiki: https://github.com/savoirfairelinux/num2words/wiki
+.. _Wiki: https://github.com/jqueguiner/num2words/wiki
 
 History
 -------
@@ -167,7 +168,18 @@ in 2003. Unfortunately, the library stopped being maintained and the author
 can't be reached. There was another developer, Marius Grigaitis, who in 2011
 added Lithuanian support, but didn't take over maintenance of the project.
 
-I am thus basing myself on Marius Grigaitis' improvements and re-publishing
-``pynum2word`` as ``num2words``.
+Virgil Dupras from Savoir-faire Linux based himself on Marius Grigaitis' improvements 
+and re-published ``pynum2word`` as ``num2words``.
 
-Virgil Dupras, Savoir-faire Linux
+``num2words2`` Fork
+-------------------
+
+``num2words2`` is a modern fork of the original ``num2words`` library, created to address
+the maintenance gap and optimize for modern AI/LLM/speech applications. This fork:
+
+* Provides active maintenance aligned with rapidly evolving AI/ML ecosystem
+* Fixes critical bugs affecting machine learning pipelines  
+* Adds enhanced language support for global AI applications
+* Maintains backward compatibility with the original library
+
+Jean-Louis Queguiner

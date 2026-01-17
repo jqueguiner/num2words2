@@ -14,7 +14,7 @@ A clear and concise description of what the bug is.
 Steps to reproduce the behavior:
 ```python
 # Code example that demonstrates the issue
-from num2words import num2words
+from num2words2 import num2words
 # Your code here
 ```
 
@@ -27,7 +27,7 @@ What actually happened instead.
 **Environment (please complete the following information):**
  - OS: [e.g. Ubuntu 20.04]
  - Python version: [e.g. 3.9.5]
- - num2words version: [e.g. 0.5.12]
+ - num2words2 version: [e.g. 0.5.15]
  - Language/locale: [e.g. en, fr, es]
 
 **Additional context**

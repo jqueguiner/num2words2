@@ -35,7 +35,7 @@ The secret should appear in the list as `PYPI_API_TOKEN` with a green checkmark.
 1. Make any small change to the codebase
 2. Create a PR and merge it to master
 3. Watch the GitHub Actions tab for automatic workflows
-4. Check PyPI for the new package version
+4. Check https://pypi.org/project/num2words2/ for the new package version
 
 ## Security Notes:
 - The API token is stored securely in GitHub Secrets
