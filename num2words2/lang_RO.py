@@ -17,10 +17,10 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from . import lang_EU
+from . import lang_EUR
 
 
-class Num2Word_RO(lang_EU.Num2Word_EU):
+class Num2Word_RO(lang_EUR.Num2Word_EUR):
     GIGA_SUFFIX = "iliard/e"
     MEGA_SUFFIX = "ilion"
     # inflection for mi/billion follows different rule

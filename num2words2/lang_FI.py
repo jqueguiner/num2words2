@@ -19,7 +19,7 @@ from __future__ import division, print_function, unicode_literals
 
 from collections import OrderedDict
 
-from . import lang_EU
+from . import lang_EUR
 
 GENERIC_CENTS = ('sentti', 'senttiä')
 GENERIC_CENTAVOS = ('centavo', 'centavoa')
@@ -399,7 +399,7 @@ class Options(object):
         )
 
 
-class Num2Word_FI(lang_EU.Num2Word_EU):
+class Num2Word_FI(lang_EUR.Num2Word_EUR):
     CURRENCY_FORMS = {
         'BRL': (('real', 'realia'), GENERIC_CENTAVOS),
         'CHF': (('frangi', 'frangia'), ('rappen', 'rappenia')),

@@ -17,7 +17,7 @@
 from __future__ import unicode_literals
 
 from .currency import parse_currency_parts
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 # Welsh numerals differs to many other languages since the counted
 # object does not follow the numeral but is inserted between
@@ -213,7 +213,7 @@ GENERIC_CENTS = ("ceiniog", "ceiniogau")
 CURRENCIES_FEM = ["GBP"]
 
 
-class Num2Word_CY(Num2Word_EU):
+class Num2Word_CY(Num2Word_EUR):
     CURRENCY_FORMS = {
         # currency code: (sg, pl), (sg, pl)
         # in Welsh a noun after a numeral is ALWAYS in the singular

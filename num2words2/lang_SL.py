@@ -18,10 +18,10 @@
 
 from __future__ import unicode_literals
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 
-class Num2Word_SL(Num2Word_EU):
+class Num2Word_SL(Num2Word_EUR):
     GIGA_SUFFIX = "ilijard"
     MEGA_SUFFIX = "ilijon"
 

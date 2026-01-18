@@ -17,7 +17,7 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from . import lang_EU
+from . import lang_EUR
 
 # Genders
 KK = 0  # Karlkyn (male)
@@ -36,7 +36,7 @@ PLURALS = {
 }
 
 
-class Num2Word_IS(lang_EU.Num2Word_EU):
+class Num2Word_IS(lang_EUR.Num2Word_EUR):
 
     GIGA_SUFFIX = "illjarður"
     MEGA_SUFFIX = "illjón"

@@ -18,13 +18,13 @@
 
 from num2words2.currency import parse_currency_parts
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 DOLLAR = ('dolar', 'dolar')
 CENTS = ('sentavu', 'sentavu')
 
 
-class Num2Word_TET(Num2Word_EU):
+class Num2Word_TET(Num2Word_EUR):
 
     CURRENCY_FORMS = {
         'AUD': (DOLLAR, CENTS),

@@ -17,10 +17,10 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from . import lang_EU
+from . import lang_EUR
 
 
-class Num2Word_AM(lang_EU.Num2Word_EU):
+class Num2Word_AM(lang_EUR.Num2Word_EUR):
     CURRENCY_FORMS = {'ETB': (('ብር', 'ብር'), ('ሳንቲም', 'ሳንቲም'))}
 
     GIGA_SUFFIX = 'ቢሊዮን'

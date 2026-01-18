@@ -19,13 +19,13 @@ from __future__ import division, unicode_literals
 
 import re
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 DOLLAR = ('dólar', 'dólares')
 CENTS = ('cêntimo', 'cêntimos')
 
 
-class Num2Word_PT(Num2Word_EU):
+class Num2Word_PT(Num2Word_EUR):
 
     CURRENCY_FORMS = {
         'AUD': (DOLLAR, CENTS),

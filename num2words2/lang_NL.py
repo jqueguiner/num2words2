@@ -17,10 +17,10 @@
 
 from __future__ import print_function, unicode_literals
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 
-class Num2Word_NL(Num2Word_EU):
+class Num2Word_NL(Num2Word_EUR):
     CURRENCY_FORMS = {
         'EUR': (('euro', 'euro'), ('cent', 'cent')),
         'GBP': (('pond', 'pond'), ('penny', 'pence')),

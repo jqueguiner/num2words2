@@ -23,7 +23,7 @@ GENERIC_DOLLARS = ('dollar', 'dollars')
 GENERIC_CENTS = ('cent', 'cents')
 
 
-class Num2Word_EU(Num2Word_Base):
+class Num2Word_EUR(Num2Word_Base):
     CURRENCY_FORMS = {
         'AUD': (GENERIC_DOLLARS, GENERIC_CENTS),
         'BYN': (('rouble', 'roubles'), ('kopek', 'kopeks')),

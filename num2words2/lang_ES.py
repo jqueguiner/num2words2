@@ -19,7 +19,7 @@ from __future__ import division, print_function, unicode_literals
 
 import math
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 GENERIC_DOLLARS = ('dólar', 'dólares')
 GENERIC_CENTS = ('centavo', 'centavos')
@@ -31,7 +31,7 @@ CURRENCIES_UNA = ('SLL', 'SEK', 'NOK', 'CZK', 'DKK', 'ISK',
 CENTS_UNA = ('EGP', 'JOD', 'LBP', 'SDG', 'SSP', 'SYP')
 
 
-class Num2Word_ES(Num2Word_EU):
+class Num2Word_ES(Num2Word_EUR):
     CURRENCY_FORMS = {
         'EUR': (('euro', 'euros'), ('céntimo', 'céntimos')),
         'ESP': (('peseta', 'pesetas'), ('céntimo', 'céntimos')),

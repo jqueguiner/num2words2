@@ -16,7 +16,7 @@
 
 from __future__ import unicode_literals
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 # Globals
 # -------
@@ -53,7 +53,7 @@ CURRENCIES_UNA = ('GBP')
 # Main class
 # ==========
 
-class Num2Word_IT(Num2Word_EU):
+class Num2Word_IT(Num2Word_EUR):
     CURRENCY_FORMS = {
         'EUR': (('euro', 'euro'), GENERIC_CENTS),
         'USD': (GENERIC_DOLLARS, GENERIC_CENTS),
@@ -64,7 +64,7 @@ class Num2Word_IT(Num2Word_EU):
     FLOAT_INFIX_WORD = " virgola "
 
     def setup(self):
-        Num2Word_EU.setup(self)
+        Num2Word_EUR.setup(self)
 
     def __init__(self):
         pass

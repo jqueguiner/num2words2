@@ -17,10 +17,10 @@
 
 from __future__ import print_function, unicode_literals
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 
-class Num2Word_EL(Num2Word_EU):
+class Num2Word_EL(Num2Word_EUR):
     CURRENCY_FORMS = {
         'EUR': (('ευρώ', 'ευρώ'), ('λεπτό', 'λεπτά')),
         'USD': (('δολάριο', 'δολάρια'), ('σεντ', 'σεντς')),
@@ -28,7 +28,7 @@ class Num2Word_EL(Num2Word_EU):
     }
 
     def setup(self):
-        Num2Word_EU.setup(self)
+        Num2Word_EUR.setup(self)
 
         self.negword = "μείον "
         self.pointword = "κόμμα"

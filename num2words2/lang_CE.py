@@ -17,7 +17,7 @@
 from __future__ import unicode_literals
 
 from .currency import parse_currency_parts
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 # Chechen numbers inflect in case if without noun or
 # use a special oblique ending when followed by a counted noun
@@ -334,7 +334,7 @@ MINUS = "минус"
 DECIMALPOINT = "а"
 
 
-class Num2Word_CE(Num2Word_EU):
+class Num2Word_CE(Num2Word_EUR):
     CURRENCY_FORMS = {
         # currency code: (sg, pl), (sg, pl)
         "EUR": (("Евро", "Евро"), ("Сент", "Сенташ")),
@@ -344,7 +344,7 @@ class Num2Word_CE(Num2Word_EU):
     }
 
     def setup(self):
-        Num2Word_EU.setup(self)
+        Num2Word_EUR.setup(self)
         self.negword = "минус"
         self.pointword = "запятая"  # check !
         # self.errmsg_nonnum = (

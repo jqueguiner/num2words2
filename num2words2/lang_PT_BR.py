@@ -70,7 +70,7 @@ class Num2Word_PT_BR(lang_PT.Num2Word_PT):
         return (ctext + ntext, cnum * nnum)
 
     def to_cardinal(self, value):
-        result = lang_PT.Num2Word_EU.to_cardinal(self, value)
+        result = lang_PT.Num2Word_EUR.to_cardinal(self, value)
 
         # Transforms "mil E cento e catorze reais" into "mil, cento e catorze
         # reais"
