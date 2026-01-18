@@ -6,8 +6,10 @@ This report tracks the actual implementation status of languages in num2words2 a
 
 ## Currently Implemented Languages (73 total)
 
-### Note on lang_EU.py
+### Important: lang_EU.py Naming Issue
 The file `lang_EU.py` is NOT for Basque language. It's for EURO currency support and contains currency definitions for various currencies (EUR, USD, etc.). Basque language (eu) is not currently implemented.
+
+**This file should be renamed to `lang_CURRENCY_EU.py` or `lang_CURRENCY_EUR.py`** to follow proper naming conventions and avoid confusion with language codes.
 
 ### Fully Implemented with Tests
 | Language | Code | Implementation | Test File | Status |
@@ -193,5 +195,5 @@ Based on the git history, these languages were recently added:
    - Southeast Asia: Javanese, Sundanese, Tagalog
    - Africa: Yoruba
 4. ⬜ Update LANGUAGES.md to correct Basque status
-5. ⬜ Consider removing lang_EU.py or renaming to avoid confusion
+5. ⬜ **CRITICAL**: Rename `lang_EU.py` to `lang_CURRENCY_EUR.py` to avoid confusion with Basque language code
 6. ⬜ Add community contribution guidelines for new languages
