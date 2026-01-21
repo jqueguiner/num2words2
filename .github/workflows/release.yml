@@ -1,0 +1,208 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Distribution
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # For setuptools_scm
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build setuptools wheel setuptools_scm
+
+    - name: Build distribution
+      run: |
+        python -m build
+        ls -la dist/
+
+    - name: Check build
+      run: |
+        pip install twine
+        twine check dist/*
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+
+  test-package:
+    name: Test Built Package
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+
+    - name: Test installation
+      run: |
+        pip install dist/*.whl
+        python -c "import num2words2; print(num2words2.__version__)"
+        python -c "from num2words2 import num2words; print(num2words(42, lang='en'))"
+        python -c "from num2words2 import num2words; print(num2words(42, lang='as'))"
+
+  release:
+    name: Create GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build, test-package]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+
+    - name: Generate Release Notes
+      id: release_notes
+      run: |
+        cat > release_notes.md << 'EOF'
+        ## What's New
+
+        ### Added Languages (45 new)
+        - Assamese (AS)
+        - Bashkir (BA)
+        - Tibetan (BO)
+        - Breton (BR)
+        - Bosnian (BS)
+        - Basque (EU)
+        - Faroese (FO)
+        - Galician (GL)
+        - Gujarati (GU)
+        - Hawaiian (HAW)
+        - Haitian Creole (HT)
+        - Javanese (JW)
+        - Georgian (KA)
+        - Kazakh (KK)
+        - Khmer (KM)
+        - Latin (LA)
+        - Luxembourgish (LB)
+        - Lingala (LN)
+        - Lao (LO)
+        - Malagasy (MG)
+        - Māori (MI)
+        - Macedonian (MK)
+        - Malayalam (ML)
+        - Marathi (MR)
+        - Maltese (MT)
+        - Burmese (MY)
+        - Nepali (NE)
+        - Norwegian Nynorsk (NN)
+        - Occitan (OC)
+        - Punjabi (PA)
+        - Pashto (PS)
+        - Sanskrit (SA)
+        - Sindhi (SD)
+        - Sinhala (SI)
+        - Somali (SO)
+        - Sundanese (SU)
+        - Turkmen (TK)
+        - Filipino/Tagalog (TL)
+        - Tatar (TT)
+        - Urdu (UR)
+        - Uzbek (UZ)
+        - Wolof (WO)
+        - Yiddish (YI)
+        - Yoruba (YO)
+
+        ### Total Languages Supported
+        Now supporting 119+ language codes!
+
+        ### Installation
+        ```bash
+        pip install num2words2
+        ```
+
+        ### Usage
+        ```python
+        from num2words2 import num2words
+
+        # New languages
+        print(num2words(42, lang='as'))   # Assamese
+        print(num2words(42, lang='sw'))   # Swahili
+        print(num2words(42, lang='yo'))   # Yoruba
+        ```
+        EOF
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        body_path: release_notes.md
+        files: dist/*
+        draft: false
+        prerelease: false
+
+  publish-pypi:
+    name: Publish to PyPI
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build, test-package, release]
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/num2words2/
+    permissions:
+      id-token: write
+
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+
+    - name: Check package versions
+      run: |
+        ls -la dist/
+        for file in dist/*; do
+          echo "Package: $file"
+          if [[ $file == *"+g"* ]]; then
+            echo "ERROR: Local version identifier found in package name!"
+            echo "This usually means no proper git tag exists."
+            echo "Please create a release tag first: git tag -a v1.0.0 -m 'Release v1.0.0'"
+            exit 1
+          fi
+        done
+
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        skip-existing: true

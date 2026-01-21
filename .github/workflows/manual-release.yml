@@ -1,0 +1,88 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.0.0)'
+        required: true
+        type: string
+      prerelease:
+        description: 'Pre-release?'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build setuptools wheel setuptools_scm
+        pip install -r tests/requirements-test.txt
+
+    - name: Run tests
+      run: |
+        python -m pytest tests/ -v --tb=short
+
+    - name: Build distribution
+      run: |
+        python -m build
+        ls -la dist/
+
+    - name: Check build
+      run: |
+        pip install twine
+        twine check dist/*
+
+    - name: Create and push tag
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git tag -a "v${{ inputs.version }}" -m "Release v${{ inputs.version }}"
+        git push origin "v${{ inputs.version }}"
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ inputs.version }}
+        name: Release v${{ inputs.version }}
+        draft: false
+        prerelease: ${{ inputs.prerelease }}
+        files: dist/*
+        body: |
+          ## Release v${{ inputs.version }}
+
+          ### What's New
+          - Added 45 new language modules
+          - Now supporting 119+ language codes
+          - Full implementations with native language support
+
+          ### Installation
+          ```bash
+          pip install num2words2==${{ inputs.version }}
+          ```
+
+          ### Full Changelog
+          See [CHANGELOG](https://github.com/${{ github.repository }}/blob/master/CHANGELOG.md)
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/

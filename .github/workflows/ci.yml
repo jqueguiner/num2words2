@@ -12,6 +12,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # For setuptools_scm
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
@@ -24,6 +26,18 @@ jobs:
     - name: Test with tox
       run: |
         tox -v || (echo "Tox failed. Here's the log:" && cat .tox/*/log/*.log 2>/dev/null && exit 1)
+    - name: Build package
+      if: matrix.python-version == '3.11'
+      run: |
+        pip install build
+        python -m build
+        ls -la dist/
+    - name: Upload build artifacts
+      if: matrix.python-version == '3.11'
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
     - name: Upload coverage data to coveralls.io
       run: coveralls --service=github
       env:
