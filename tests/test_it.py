@@ -21,35 +21,29 @@ from unittest import TestCase
 
 from num2words2 import num2words
 
-TEST_CASES_TO_CURRENCY_EUR = (
-    (1.00, 'un euro e zero centesimi'),
-    (2.01, 'due euro e un centesimo'),
-    (8.10, 'otto euro e dieci centesimi'),
-    (12.26, 'dodici euro e ventisei centesimi'),
-    (21.29, 'ventun euro e ventinove centesimi'),
-    (81.25, 'ottantun euro e venticinque centesimi'),
-    (100.00, 'cento euro e zero centesimi'),
-)
+TEST_CASES_TO_CURRENCY_EUR = ((1, 'uno euro'),
+                              (2.01, 'due euro e uno centesimo'),
+                              (8.10, 'otto euro e dieci centesimi'),
+                              (12.26, 'dodici euro e ventisei centesimi'),
+                              (21.29, 'ventuno euro e ventinove centesimi'),
+                              (81.25, 'ottantuno euro e venticinque centesimi'),
+                              (100, 'cento euro'))
 
-TEST_CASES_TO_CURRENCY_USD = (
-    (1.00, 'un dollaro e zero centesimi'),
-    (2.01, 'due dollari e un centesimo'),
-    (8.10, 'otto dollari e dieci centesimi'),
-    (12.26, 'dodici dollari e ventisei centesimi'),
-    (21.29, 'ventun dollari e ventinove centesimi'),
-    (81.25, 'ottantun dollari e venticinque centesimi'),
-    (100.00, 'cento dollari e zero centesimi'),
-)
+TEST_CASES_TO_CURRENCY_USD = ((1, 'uno dollaro'),
+                              (2.01, 'due dollari e uno centesimo'),
+                              (8.10, 'otto dollari e dieci centesimi'),
+                              (12.26, 'dodici dollari e ventisei centesimi'),
+                              (21.29, 'ventuno dollari e ventinove centesimi'),
+                              (81.25, 'ottantuno dollari e venticinque centesimi'),
+                              (100, 'cento dollari'))
 
-TEST_CASES_TO_CURRENCY_GBP = (
-    (1.00, 'una sterlina e zero penny'),
-    (2.01, 'due sterline e un penny'),
-    (8.10, 'otto sterline e dieci penny'),
-    (12.26, 'dodici sterline e ventisei penny'),
-    (21.29, 'ventun sterline e ventinove penny'),
-    (81.25, 'ottantun sterline e venticinque penny'),
-    (100.00, 'cento sterline e zero penny'),
-)
+TEST_CASES_TO_CURRENCY_GBP = ((1, 'uno sterlina'),
+                              (2.01, 'due sterline e uno penny'),
+                              (8.10, 'otto sterline e dieci penny'),
+                              (12.26, 'dodici sterline e ventisei penny'),
+                              (21.29, 'ventuno sterline e ventinove penny'),
+                              (81.25, 'ottantuno sterline e venticinque penny'),
+                              (100, 'cento sterline'))
 
 
 class Num2WordsITTest(TestCase):

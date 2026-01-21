@@ -182,7 +182,7 @@ class Num2Word_AR(Num2Word_Base):
             else:
                 ret_val = "{}".format(self.arabicHundreds[int(hundreds)])
                 if ret_val != "" and tens != 0:
-                    ret_val += " و "
+                    ret_val += " و"
 
         if tens > 0:
             if tens < 20:
@@ -221,7 +221,7 @@ class Num2Word_AR(Num2Word_Base):
                 if ones > 0:
                     ret_val += self.digit_feminine_status(ones, group_level)
                 if ret_val != "" and ones != 0:
-                    ret_val += " و "
+                    ret_val += " و"
 
                 ret_val += self.arabicTens[int(tens)]
 
@@ -279,7 +279,7 @@ class Num2Word_AR(Num2Word_Base):
             if group_description != '':
                 if group > 0:
                     if ret_val != "":
-                        ret_val = "{}و {}".format("", ret_val)
+                        ret_val = "و{}".format(ret_val)
                     if number_to_process != 2 and number_to_process != 1:
                         # if group >= len(self.arabicGroup):
                         #     raise OverflowError(self.errmsg_toobig %
@@ -325,7 +325,10 @@ class Num2Word_AR(Num2Word_Base):
             elif 11 <= remaining100 <= 99:
                 formatted_number += self.currency_unit[3]
         if self._decimalValue != 0:
-            formatted_number += " {} ".format(self.separator)
+            if self.separator == 'و':
+                formatted_number += " و"
+            else:
+                formatted_number += " {} ".format(self.separator)
             formatted_number += decimal_string
 
         if self._decimalValue != 0:
@@ -371,15 +374,6 @@ class Num2Word_AR(Num2Word_Base):
             self.currency_subunit = CURRENCY_SR[1]
             self.partPrecision = 2
 
-    def to_currency(self, value, currency='SR', prefix='', suffix=''):
-        self.set_currency_prefer(currency)
-        self.isCurrencyNameFeminine = False
-        self.separator = "و"
-        self.arabicOnes = ARABIC_ONES
-        self.arabicPrefixText = prefix
-        self.arabicSuffixText = suffix
-        return self.convert(value=value)
-
     def to_ordinal(self, number, prefix=''):
         if number <= 19:
             return "{}".format(self.arabicOrdinal[number])
@@ -413,3 +407,29 @@ class Num2Word_AR(Num2Word_Base):
         self.arabicSuffixText = ""
         self.arabicOnes = ARABIC_ONES
         return minus + self.convert(value=self.abs(number)).strip()
+
+    def to_currency(self, n, currency='SR', cents=True, separator=',',
+                    adjective=False):
+        # Arabic has a special currency implementation
+        # Set the currency preference based on the currency code
+        self.set_currency_prefer(currency)
+
+        # Reset settings for currency mode
+        self.isCurrencyNameFeminine = False
+        self.arabicPrefixText = ''
+        self.arabicSuffixText = ''
+        self.separator = 'و'
+
+        # Validate and handle negative numbers
+        n = self.validate_number(n)
+        minus = ''
+        if n < 0:
+            minus = 'سالب '
+            n = -n
+
+        # Convert and return
+        result = self.convert(value=n)
+        if minus:
+            # Need to prepend minus to the result
+            return minus + result
+        return result

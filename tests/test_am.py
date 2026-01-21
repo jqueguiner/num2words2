@@ -73,7 +73,7 @@ class Num2WordsAMTest(TestCase):
         )
         self.assertEqual(
             num2words('0', lang='am', to='currency', separator=' እና',
-                      cents=True, currency='ETB'), 'ዜሮ ብር'
+                      cents=True, currency='ETB'), 'ዜሮ ብር እና ዜሮ ሳንቲም'
         )
 
         self.assertEqual(
@@ -95,6 +95,6 @@ class Num2WordsAMTest(TestCase):
 
     def test_negative_decimals(self):
         # Comprehensive test for negative decimals including -0.4
-        self.assertEqual(num2words(-0.4, lang="am"), "አሉታዊ ዜሮ ነጥብ አራት")
-        self.assertEqual(num2words(-0.5, lang="am"), "አሉታዊ ዜሮ ነጥብ አምስት")
-        self.assertEqual(num2words(-1.4, lang="am"), "አሉታዊ አንድ ነጥብ አራት")
+        self.assertEqual(num2words(-0.4, lang="am"), "ሰልቢ ዜሮ ነጥብ አራት")
+        self.assertEqual(num2words(-0.5, lang="am"), "ሰልቢ ዜሮ ነጥብ አምስት")
+        self.assertEqual(num2words(-1.4, lang="am"), "ሰልቢ አንድ ነጥብ አራት")

@@ -17,10 +17,18 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from . import lang_EU
+from . import lang_EUR
 
 
-class Num2Word_EN(lang_EU.Num2Word_EU):
+class Num2Word_EN(lang_EUR.Num2Word_EUR):
+    def __init__(self):
+        super(Num2Word_EN, self).__init__()
+        # Override specific currency forms for proper English pluralization
+        self.CURRENCY_FORMS['EUR'] = (('euro', 'euros'), ('cent', 'cents'))
+        self.CURRENCY_FORMS['USD'] = (('dollar', 'dollars'), ('cent', 'cents'))
+        self.CURRENCY_FORMS['GBP'] = (('pound', 'pounds'), ('penny', 'pence'))
+        self.CURRENCY_FORMS['NGN'] = (('naira', 'naira'), ('kobo', 'kobo'))
+
     def set_high_numwords(self, high):
         max = 3 + 3 * len(high)
         for word, n in zip(high, range(max, 3, -3)):

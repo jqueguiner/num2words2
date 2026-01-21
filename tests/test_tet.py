@@ -48,12 +48,12 @@ class Num2WordsTETTest(TestCase):
         self.assertEqual(num2words(17, lang='tet'), 'sanulu resin hitu')
         self.assertEqual(num2words(18, lang='tet'), 'sanulu resin ualu')
         self.assertEqual(num2words(19, lang='tet'), 'sanulu resin sia')
-        self.assertEqual(num2words(20, lang='tet'), 'ruanulu')
+        self.assertEqual(num2words(20, lang='tet'), 'rua nulu')
 
-        self.assertEqual(num2words(21, lang='tet'), 'ruanulu resin ida')
-        self.assertEqual(num2words(22, lang='tet'), 'ruanulu resin rua')
-        self.assertEqual(num2words(35, lang='tet'), 'tolunulu resin lima')
-        self.assertEqual(num2words(99, lang='tet'), 'sianulu resin sia')
+        self.assertEqual(num2words(21, lang='tet'), 'rua nulu resin ida')
+        self.assertEqual(num2words(22, lang='tet'), 'rua nulu resin rua')
+        self.assertEqual(num2words(35, lang='tet'), 'tolu nulu resin lima')
+        self.assertEqual(num2words(99, lang='tet'), 'sia nulu resin sia')
 
         self.assertEqual(num2words(100, lang='tet'), 'atus ida')
         self.assertEqual(num2words(101, lang='tet'), 'atus ida ida')
@@ -65,11 +65,11 @@ class Num2WordsTETTest(TestCase):
         )
         self.assertEqual(
             num2words(128, lang='tet'),
-            'atus ida ruanulu resin ualu'
+            'atus ida rua nulu resin ualu'
         )
         self.assertEqual(
             num2words(151, lang='tet'),
-            'atus ida limanulu resin ida'
+            'atus ida lima nulu resin ida'
         )
         self.assertEqual(
             num2words(713, lang='tet'),
@@ -77,7 +77,7 @@ class Num2WordsTETTest(TestCase):
         )
         self.assertEqual(
             num2words(999, lang='tet'),
-            'atus sia sianulu resin sia'
+            'atus sia sia nulu resin sia'
         )
 
         self.assertEqual(num2words(1000, lang='tet'), 'rihun ida')
@@ -92,7 +92,7 @@ class Num2WordsTETTest(TestCase):
         )
         self.assertEqual(
             num2words(2357, lang='tet'),
-            'rihun rua atus tolu limanulu resin hitu'
+            'rihun rua atus tolu lima nulu resin hitu'
         )
         self.assertEqual(
             num2words(2200, lang='tet'),
@@ -100,20 +100,20 @@ class Num2WordsTETTest(TestCase):
         )
         self.assertEqual(
             num2words(2230, lang='tet'),
-            'rihun rua atus rua tolunulu'
+            'rihun rua atus rua tolu nulu'
         )
         self.assertEqual(
             num2words(73400, lang='tet'),
-            'rihun hitunulu resin tolu atus haat'
+            'rihun hitu nulu resin tolu atus haat'
         )
         self.assertEqual(
             num2words(73421, lang='tet'),
-            'rihun hitunulu resin tolu atus haat ruanulu resin ida'
+            'rihun hitu nulu resin tolu atus haat rua nulu resin ida'
         )
         self.assertEqual(num2words(100000, lang='tet'), 'rihun atus ida')
         self.assertEqual(
             num2words(250050, lang='tet'),
-            'rihun atus rua limanulu limanulu'
+            'rihun atus rua lima nulu lima nulu'
         )
         self.assertEqual(
             num2words(6000000, lang='tet'), 'miliaun neen'
@@ -127,16 +127,16 @@ class Num2WordsTETTest(TestCase):
         )
         self.assertEqual(
             num2words(145000000002, lang='tet'),
-            'miliaun rihun atus ida haatnulu resin lima resin rua'
+            'miliaun rihun atus ida haat nulu resin lima resin rua'
         )
         self.assertEqual(
             num2words(4635102, lang='tet'),
-            'miliaun haat rihun atus neen tolunulu resin lima atus ida rua'
+            'miliaun haat rihun atus neen tolu nulu resin lima atus ida rua'
         )
         self.assertEqual(
             num2words(145254635102, lang='tet'),
-            "miliaun rihun atus ida haatnulu resin lima atus rua limanulu \
-resin haat rihun atus neen tolunulu resin lima atus ida rua"
+            "miliaun rihun atus ida haat nulu resin lima atus rua lima nulu \
+resin haat rihun atus neen tolu nulu resin lima atus ida rua"
         )
         self.assertEqual(
             num2words(1000000000000, lang='tet'),
@@ -166,14 +166,14 @@ resin haat rihun atus neen tolunulu resin lima atus ida rua"
     def test_cardinal_integer_negative(self):
         self.assertEqual(num2words(-1, lang='tet'), 'menus ida')
         self.assertEqual(
-            num2words(-256, lang='tet'), 'menus atus rua limanulu resin neen'
+            num2words(-256, lang='tet'), 'menus atus rua lima nulu resin neen'
         )
         self.assertEqual(num2words(-1000, lang='tet'), 'menus rihun ida')
         self.assertEqual(num2words(-1000000, lang='tet'), 'menus miliaun ida')
         self.assertEqual(
             num2words(-1234567, lang='tet'),
-            'menus miliaun ida rihun atus rua tolunulu resin \
-haat atus lima neenulu resin hitu'
+            'menus miliaun ida rihun atus rua tolu nulu resin \
+haat atus lima neen nulu resin hitu'
         )
 
     def test_cardinal_float(self):
@@ -196,7 +196,7 @@ haat atus lima neenulu resin hitu'
         )
         self.assertEqual(
             num2words(Decimal('2345.75'), lang='tet'),
-            'rihun rua atus tolu haatnulu resin lima vírgula hitu lima'
+            'rihun rua atus tolu haat nulu resin lima vírgula hitu lima'
         )
 
     def test_cardinal_float_negative(self):
@@ -214,7 +214,7 @@ haat atus lima neenulu resin hitu'
         )
         self.assertEqual(
             num2words(Decimal('-222.22'), lang='tet'),
-            'menus atus rua ruanulu resin rua vírgula rua rua'
+            'menus atus rua rua nulu resin rua vírgula rua rua'
         )
 
     def test_ordinal(self):
@@ -260,20 +260,20 @@ haat atus lima neenulu resin hitu'
             num2words(19, lang='tet', ordinal=True), 'dasanulu resin siak'
         )
         self.assertEqual(
-            num2words(20, lang='tet', ordinal=True), 'daruanuluk'
+            num2words(20, lang='tet', ordinal=True), 'darua nuluk'
         )
 
         self.assertEqual(
-            num2words(21, lang='tet', ordinal=True), 'daruanulu resin idak'
+            num2words(21, lang='tet', ordinal=True), 'darua nulu resin idak'
         )
         self.assertEqual(
-            num2words(22, lang='tet', ordinal=True), 'daruanulu resin ruak'
+            num2words(22, lang='tet', ordinal=True), 'darua nulu resin ruak'
         )
         self.assertEqual(
-            num2words(35, lang='tet', ordinal=True), 'datolunulu resin limak'
+            num2words(35, lang='tet', ordinal=True), 'datolu nulu resin limak'
         )
         self.assertEqual(
-            num2words(99, lang='tet', ordinal=True), 'dasianulu resin siak'
+            num2words(99, lang='tet', ordinal=True), 'dasia nulu resin siak'
         )
 
         self.assertEqual(
@@ -287,7 +287,7 @@ haat atus lima neenulu resin hitu'
         )
         self.assertEqual(
             num2words(128, lang='tet', ordinal=True),
-            'dahatus ida ruanulu resin ualuk'
+            'dahatus ida rua nulu resin ualuk'
         )
         self.assertEqual(
             num2words(600, lang='tet', ordinal=True),
@@ -314,7 +314,7 @@ haat atus lima neenulu resin hitu'
         )
         self.assertEqual(
             num2words(73421, lang='tet', ordinal=True),
-            'darihun hitunulu resin tolu atus haat ruanulu resin idak'
+            'darihun hitu nulu resin tolu atus haat rua nulu resin idak'
         )
 
         self.assertEqual(
@@ -323,7 +323,7 @@ haat atus lima neenulu resin hitu'
         )
         self.assertEqual(
             num2words(250050, lang='tet', ordinal=True),
-            'darihun atus rua limanulu limanuluk'
+            'darihun atus rua lima nulu lima nuluk'
         )
         self.assertEqual(
             num2words(6000000, lang='tet', ordinal=True), 'damiliaun neen'
@@ -334,116 +334,116 @@ haat atus lima neenulu resin hitu'
         )
         self.assertEqual(
             num2words(145000000002, lang='tet', ordinal=True),
-            'damiliaun rihun atus ida haatnulu resin lima resin ruak'
+            'damiliaun rihun atus ida haat nulu resin lima resin ruak'
         )
 
     def test_currency_integer(self):
-        self.assertEqual(self.n2w.to_currency(1.00), 'dolar ida')
-        self.assertEqual(self.n2w.to_currency(2.00), 'dolar rua')
-        self.assertEqual(self.n2w.to_currency(3.00), 'dolar tolu')
-        self.assertEqual(self.n2w.to_currency(4.00), 'dolar haat')
-        self.assertEqual(self.n2w.to_currency(5.00), 'dolar lima')
-        self.assertEqual(self.n2w.to_currency(6.00), 'dolar neen')
-        self.assertEqual(self.n2w.to_currency(7.00), 'dolar hitu')
-        self.assertEqual(self.n2w.to_currency(8.00), 'dolar ualu')
-        self.assertEqual(self.n2w.to_currency(9.00), 'dolar sia')
-        self.assertEqual(self.n2w.to_currency(10.00), 'dolar sanulu')
-        self.assertEqual(self.n2w.to_currency(11.00), 'dolar sanulu resin ida')
-        self.assertEqual(self.n2w.to_currency(12.00), 'dolar sanulu resin rua')
+        self.assertEqual(self.n2w.to_currency(1), 'dolar ida')
+        self.assertEqual(self.n2w.to_currency(2), 'dolar rua')
+        self.assertEqual(self.n2w.to_currency(3), 'dolar tolu')
+        self.assertEqual(self.n2w.to_currency(4), 'dolar haat')
+        self.assertEqual(self.n2w.to_currency(5), 'dolar lima')
+        self.assertEqual(self.n2w.to_currency(6), 'dolar neen')
+        self.assertEqual(self.n2w.to_currency(7), 'dolar hitu')
+        self.assertEqual(self.n2w.to_currency(8), 'dolar ualu')
+        self.assertEqual(self.n2w.to_currency(9), 'dolar sia')
+        self.assertEqual(self.n2w.to_currency(10), 'dolar sanulu')
+        self.assertEqual(self.n2w.to_currency(11), 'dolar sanulu resin ida')
+        self.assertEqual(self.n2w.to_currency(12), 'dolar sanulu resin rua')
         self.assertEqual(
-            self.n2w.to_currency(13.00),
+            self.n2w.to_currency(13),
             'dolar sanulu resin tolu'
         )
         self.assertEqual(
-            self.n2w.to_currency(14.00),
+            self.n2w.to_currency(14),
             'dolar sanulu resin haat'
         )
         self.assertEqual(
-            self.n2w.to_currency(15.00),
+            self.n2w.to_currency(15),
             'dolar sanulu resin lima'
         )
         self.assertEqual(
-            self.n2w.to_currency(16.00),
+            self.n2w.to_currency(16),
             'dolar sanulu resin neen'
         )
         self.assertEqual(
-            self.n2w.to_currency(17.00),
+            self.n2w.to_currency(17),
             'dolar sanulu resin hitu'
         )
         self.assertEqual(
-            self.n2w.to_currency(18.00),
+            self.n2w.to_currency(18),
             'dolar sanulu resin ualu'
         )
         self.assertEqual(
-            self.n2w.to_currency(19.00),
+            self.n2w.to_currency(19),
             'dolar sanulu resin sia'
         )
-        self.assertEqual(self.n2w.to_currency(20.00), 'dolar ruanulu')
+        self.assertEqual(self.n2w.to_currency(20), 'dolar rua nulu')
 
         self.assertEqual(
-            self.n2w.to_currency(21.00),
-            'dolar ruanulu resin ida'
+            self.n2w.to_currency(21),
+            'dolar rua nulu resin ida'
         )
         self.assertEqual(
-            self.n2w.to_currency(22.00),
-            'dolar ruanulu resin rua'
+            self.n2w.to_currency(22),
+            'dolar rua nulu resin rua'
         )
         self.assertEqual(
-            self.n2w.to_currency(35.00),
-            'dolar tolunulu resin lima'
+            self.n2w.to_currency(35),
+            'dolar tolu nulu resin lima'
         )
         self.assertEqual(
-            self.n2w.to_currency(99.00),
-            'dolar sianulu resin sia'
+            self.n2w.to_currency(99),
+            'dolar sia nulu resin sia'
         )
 
-        self.assertEqual(self.n2w.to_currency(100.00), 'dolar atus ida')
-        self.assertEqual(self.n2w.to_currency(101.00), 'dolar atus ida ida')
+        self.assertEqual(self.n2w.to_currency(100), 'dolar atus ida')
+        self.assertEqual(self.n2w.to_currency(101), 'dolar atus ida ida')
         self.assertEqual(
-            self.n2w.to_currency(128.00), 'dolar atus ida ruanulu resin ualu'
+            self.n2w.to_currency(128), 'dolar atus ida rua nulu resin ualu'
         )
         self.assertEqual(
-            self.n2w.to_currency(713.00), 'dolar atus hitu sanulu resin tolu')
+            self.n2w.to_currency(713), 'dolar atus hitu sanulu resin tolu')
 
-        self.assertEqual(self.n2w.to_currency(1000.00), 'dolar rihun ida')
-        self.assertEqual(self.n2w.to_currency(1001.00), 'dolar rihun ida ida')
+        self.assertEqual(self.n2w.to_currency(1000), 'dolar rihun ida')
+        self.assertEqual(self.n2w.to_currency(1001), 'dolar rihun ida ida')
         self.assertEqual(
-            self.n2w.to_currency(1111.00),
+            self.n2w.to_currency(1111),
             'dolar rihun ida atus ida sanulu resin ida'
         )
         self.assertEqual(
-            self.n2w.to_currency(2114.00),
+            self.n2w.to_currency(2114),
             'dolar rihun rua atus ida sanulu resin haat'
         )
         self.assertEqual(
-            self.n2w.to_currency(73421.00),
-            'dolar rihun hitunulu resin tolu atus haat ruanulu resin ida'
+            self.n2w.to_currency(73421),
+            'dolar rihun hitu nulu resin tolu atus haat rua nulu resin ida'
         )
 
         self.assertEqual(
-            self.n2w.to_currency(100000.00),
+            self.n2w.to_currency(100000),
             'dolar rihun atus ida'
         )
         self.assertEqual(
-            self.n2w.to_currency(250050.00),
-            'dolar rihun atus rua limanulu limanulu'
+            self.n2w.to_currency(250050),
+            'dolar rihun atus rua lima nulu lima nulu'
         )
         self.assertEqual(
-            self.n2w.to_currency(6000000.00),
+            self.n2w.to_currency(6000000),
             'dolar miliaun neen'
         )
         self.assertEqual(
-            self.n2w.to_currency(19000000000.00),
+            self.n2w.to_currency(19000000000),
             'dolar miliaun rihun sanulu resin sia'
         )
         self.assertEqual(
-            self.n2w.to_currency(145000000002.00),
-            'dolar miliaun rihun atus ida haatnulu resin lima resin rua'
+            self.n2w.to_currency(145000000002),
+            'dolar miliaun rihun atus ida haat nulu resin lima resin rua'
         )
         self.assertEqual(self.n2w.to_currency(1.00, currency='USD'),
                          'dolar ida')
         self.assertEqual(self.n2w.to_currency(1.50, currency='USD'),
-                         'dolar ida sentavu limanulu')
+                         'dolar ida sentavu lima nulu')
         with self.assertRaises(NotImplementedError):
             self.n2w.to_currency(1.00, currency='CHF')
 
@@ -451,7 +451,7 @@ haat atus lima neenulu resin hitu'
         self.assertEqual(self.n2w.to_currency(-1.00), 'menus dolar ida')
         self.assertEqual(
             self.n2w.to_currency(-256.00),
-            'menus dolar atus rua limanulu resin neen'
+            'menus dolar atus rua lima nulu resin neen'
         )
         self.assertEqual(
             self.n2w.to_currency(-1000.00),
@@ -462,8 +462,8 @@ haat atus lima neenulu resin hitu'
         )
         self.assertEqual(
             self.n2w.to_currency(-1234567.00),
-            'menus dolar miliaun ida rihun atus rua tolunulu \
-resin haat atus lima neenulu resin hitu'
+            'menus dolar miliaun ida rihun atus rua tolu nulu \
+resin haat atus lima neen nulu resin hitu'
         )
 
     def test_currency_float(self):
@@ -476,7 +476,7 @@ resin haat atus lima neenulu resin hitu'
         )
         self.assertEqual(
             self.n2w.to_currency(Decimal('1.35')),
-            'dolar ida sentavu tolunulu resin lima'
+            'dolar ida sentavu tolu nulu resin lima'
         )
         self.assertEqual(
             self.n2w.to_currency(Decimal('3.14')),
@@ -484,22 +484,22 @@ resin haat atus lima neenulu resin hitu'
         )
         self.assertEqual(
             self.n2w.to_currency(Decimal('101.22')),
-            'dolar atus ida ida sentavu ruanulu resin rua'
+            'dolar atus ida ida sentavu rua nulu resin rua'
         )
         self.assertEqual(
             self.n2w.to_currency(Decimal('2345.75')),
-            'dolar rihun rua atus tolu haatnulu resin \
-lima sentavu hitunulu resin lima'
+            'dolar rihun rua atus tolu haat nulu resin \
+lima sentavu hitu nulu resin lima'
         )
 
     def test_currency_float_negative(self):
         self.assertEqual(
             self.n2w.to_currency(Decimal('-2.34')),
-            'menus dolar rua sentavu tolunulu resin haat'
+            'menus dolar rua sentavu tolu nulu resin haat'
         )
         self.assertEqual(
             self.n2w.to_currency(Decimal('-9.99')),
-            'menus dolar sia sentavu sianulu resin sia'
+            'menus dolar sia sentavu sia nulu resin sia'
         )
         self.assertEqual(
             self.n2w.to_currency(Decimal('-7.01')),
@@ -507,29 +507,29 @@ lima sentavu hitunulu resin lima'
         )
         self.assertEqual(
             self.n2w.to_currency(Decimal('-222.22')),
-            'menus dolar atus rua ruanulu resin rua sentavu ruanulu resin rua'
+            'menus dolar atus rua rua nulu resin rua sentavu rua nulu resin rua'
         )
 
     def test_year(self):
         self.assertEqual(self.n2w.to_year(1001), 'rihun ida ida')
         self.assertEqual(
-            self.n2w.to_year(1789), 'rihun ida atus hitu ualunulu resin sia'
+            self.n2w.to_year(1789), 'rihun ida atus hitu ualu nulu resin sia'
         )
         self.assertEqual(
-            self.n2w.to_year(1942), 'rihun ida atus sia haatnulu resin rua'
+            self.n2w.to_year(1942), 'rihun ida atus sia haat nulu resin rua'
         )
         self.assertEqual(
-            self.n2w.to_year(1984), 'rihun ida atus sia ualunulu resin haat'
+            self.n2w.to_year(1984), 'rihun ida atus sia ualu nulu resin haat'
         )
         self.assertEqual(self.n2w.to_year(2000), 'rihun rua')
         self.assertEqual(self.n2w.to_year(2001), 'rihun rua ida')
         self.assertEqual(self.n2w.to_year(2016), 'rihun rua sanulu resin neen')
 
     def test_year_negative(self):
-        self.assertEqual(self.n2w.to_year(-30), 'tolunulu antes Kristu')
+        self.assertEqual(self.n2w.to_year(-30), 'tolu nulu antes Kristu')
         self.assertEqual(
             self.n2w.to_year(-744),
-            'atus hitu haatnulu resin haat antes Kristu'
+            'atus hitu haat nulu resin haat antes Kristu'
         )
         self.assertEqual(
             self.n2w.to_year(-10000),

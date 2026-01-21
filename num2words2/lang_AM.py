@@ -17,11 +17,13 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from . import lang_EU
+from . import lang_EUR
 
 
-class Num2Word_AM(lang_EU.Num2Word_EU):
-    CURRENCY_FORMS = {'ETB': (('ብር', 'ብር'), ('ሳንቲም', 'ሳንቲም'))}
+class Num2Word_AM(lang_EUR.Num2Word_EUR):
+    CURRENCY_FORMS = {'ETB': (('ብር', 'ብር'), ('ሳንቲም', 'ሳንቲም'), ' ከ'),
+                      'USD': (('ዶላር', 'ዶላር'), ('ሳንቲም', 'ሳንቲም'), ' ከ'),
+                      'JPY': (('የን', 'የን'), ('ሴን', 'ሴን'), ' ከ')}
 
     GIGA_SUFFIX = 'ቢሊዮን'
     MEGA_SUFFIX = 'ሚሊዮን'
@@ -38,12 +40,12 @@ class Num2Word_AM(lang_EU.Num2Word_EU):
     def setup(self):
         super(Num2Word_AM, self).setup()
 
-        self.negword = 'አሉታዊ '
+        self.negword = 'ሰልቢ '
         self.pointword = 'ነጥብ'
         self.exclude_title = ['እና', 'ነጥብ', 'አሉታዊ']
 
         self.mid_numwords = [(1000, 'ሺህ'), (100, 'መቶ'), (90, 'ዘጠና'),
-                             (80, 'ሰማኒያ'), (70, 'ሰባ'), (60, 'ስድሳ'),
+                             (80, 'ሰማንያ'), (70, 'ሰባ'), (60, 'ስድሳ'),
                              (50, 'አምሳ'), (40, 'አርባ'), (30, 'ሠላሳ')]
         self.low_numwords = ['ሃያ', 'አሥራ ዘጠኝ', 'አሥራ ስምንት', 'አሥራ ሰባት',
                              'አስራ ስድስት', 'አሥራ አምስት', 'አሥራ አራት', 'አሥራ ሦስት',
@@ -102,6 +104,9 @@ class Num2Word_AM(lang_EU.Num2Word_EU):
             return '%s %s' % (ltext, rtext), lnum + rnum
         elif rnum > lnum:
             return '%s %s' % (ltext, rtext), lnum * rnum
+        else:
+            # Default case: lnum > rnum, both could be >= 100
+            return '%s %s' % (ltext, rtext), lnum + rnum
 
     def to_ordinal(self, value):
         self.verify_ordinal(value)
@@ -120,12 +125,67 @@ class Num2Word_AM(lang_EU.Num2Word_EU):
         self.verify_ordinal(value)
         return '%s%s' % (value, self.to_ordinal(value)[-1:])
 
-    def to_currency(self, val, currency='ብር', cents=True, separator=' ከ',
-                    adjective=True):
-        result = super(Num2Word_AM, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator,
-            adjective=adjective)
-        return result
+    def to_currency(self, val, currency='ETB', cents=True, separator=',',
+                    adjective=False):
+        # Track if input was originally an integer
+        is_integer_input = isinstance(val, int)
+
+        if is_integer_input:
+            left = abs(val)
+            right = 0
+            is_negative = val < 0
+        else:
+            from decimal import Decimal
+
+            from .currency import parse_currency_parts
+
+            # Check if value has fractional cents
+            decimal_val = Decimal(str(val))
+            has_fractional_cents = (decimal_val * 100) % 1 != 0
+
+            left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
+                                                            keep_precision=has_fractional_cents)
+
+        try:
+            cr1, cr2, default_separator = self.CURRENCY_FORMS[currency]
+            if separator == ',':  # Use default separator if not overridden
+                separator = default_separator
+        except KeyError:
+            raise NotImplementedError(
+                'Currency code "%s" not implemented for "%s"' %
+                (currency, self.__class__.__name__))
+
+        minus_str = "%s " % self.negword.strip() if is_negative else ""
+        money_str = self.to_cardinal(left)
+
+        # For floats, always show cents (even if zero)
+        # For integers, don't show cents at all
+        if not is_integer_input:
+            if cents:
+                # Handle fractional cents
+                from decimal import Decimal
+                if isinstance(right, Decimal):
+                    # Convert fractional cents (e.g., 65.3 cents)
+                    cents_str = self.to_cardinal_float(float(right)) if right > 0 else 'ዜሮ'
+                else:
+                    cents_str = self.to_cardinal(right) if right > 0 else 'ዜሮ'
+            else:
+                cents_str = str(float(right) if isinstance(right, Decimal) else right)
+            return u'%s%s %s%s %s %s' % (
+                minus_str,
+                money_str,
+                self.pluralize(left, cr1),
+                separator,
+                cents_str,
+                self.pluralize(right, cr2)
+            )
+        else:
+            # Integer: no cents
+            return u'%s%s %s' % (
+                minus_str,
+                money_str,
+                self.pluralize(left, cr1)
+            )
 
     def to_year(self, val, longval=True):
         if not (val // 100) % 10:

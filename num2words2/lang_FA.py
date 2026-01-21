@@ -21,6 +21,8 @@
 from decimal import Decimal
 from math import floor
 
+from .base import Num2Word_Base
+
 farsiOnes = [
     "", "یک", "دو", "سه", "چهار", "پنج", "شش", "هفت", "هشت",
     "نه",
@@ -77,10 +79,17 @@ farsiFracBig = ["", "هزارم", "میلیونیم", "میلیاردیم"]
 farsiSeperator = ' و '
 
 
-class Num2Word_FA(object):
+class Num2Word_FA(Num2Word_Base):
     # Those are unused
     errmsg_toobig = "Too large"
     MAXNUM = 10 ** 36
+
+    CURRENCY_FORMS = {
+        'IRR': (('ریال', 'ریال'), ('', '')),
+        'IRT': (('تومان', 'تومان'), ('', '')),  # Iranian Toman
+        'EUR': (('یورو', 'یورو'), ('سنت', 'سنت')),
+        'USD': (('دلار', 'دلار'), ('سنت', 'سنت')),
+    }
 
     def __init__(self):
         self.number = 0
@@ -139,8 +148,18 @@ class Num2Word_FA(object):
         ltext = (farsiFrac[lm3] + " " + farsiFracBig[ld3]).strip()
         return x + " " + ltext
 
-    def to_currency(self, value):
-        return self.to_cardinal(value) + " تومان"
+    def pluralize(self, n, forms):
+        """Persian doesn't have pluralization in the same way as European languages"""
+        # For Persian, we typically use the same form regardless of number
+        if isinstance(forms, tuple):
+            return forms[0]  # Always return first form for Persian
+        return forms
+
+    def to_currency(self, val, currency='IRT', cents=True, separator=' و ', adjective=False):
+        # Use parent class implementation with our currency forms
+        return super(Num2Word_FA, self).to_currency(
+            val, currency=currency, cents=cents, separator=separator, adjective=adjective
+        )
 
     def to_ordinal(self, number):
         r = self.to_cardinal(number)

@@ -19,86 +19,140 @@ from __future__ import unicode_literals
 
 from .base import Num2Word_Base
 
-GENERIC_DOLLARS = ('dollar', 'dollars')
-GENERIC_CENTS = ('cent', 'cents')
 
-
+# Basque language support
 class Num2Word_EU(Num2Word_Base):
     CURRENCY_FORMS = {
-        'AUD': (GENERIC_DOLLARS, GENERIC_CENTS),
-        'BYN': (('rouble', 'roubles'), ('kopek', 'kopeks')),
-        'CAD': (GENERIC_DOLLARS, GENERIC_CENTS),
-        # repalced by EUR
-        'EEK': (('kroon', 'kroons'), ('sent', 'senti')),
-        'EUR': (('euro', 'euro'), GENERIC_CENTS),
-        'GBP': (('pound sterling', 'pounds sterling'), ('penny', 'pence')),
-        # replaced by EUR
-        'LTL': (('litas', 'litas'), GENERIC_CENTS),
-        # replaced by EUR
-        'LVL': (('lat', 'lats'), ('santim', 'santims')),
-        'USD': (GENERIC_DOLLARS, GENERIC_CENTS),
-        'RUB': (('rouble', 'roubles'), ('kopek', 'kopeks')),
-        'SEK': (('krona', 'kronor'), ('öre', 'öre')),
-        'NOK': (('krone', 'kroner'), ('øre', 'øre')),
-        'PLN': (('zloty', 'zlotys', 'zlotu'), ('grosz', 'groszy')),
-        'MXN': (('peso', 'pesos'), GENERIC_CENTS),
-        'RON': (('leu', 'lei', 'de lei'), ('ban', 'bani', 'de bani')),
-        'INR': (('rupee', 'rupees'), ('paisa', 'paise')),
-        'HUF': (('forint', 'forint'), ('fillér', 'fillér')),
-        'ISK': (('króna', 'krónur'), ('aur', 'aurar')),
-        'UZS': (('sum', 'sums'), ('tiyin', 'tiyins')),
-        'SAR': (('saudi riyal', 'saudi riyals'), ('halalah', 'halalas')),
-        'JPY': (('yen', 'yen'), ('sen', 'sen')),
-        'KRW': (('won', 'won'), ('jeon', 'jeon')),
-
+        'EUR': (('euro', 'euro'), ('zentimo', 'zentimo')),
+        'USD': (('dolar', 'dolar'), ('zentabo', 'zentabo')),
+        'GBP': (('libera', 'libera'), ('penike', 'penike')),
     }
-
-    CURRENCY_ADJECTIVES = {
-        'AUD': 'Australian',
-        'BYN': 'Belarusian',
-        'CAD': 'Canadian',
-        'EEK': 'Estonian',
-        'USD': 'US',
-        'RUB': 'Russian',
-        'NOK': 'Norwegian',
-        'MXN': 'Mexican',
-        'RON': 'Romanian',
-        'INR': 'Indian',
-        'HUF': 'Hungarian',
-        'ISK': 'íslenskar',
-        'UZS': 'Uzbekistan',
-        'SAR': 'Saudi',
-        'JPY': 'Japanese',
-        'KRW': 'Korean',
-    }
-
-    GIGA_SUFFIX = "illiard"
-    MEGA_SUFFIX = "illion"
-
-    def set_high_numwords(self, high):
-        cap = 3 + 6 * len(high)
-
-        for word, n in zip(high, range(cap, 3, -6)):
-            if self.GIGA_SUFFIX:
-                self.cards[10 ** n] = word + self.GIGA_SUFFIX
-
-            if self.MEGA_SUFFIX:
-                self.cards[10 ** (n - 3)] = word + self.MEGA_SUFFIX
-
-    def gen_high_numwords(self, units, tens, lows):
-        out = [u + t for t in tens for u in units]
-        out.reverse()
-        return out + lows
-
-    def pluralize(self, n, forms):
-        form = 0 if n == 1 else 1
-        return forms[form]
 
     def setup(self):
-        lows = ["non", "oct", "sept", "sext", "quint", "quadr", "tr", "b", "m"]
-        units = ["", "un", "duo", "tre", "quattuor", "quin", "sex", "sept",
-                 "octo", "novem"]
-        tens = ["dec", "vigint", "trigint", "quadragint", "quinquagint",
-                "sexagint", "septuagint", "octogint", "nonagint"]
-        self.high_numwords = ["cent"] + self.gen_high_numwords(units, tens,
-                                                               lows)
+        self.negword = "minus "
+        self.pointword = "koma"
+
+    def to_cardinal(self, number):
+        """Convert a number to its word representation in Basque."""
+        n = str(number).strip()
+
+        if n.startswith('-'):
+            n = n[1:]
+            ret = self.negword
+        else:
+            ret = ""
+
+        if '.' in n:
+            left, right = n.split('.', 1)
+            ret += self._int_to_word(int(left)) + " " + self.pointword + " "
+            ret += " ".join(self._int_to_word(int(d)) for d in right)
+            return ret
+        else:
+            return ret + self._int_to_word(int(n))
+
+    def _int_to_word(self, number):
+        """Convert an integer to its word representation in Basque."""
+        if number == 0:
+            return "zero"
+
+        ones = ["", "bat", "bi", "hiru", "lau", "bost", "sei", "zazpi", "zortzi", "bederatzi"]
+        tens = ["", "hamar", "hogei", "hogeita hamar", "berrogei", "berrogeita hamar",
+                "hirurogei", "hirurogeita hamar", "laurogei", "laurogeita hamar"]
+
+        if number < 10:
+            return ones[number]
+        elif number == 10:
+            return "hamar"
+        elif number < 20:
+            return "hama" + ones[number - 10]
+        elif number < 100:
+            ten_val = number // 10
+            one_val = number % 10
+            if one_val == 0:
+                return tens[ten_val]
+            else:
+                return tens[ten_val] + "ta " + ones[one_val]
+        elif number < 1000:
+            hundred_val = number // 100
+            remainder = number % 100
+            if hundred_val == 1:
+                result = "ehun"
+            else:
+                result = ones[hundred_val] + "ehun"
+            if remainder:
+                result += " eta " + self._int_to_word(remainder)
+            return result
+        elif number < 1000000:
+            thousand_val = number // 1000
+            remainder = number % 1000
+            if thousand_val == 1:
+                result = "mila"
+            else:
+                result = self._int_to_word(thousand_val) + " mila"
+            if remainder:
+                result += " " + self._int_to_word(remainder)
+            return result
+        elif number < 1000000000:
+            million_val = number // 1000000
+            remainder = number % 1000000
+            if million_val == 1:
+                result = "milioi bat"
+            else:
+                result = self._int_to_word(million_val) + " milioi"
+            if remainder:
+                result += " " + self._int_to_word(remainder)
+            return result
+        else:
+            billion_val = number // 1000000000
+            remainder = number % 1000000000
+            result = self._int_to_word(billion_val) + " mila milioi"
+            if remainder:
+                result += " " + self._int_to_word(remainder)
+            return result
+
+    def to_ordinal(self, number):
+        """Convert to ordinal."""
+        cardinal = self.to_cardinal(number)
+        if cardinal.endswith('t'):
+            return cardinal + "garren"
+        else:
+            return cardinal + "garren"
+
+    def to_ordinal_num(self, number):
+        """Convert to abbreviated ordinal."""
+        return str(number) + "."
+
+    def to_year(self, val, longval=True):
+        """Convert to year."""
+        return self.to_cardinal(val) + ". urtea"
+
+    def to_currency(self, val, currency='EUR', cents=True, separator=' eta ', adjective=False):
+        """Convert to currency."""
+        try:
+            left, right, is_negative = self.parse_currency(val)
+        except AttributeError:
+            is_negative = False
+            if val < 0:
+                is_negative = True
+                val = abs(val)
+
+            left, right = self._split_currency(val)
+
+        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS['EUR'])
+
+        left_str = self._int_to_word(int(left))
+        cents_str = self._int_to_word(int(right)) if cents and right else ""
+
+        result = left_str + " " + cr1[0]
+
+        if cents_str:
+            result += separator + cents_str + " " + cr2[0]
+
+        return self.negword + result if is_negative else result
+
+    def _split_currency(self, n):
+        """Split currency into whole and fraction parts."""
+        parts = str(n).split('.')
+        left = int(parts[0]) if parts[0] else 0
+        right = int(parts[1][:2].ljust(2, '0')) if len(parts) > 1 and parts[1] else 0
+        return left, right

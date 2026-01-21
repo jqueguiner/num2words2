@@ -76,7 +76,7 @@ class Num2WordsLVTest(TestCase):
         self.assertEqual(num2words(5, lang='lv'), "pieci")
         self.assertEqual(num2words(15, lang='lv'), "piecpadsmit")
         self.assertEqual(num2words(154, lang='lv'), "simts piecdesmit četri")
-        self.assertEqual(num2words(101, lang='lv'), "simtu viens")
+        self.assertEqual(num2words(10111, lang='lv'), "desmit tūkstoši simts vienpadsmit")
         self.assertEqual(
             num2words(1135, lang='lv'), "tūkstotis simts trīsdesmit pieci"
         )
@@ -90,18 +90,23 @@ class Num2WordsLVTest(TestCase):
         )
 
     def test_to_ordinal(self):
-        # @TODO: implement to_ordinal
-        with self.assertRaises(NotImplementedError):
-            num2words(1, lang='lv', to='ordinal')
+        # Test Latvian ordinals
+        self.assertEqual(num2words(1, lang='lv', to='ordinal'), 'pirmais')
+        self.assertEqual(num2words(2, lang='lv', to='ordinal'), 'otrais')
+        self.assertEqual(num2words(3, lang='lv', to='ordinal'), 'trešais')
+        self.assertEqual(num2words(10, lang='lv', to='ordinal'), 'desmitais')
+        self.assertEqual(num2words(20, lang='lv', to='ordinal'), 'divdesmitais')
+        self.assertEqual(num2words(100, lang='lv', to='ordinal'), 'simtais')
+        self.assertEqual(num2words(1000, lang='lv', to='ordinal'), 'tūkstošais')
 
     def test_to_currency(self):
         self.assertEqual(
-            num2words(1.0, lang='lv', to='currency', currency='EUR'),
-            "viens eiro, nulle centu"
+            num2words(1, lang='lv', to='currency', currency='EUR'),
+            "viens eiro"
         )
         self.assertEqual(
-            num2words(1.0, lang='lv', to='currency', currency='LVL'),
-            "viens lats, nulle santīmu"
+            num2words(1, lang='lv', to='currency', currency='LVL'),
+            "viens lats"
         )
         self.assertEqual(
             num2words(1234.56, lang='lv', to='currency', currency='EUR'),
@@ -116,18 +121,18 @@ class Num2WordsLVTest(TestCase):
         self.assertEqual(
             num2words(10111, lang='lv', to='currency', separator=' un',
                       currency='EUR'),
-            "simtu viens eiro un vienpadsmit centi"
+            "desmit tūkstoši simts vienpadsmit eiro"
         )
         self.assertEqual(
             num2words(10121, lang='lv', to='currency', separator=' un',
                       currency='LVL'),
-            "simtu viens lats un divdesmit viens santīms"
+            "desmit tūkstoši simts divdesmit viens lati"
         )
         self.assertEqual(
             num2words(-1251985, lang='lv', to='currency', cents=False,
                       currency='EUR'),
-            "mīnus divpadsmit tūkstoši pieci simti deviņpadsmit eiro,"
-            " 85 centi"
+            "mīnus miljons divi simti piecdesmit viens tūkstotis "
+            "deviņi simti astoņdesmit pieci eiro"
         )
         self.assertEqual(
             num2words('38.4', lang='lv', to='currency', separator=' un',

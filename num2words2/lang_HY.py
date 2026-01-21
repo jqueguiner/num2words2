@@ -276,12 +276,23 @@ class Num2Word_HY(Num2Word_Base):
         is_negative = val < 0
         val = abs(val)
 
+        # Check if value has fractional cents
+        from decimal import Decimal
+        decimal_val = Decimal(str(val))
+        has_fractional_cents = (decimal_val * 100) % 1 != 0
+
         if currency in self.CURRENCY_FORMS:
             if cents:
-                # Get cents
-                cents = int(round(val * 100))
-                # Split whole and cents
-                whole, cents = cents // 100, cents % 100
+                if has_fractional_cents:
+                    # Keep precision for fractional cents
+                    cents_decimal = decimal_val * 100
+                    whole = int(decimal_val)
+                    cents = cents_decimal - (whole * 100)
+                else:
+                    # Get cents
+                    cents = int(round(val * 100))
+                    # Split whole and cents
+                    whole, cents = cents // 100, cents % 100
             else:
                 whole, cents = int(val), 0
 
@@ -323,10 +334,19 @@ class Num2Word_HY(Num2Word_Base):
                 else:
                     if whole:
                         result = [' '.join(result) + ',']
-                    result.append(self.to_cardinal(cents))
-                    result.append(
-                        self.pluralize(cents, self.CURRENCY_FORMS[currency][1])
-                    )
+                    # Handle fractional cents
+                    from decimal import Decimal
+                    if isinstance(cents, Decimal):
+                        # Convert fractional cents (e.g., 65.3 cents)
+                        result.append(self.to_cardinal_float(float(cents)))
+                        result.append(
+                            self.pluralize(int(cents), self.CURRENCY_FORMS[currency][1])
+                        )
+                    else:
+                        result.append(self.to_cardinal(cents))
+                        result.append(
+                            self.pluralize(cents, self.CURRENCY_FORMS[currency][1])
+                        )
 
             if is_negative:
                 result.insert(0, 'մինուս')

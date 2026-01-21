@@ -61,22 +61,37 @@ class Num2WordsISTest(TestCase):
                       "0000000000000000000000000000000000000000000000000000000"
                       "00000000000000000000000000000000", lang="is")
 
-    def test_not_implemented(self):
-        # Ordinals
-        with self.assertRaises(NotImplementedError):
-            num2words(1, to="ordinal", lang="is")
+    def test_ordinal(self):
+        # Test ordinal numbers
+        self.assertEqual(num2words(1, to="ordinal", lang="is"), "fyrsti")
+        self.assertEqual(num2words(2, to="ordinal", lang="is"), "annar")
+        self.assertEqual(num2words(3, to="ordinal", lang="is"), "þriðji")
+        self.assertEqual(num2words(4, to="ordinal", lang="is"), "fjórði")
+        self.assertEqual(num2words(5, to="ordinal", lang="is"), "fimmti")
+        self.assertEqual(num2words(10, to="ordinal", lang="is"), "tíundi")
+        self.assertEqual(num2words(20, to="ordinal", lang="is"), "tuttugasti")
+        self.assertEqual(num2words(100, to="ordinal", lang="is"), "hundraðasti")
 
-        # Ordinal num
-        with self.assertRaises(NotImplementedError):
-            num2words(1, to="ordinal_num", lang="is")
+    def test_ordinal_num(self):
+        # Test ordinal number formatting
+        self.assertEqual(num2words(1, to="ordinal_num", lang="is"), "1.")
+        self.assertEqual(num2words(10, to="ordinal_num", lang="is"), "10.")
+        self.assertEqual(num2words(21, to="ordinal_num", lang="is"), "21.")
 
-        # Year
-        with self.assertRaises(NotImplementedError):
-            num2words(1, to="year", lang="is")
-
-        # Currency
-        with self.assertRaises(NotImplementedError):
-            num2words(1, to="currency", lang="is")
+    def test_year(self):
+        # Test year conversion
+        self.assertEqual(
+            num2words(2021, to="year", lang="is"),
+            "tvö þúsund tuttugu og einn"
+        )
+        self.assertEqual(
+            num2words(1999, to="year", lang="is"),
+            "eitt þúsund níu hundruð níutíu og níu"
+        )
+        self.assertEqual(
+            num2words(2000, to="year", lang="is"),
+            "tvö þúsund"
+        )
 
     def test_negative_decimals(self):
         # Comprehensive test for negative decimals including -0.4

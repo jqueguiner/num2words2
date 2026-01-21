@@ -239,7 +239,13 @@ class Num2Word_TA(Num2Word_Base):
 
     def to_currency(self, n, currency='INR'):
         try:
-            left, right, is_negative = parse_currency_parts(n)
+            # Check if value has fractional cents
+            from decimal import Decimal
+            decimal_val = Decimal(str(n))
+            has_fractional_cents = (decimal_val * 100) % 1 != 0
+
+            left, right, is_negative = parse_currency_parts(n, is_int_with_cents=False,
+                                                            keep_precision=has_fractional_cents)
 
             if currency not in self.CURRENCY_FORMS:
                 raise NotImplementedError(
@@ -259,7 +265,13 @@ class Num2Word_TA(Num2Word_Base):
 
             # Handle paise/cents if non-zero
             if right > 0:
-                right_words = self._int_to_cardinal(right)
+                # Handle fractional paise
+                from decimal import Decimal
+                if isinstance(right, Decimal):
+                    # Convert fractional paise (e.g., 65.3 paise)
+                    right_words = self.to_cardinal(float(right))
+                else:
+                    right_words = self._int_to_cardinal(right)
                 result.append(right_words)
                 result.append(cr_minor[0])
 

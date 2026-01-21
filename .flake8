@@ -1,0 +1,14 @@
+[flake8]
+max-line-length = 160
+exclude =
+    .tox,
+    venv,
+    build,
+    dist,
+    num2words2/_version.py,
+    .git,
+    __pycache__,
+    *.egg-info
+ignore = E501,W503,W504
+per-file-ignores =
+    tests/*:E501,W293,W292,W503,W504

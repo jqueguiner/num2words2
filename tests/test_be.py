@@ -191,20 +191,20 @@ class Num2WordsBYTest(TestCase):
 
     def test_to_currency(self):
         self.assertEqual(
-            num2words(1.0, lang="be", to="currency", currency="EUR"),
-            "адзін еўра, нуль цэнтаў",
+            num2words(1, lang="be", to="currency", currency="EUR"),
+            "адзін еўра",
         )
         self.assertEqual(
-            num2words(1.0, lang="be", to="currency", currency="RUB"),
-            "адзін расійскі рубель, нуль капеек",
+            num2words(1, lang="be", to="currency", currency="RUB"),
+            "адзін расійскі рубель",
         )
         self.assertEqual(
-            num2words(1.0, lang="be", to="currency", currency="BYN"),
-            "адзін беларускі рубель, нуль капеек",
+            num2words(1, lang="be", to="currency", currency="BYN"),
+            "адзін беларускі рубель",
         )
         self.assertEqual(
-            num2words(1.0, lang="be", to="currency", currency="UAH"),
-            "адна грыўна, нуль капеек",
+            num2words(1, lang="be", to="currency", currency="UAH"),
+            "адна грыўна",
         )
         self.assertEqual(
             num2words(1234.56, lang="be", to="currency", currency="EUR"),
@@ -230,105 +230,103 @@ class Num2WordsBYTest(TestCase):
             num2words(
                 10111, lang="be", to="currency", currency="EUR", separator=" і"
             ),
-            "сто адзін еўра і адзінаццаць цэнтаў",
+            "дзесяць тысяч сто адзінаццаць еўра",
         )
         self.assertEqual(
             num2words(
                 10111, lang="be", to="currency", currency="RUB", separator=" і"
             ),
-            "сто адзін расійскі рубель і адзінаццаць капеек",
+            "дзесяць тысяч сто адзінаццаць расійскіх рублёў",
         )
         self.assertEqual(
             num2words(
                 10111, lang="be", to="currency", currency="BYN", separator=" і"
             ),
-            "сто адзін беларускі рубель і адзінаццаць капеек",
+            "дзесяць тысяч сто адзінаццаць беларускіх рублёў",
         )
         self.assertEqual(
             num2words(
                 10111, lang="be", to="currency", currency="UAH", separator=" і"
             ),
-            "сто адна грыўна і адзінаццаць капеек",
+            "дзесяць тысяч сто адзінаццаць грыўнаў",
         )
         self.assertEqual(
             num2words(
                 10121, lang="be", to="currency", currency="EUR", separator=" і"
             ),
-            "сто адзін еўра і дваццаць адзін цэнт",
+            "дзесяць тысяч сто дваццаць адзін еўра",
         )
         self.assertEqual(
             num2words(
                 10121, lang="be", to="currency", currency="RUB", separator=" і"
             ),
-            "сто адзін расійскі рубель і дваццаць адна капейка",
+            "дзесяць тысяч сто дваццаць адзін расійскі рубель",
         )
         self.assertEqual(
             num2words(
                 10121, lang="be", to="currency", currency="BYN", separator=" і"
             ),
-            "сто адзін беларускі рубель і дваццаць адна капейка",
+            "дзесяць тысяч сто дваццаць адзін беларускі рубель",
         )
         self.assertEqual(
             num2words(
                 10121, lang="be", to="currency", currency="UAH", separator=" і"
             ),
-            "сто адна грыўна і дваццаць адна капейка",
+            "дзесяць тысяч сто дваццаць адна грыўна",
         )
         self.assertEqual(
             num2words(
                 10122, lang="be", to="currency", currency="EUR", separator=" і"
             ),
-            "сто адзін еўра і дваццаць два цэнты",
+            "дзесяць тысяч сто дваццаць два еўра",
         )
         self.assertEqual(
             num2words(
                 10122, lang="be", to="currency", currency="RUB", separator=" і"
             ),
-            "сто адзін расійскі рубель і дваццаць дзве капейкі",
+            "дзесяць тысяч сто дваццаць два расійскія рублі",
         )
         self.assertEqual(
             num2words(
                 10122, lang="be", to="currency", currency="BYN", separator=" і"
             ),
-            "сто адзін беларускі рубель і дваццаць дзве капейкі",
+            "дзесяць тысяч сто дваццаць два беларускія рублі",
         )
         self.assertEqual(
             num2words(
                 10122, lang="be", to="currency", currency="UAH", separator=" і"
             ),
-            "сто адна грыўна і дваццаць дзве капейкі",
+            "дзесяць тысяч сто дваццаць дзве грыўны",
         )
         self.assertEqual(
             num2words(
                 10122, lang="be", to="currency", currency="KZT", separator=" і"
             ),
-            "сто адзін тэнге і дваццаць два тыйіны",
+            "дзесяць тысяч сто дваццаць два тэнге",
         )
         self.assertEqual(
             num2words(
                 -1251985, lang="be", to="currency", currency="EUR", cents=False
             ),
-            "мінус дванаццаць тысяч пяцьсот дзевятнаццаць еўра, 85 цэнтаў",
+            "мінус адзін мільён дзвесце пяцьдзясят адна тысяча дзевяцьсот восемдзесят пяць еўра",
         )
         self.assertEqual(
             num2words(
                 -1251985, lang="be", to="currency", currency="RUB", cents=False
             ),
-            "мінус дванаццаць тысяч пяцьсот дзевятнаццаць "
-            "расійскіх рублёў, 85 капеек",
+            "мінус адзін мільён дзвесце пяцьдзясят адна тысяча дзевяцьсот восемдзесят пяць расійскіх рублёў",
         )
         self.assertEqual(
             num2words(
                 -1251985, lang="be", to="currency", currency="BYN", cents=False
             ),
-            "мінус дванаццаць тысяч пяцьсот дзевятнаццаць "
-            "беларускіх рублёў, 85 капеек",
+            "мінус адзін мільён дзвесце пяцьдзясят адна тысяча дзевяцьсот восемдзесят пяць беларускіх рублёў",
         )
         self.assertEqual(
             num2words(
                 -1251985, lang="be", to="currency", currency="UAH", cents=False
             ),
-            "мінус дванаццаць тысяч пяцьсот дзевятнаццаць грыўнаў, 85 капеек",
+            "мінус адзін мільён дзвесце пяцьдзясят адна тысяча дзевяцьсот восемдзесят пяць грыўнаў",
         )
         self.assertEqual(
             num2words(
@@ -381,12 +379,12 @@ class Num2WordsBYTest(TestCase):
             num2words(
                 10122, lang="be", to="currency", currency="UZS", separator=" і"
             ),
-            "сто адзін сум і дваццаць два тыйіны",
+            "дзесяць тысяч сто дваццаць два сумы",
         )
 
         self.assertEqual(
-            num2words(1.0, lang="be", to="currency", currency="PLN"),
-            "адзін злоты, нуль грошаў",
+            num2words(1, lang="be", to="currency", currency="PLN"),
+            "адзін злоты",
         )
 
         self.assertEqual(

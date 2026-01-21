@@ -2745,8 +2745,10 @@ class Num2WordsFITest(TestCase):
             n2f(1.5, to="cardinal", case="inessive")
 
     def test_ordinal_num(self):
-        with self.assertRaises(NotImplementedError):
-            n2f(1, to="ordinal_num")
+        # ordinal_num is now implemented for Finnish
+        self.assertEqual(n2f(1, to="ordinal_num"), "1.")
+        self.assertEqual(n2f(2, to="ordinal_num"), "2.")
+        self.assertEqual(n2f(10, to="ordinal_num"), "10.")
 
     def test_year(self):
         self.assertEqual(n2f(2018, to="year"), "kaksituhattakahdeksantoista")
@@ -2756,10 +2758,10 @@ class Num2WordsFITest(TestCase):
 
     def test_currency(self):
         self.assertEqual(
-            n2f(150, to="currency"), "yksi euro ja viisikymmentä senttiä")
+            n2f(150, to="currency"), "sataviisikymmentä euroa")
         self.assertEqual(
             n2f(150, to="currency", currency="FIM", adjective=True),
-            "yksi Suomen markka ja viisikymmentä penniä")
+            "sataviisikymmentä markkaa")
 
     def test_negative_decimals(self):
         # Comprehensive test for negative decimals including -0.4

@@ -118,41 +118,35 @@ TEST_CASES_TO_CURRENCY = (
     (100.00, "cent euros amb zero cèntims"),
 )
 
-TEST_CASES_TO_CURRENCY_ESP = (
-    (1.00, "una pesseta amb zero cèntims"),
-    (1.01, "una pesseta amb un cèntim"),
-    (2.00, "dues pessetes amb zero cèntims"),
-    (8.00, "vuit pessetes amb zero cèntims"),
-    (12.00, "dotze pessetes amb zero cèntims"),
-    (21.00, "vint-i-una pessetes amb zero cèntims"),
-    (81.25, "vuitanta-una pessetes amb vint-i-cinc cèntims"),
-    (350.90, "tres-centes cinquanta pessetes amb noranta cèntims"),
-    (100.00, "cent pessetes amb zero cèntims"),
-)
+TEST_CASES_TO_CURRENCY_ESP = ((1.00, 'un pesseta amb zero cèntims'),
+                              (1.01, 'un pesseta amb un cèntim'),
+                              (2.00, 'dos pessetes amb zero cèntims'),
+                              (8.00, "vuit pessetes amb zero cèntims"),
+                              (12.00, "dotze pessetes amb zero cèntims"),
+                              (21.00, 'vint-i-un pessetes amb zero cèntims'),
+                              (81.25, 'vuitanta-un pessetes amb vint-i-cinc cèntims'),
+                              (350.90, 'tres-cents cinquanta pessetes amb noranta cèntims'),
+                              (100.00, "cent pessetes amb zero cèntims"))
 
-TEST_CASES_TO_CURRENCY_USD = (
-    (1.00, "un dòlar amb zero centaus"),
-    (2.00, "dos dòlars amb zero centaus"),
-    (8.00, "vuit dòlars amb zero centaus"),
-    (12.00, "dotze dòlars amb zero centaus"),
-    (21.00, "vint-i-un dòlars amb zero centaus"),
-    (81.25, "vuitanta-un dòlars amb vint-i-cinc centaus"),
-    (350.90, "tres-cents cinquanta dòlars amb noranta centaus"),
-    (100.00, "cent dòlars amb zero centaus"),
-)
+TEST_CASES_TO_CURRENCY_USD = ((1.00, "un dòlar amb zero centaus"),
+                              (2.00, "dos dòlars amb zero centaus"),
+                              (8.00, "vuit dòlars amb zero centaus"),
+                              (12.00, "dotze dòlars amb zero centaus"),
+                              (21.00, "vint-i-un dòlars amb zero centaus"),
+                              (81.25, "vuitanta-un dòlars amb vint-i-cinc centaus"),
+                              (350.90, "tres-cents cinquanta dòlars amb noranta centaus"),
+                              (100.00, "cent dòlars amb zero centaus"))
 
 
-TEST_CASES_TO_CURRENCY_GBP = (
-    (1.00, "una lliura amb zero penics"),
-    (1.01, "una lliura amb un penic"),
-    (2.00, "dues lliures amb zero penics"),
-    (8.00, "vuit lliures amb zero penics"),
-    (12.00, "dotze lliures amb zero penics"),
-    (21.00, "vint-i-una lliures amb zero penics"),
-    (81.25, "vuitanta-una lliures amb vint-i-cinc penics"),
-    (350.90, "tres-centes cinquanta lliures amb noranta penics"),
-    (100.00, "cent lliures amb zero penics"),
-)
+TEST_CASES_TO_CURRENCY_GBP = ((1.00, 'un lliura amb zero penics'),
+                              (1.01, 'un lliura amb un penic'),
+                              (2.00, 'dos lliures amb zero penics'),
+                              (8.00, "vuit lliures amb zero penics"),
+                              (12.00, "dotze lliures amb zero penics"),
+                              (21.00, 'vint-i-un lliures amb zero penics'),
+                              (81.25, 'vuitanta-un lliures amb vint-i-cinc penics'),
+                              (350.90, 'tres-cents cinquanta lliures amb noranta penics'),
+                              (100.00, "cent lliures amb zero penics"))
 
 
 class TestNum2WordsCA(TestCase):

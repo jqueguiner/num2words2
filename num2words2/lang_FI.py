@@ -19,7 +19,7 @@ from __future__ import division, print_function, unicode_literals
 
 from collections import OrderedDict
 
-from . import lang_EU
+from . import lang_EUR
 
 GENERIC_CENTS = ('sentti', 'senttiä')
 GENERIC_CENTAVOS = ('centavo', 'centavoa')
@@ -399,7 +399,7 @@ class Options(object):
         )
 
 
-class Num2Word_FI(lang_EU.Num2Word_EU):
+class Num2Word_FI(lang_EUR.Num2Word_EUR):
     CURRENCY_FORMS = {
         'BRL': (('real', 'realia'), GENERIC_CENTAVOS),
         'CHF': (('frangi', 'frangia'), ('rappen', 'rappenia')),
@@ -672,8 +672,8 @@ class Num2Word_FI(lang_EU.Num2Word_EU):
         return self.title(words)
 
     def to_ordinal_num(self, value, case='nominative', plural=False):
-        case = NAME_TO_CASE[case]
-        raise NotImplementedError
+        """Convert to abbreviated ordinal form (1., 2., 3. etc)"""
+        return str(value) + '.'
 
     def to_year(self, val, suffix=None, longval=True):
         suffix = suffix or ""
@@ -684,6 +684,29 @@ class Num2Word_FI(lang_EU.Num2Word_EU):
 
     def to_currency(self, val, currency="EUR", cents=True, separator=" ja",
                     adjective=False):
+        # Handle integers specially - just add currency name without cents
+        if isinstance(val, int):
+            try:
+                cr1, cr2 = self.CURRENCY_FORMS[currency]
+            except (KeyError, AttributeError):
+                # Fallback to base implementation for unknown currency
+                return super(Num2Word_FI, self).to_currency(
+                    val, currency=currency, cents=cents, separator=separator,
+                    adjective=adjective)
+
+            minus_str = self.negword if val < 0 else ""
+            abs_val = abs(val)
+            money_str = self.to_cardinal(abs_val)
+
+            # Proper pluralization for currency
+            if abs_val == 1:
+                currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
+            else:
+                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+
+            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+
+        # For floats, use the parent class implementation
         return super(Num2Word_FI, self).to_currency(
             val, currency=currency, cents=cents, separator=separator,
             adjective=adjective)

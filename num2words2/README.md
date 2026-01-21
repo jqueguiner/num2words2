@@ -3,7 +3,7 @@
 for each new language you must create a file `lang_NN.py` where `NN` is the
 ISO 639-1 or ISO 639-3 [language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
 
-This class must be a subclass of `Num2Word_EU` and implement at least the following methods
+This class must be a subclass of `Num2Word_EUR` and implement at least the following methods
 
 ```
 to_cardinal(self, number)
@@ -18,11 +18,11 @@ Do not forget to remplace `NN` by the appropriate ISO 639 language code.
 The following is a template for a new language class
 
 ```
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
-class Num2Word_CY(Num2Word_EU):
+class Num2Word_CY(Num2Word_EUR):
     def setup(self):
-        Num2Word_EU.setup(self)
+        Num2Word_EUR.setup(self)
 
     def __init__(self):
         pass

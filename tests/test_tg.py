@@ -85,12 +85,12 @@ class Num2WordsTGTest(TestCase):
 
     def test_to_currency(self):
         self.assertEqual(
-            num2words(1.0, lang="tg", to="currency", currency="EUR"),
-            "як евро, сифр сент",
+            num2words(1, lang="tg", to="currency", currency="EUR"),
+            "як евро",
         )
         self.assertEqual(
-            num2words(1.0, lang="tg", to="currency", currency="TJS"),
-            "як сомонӣ, сифр дирам",
+            num2words(1, lang="tg", to="currency", currency="TJS"),
+            "як сомонӣ",
         )
         self.assertEqual(
             num2words(1234.56, lang="tg", to="currency", currency="TJS"),

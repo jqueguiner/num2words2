@@ -31,12 +31,12 @@ TEST_CASES_CARDINAL = (
     (17.42, 'dix-sept virgule quatre deux'),
     (19, 'dix-neuf'),
     (20, 'vingt'),
-    (21, 'vingt et un'),
+    (21, 'vingt-et-un'),
     (26, 'vingt-six'),
     (27.312, 'vingt-sept virgule trois un deux'),
     (28, 'vingt-huit'),
     (30, 'trente'),
-    (31, 'trente et un'),
+    (31, 'trente-et-un'),
     (40, 'quarante'),
     (44, 'quarante-quatre'),
     (50, 'cinquante'),
@@ -118,35 +118,29 @@ TEST_CASES_ORDINAL_NUM = (
     (1000000, '1000000me')
 )
 
-TEST_CASES_TO_CURRENCY_EUR = (
-    (1.00, 'un euro et zéro centimes'),
-    (2.01, 'deux euros et un centime'),
-    (8.10, 'huit euros et dix centimes'),
-    (12.26, 'douze euros et vingt-six centimes'),
-    (21.29, 'vingt et un euros et vingt-neuf centimes'),
-    (81.25, 'quatre-vingt-un euros et vingt-cinq centimes'),
-    (100.00, 'cent euros et zéro centimes'),
-)
+TEST_CASES_TO_CURRENCY_EUR = ((1, 'un euro'),
+                              (2.01, 'deux euros et un centime'),
+                              (8.10, 'huit euros et dix centimes'),
+                              (12.26, 'douze euros et vingt-six centimes'),
+                              (21.29, 'vingt-et-un euros et vingt-neuf centimes'),
+                              (81.25, 'quatre-vingt-un euros et vingt-cinq centimes'),
+                              (100, 'cent euros'))
 
-TEST_CASES_TO_CURRENCY_FRF = (
-    (1.00, 'un franc et zéro centimes'),
-    (2.01, 'deux francs et un centime'),
-    (8.10, 'huit francs et dix centimes'),
-    (12.27, 'douze francs et vingt-sept centimes'),
-    (21.29, 'vingt et un francs et vingt-neuf centimes'),
-    (81.25, 'quatre-vingt-un francs et vingt-cinq centimes'),
-    (100.00, 'cent francs et zéro centimes'),
-)
+TEST_CASES_TO_CURRENCY_FRF = ((1, 'un franc'),
+                              (2.01, 'deux francs et un centime'),
+                              (8.10, 'huit francs et dix centimes'),
+                              (12.27, 'douze francs et vingt-sept centimes'),
+                              (21.29, 'vingt-et-un francs et vingt-neuf centimes'),
+                              (81.25, 'quatre-vingt-un francs et vingt-cinq centimes'),
+                              (100, 'cent francs'))
 
-TEST_CASES_TO_CURRENCY_USD = (
-    (1.00, 'un dollar et zéro cents'),
-    (2.01, 'deux dollars et un cent'),
-    (8.10, 'huit dollars et dix cents'),
-    (12.26, 'douze dollars et vingt-six cents'),
-    (21.29, 'vingt et un dollars et vingt-neuf cents'),
-    (81.25, 'quatre-vingt-un dollars et vingt-cinq cents'),
-    (100.00, 'cent dollars et zéro cents'),
-)
+TEST_CASES_TO_CURRENCY_USD = ((1, 'un dollar'),
+                              (2.01, 'deux dollars et un cent'),
+                              (8.10, 'huit dollars et dix cents'),
+                              (12.26, 'douze dollars et vingt-six cents'),
+                              (21.29, 'vingt-et-un dollars et vingt-neuf cents'),
+                              (81.25, 'quatre-vingt-un dollars et vingt-cinq cents'),
+                              (100, 'cent dollars'))
 
 
 class Num2WordsFRTest(TestCase):

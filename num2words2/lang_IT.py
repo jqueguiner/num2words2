@@ -16,7 +16,7 @@
 
 from __future__ import unicode_literals
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 # Globals
 # -------
@@ -44,30 +44,78 @@ EXPONENT_PREFIXES = [
     ZERO, "m", "b", "tr", "quadr", "quint", "sest", "sett", "ott", "nov", "dec"
 ]
 
+EXPONENT = EXPONENT_PREFIXES  # Alias for backward compatibility
+
 
 GENERIC_DOLLARS = ('dollaro', 'dollari')
 GENERIC_CENTS = ('centesimo', 'centesimi')
 CURRENCIES_UNA = ('GBP')
 
 
+# Helper functions
+def omitt_if_zero(number_to_string):
+    return "" if number_to_string == ZERO else number_to_string
+
+
+def accentuate(string):
+    # This is inefficient: it may do several rewritings when deleting
+    # half-sentence accents. However, it is the easiest method and speed is
+    # not crucial (duh), so...
+    return " ".join(
+        # Deletes half-sentence accents and accentuates the last "tre"
+        [w.replace("tré", "tre")[:-3] + "tré"
+         # We shouldn't accentuate a single "tre": is has to be a composite
+         # word.                ~~~~~~~~~~
+         if w[-3:] == "tre" and len(w) > 3
+         # Deletes half-sentence accents anyway
+         #     ~~~~~~~~~~~~~~~~~~~~~~
+         else w.replace("tré", "tre")
+         for w in string.split()
+         ])
+
+
+def phonetic_contraction(string):
+    return (string
+            .replace("oo", "o")  # ex. "centootto"
+            .replace("ao", "o")  # ex. "settantaotto"
+            .replace("io", "o")  # ex. "ventiotto"
+            .replace("au", "u")  # ex. "trentauno"
+            .replace("iu", "u")  # ex. "ventiunesimo"
+            )
+
+
+def exponent_length_to_string(exponent_length):
+    # We always get an exponent length of the form 3n, n>=1
+    prefix = EXPONENT[(exponent_length // 6) % 5]
+
+    if exponent_length == 3:
+        return "mila"
+    elif exponent_length % 6 == 0:
+        return prefix + "ilione"
+    else:
+        return prefix + "iliardo"
+
+
 # Main class
 # ==========
 
-class Num2Word_IT(Num2Word_EU):
+class Num2Word_IT(Num2Word_EUR):
     CURRENCY_FORMS = {
         'EUR': (('euro', 'euro'), GENERIC_CENTS),
         'USD': (GENERIC_DOLLARS, GENERIC_CENTS),
         'GBP': (('sterlina', 'sterline'), ('penny', 'penny')),
         'CNY': (('yuan', 'yuan'), ('fen', 'fen')),
+        'CHF': (('franco', 'franchi'), GENERIC_CENTS),
     }
     MINUS_PREFIX_WORD = "meno "
     FLOAT_INFIX_WORD = " virgola "
 
     def setup(self):
-        Num2Word_EU.setup(self)
+        Num2Word_EUR.setup(self)
+        self.negword = "meno"
 
     def __init__(self):
-        pass
+        self.setup()
 
     def float_to_words(self, float_number, ordinal=False):
         if ordinal:
@@ -142,7 +190,9 @@ class Num2Word_IT(Num2Word_EU):
 
     def to_cardinal(self, number):
         if number < 0:
-            string = Num2Word_IT.MINUS_PREFIX_WORD + self.to_cardinal(-number)
+            # Apply accentuation to the positive part, then add minus prefix
+            positive_part = self.to_cardinal(-number)
+            string = Num2Word_IT.MINUS_PREFIX_WORD + positive_part
         elif int(number) != number:
             string = self.float_to_words(number)
         elif number < 20:
@@ -155,7 +205,8 @@ class Num2Word_IT(Num2Word_EU):
             string = self.thousands_to_cardinal(int(number))
         else:
             string = self.big_number_to_cardinal(number)
-        return accentuate(string)
+        # Only apply accentuate for non-negative numbers (already done for negative)
+        return string if number < 0 else accentuate(string)
 
     def to_ordinal(self, number):
         tens = number % 100
@@ -181,61 +232,34 @@ class Num2Word_IT(Num2Word_EU):
 
     def to_currency(self, val, currency='EUR', cents=True, separator=' e',
                     adjective=False):
-        result = super(Num2Word_IT, self).to_currency(
+        # Handle integers specially - just add currency name without cents
+        if isinstance(val, int):
+            try:
+                cr1, cr2 = self.CURRENCY_FORMS[currency]
+            except (KeyError, AttributeError):
+                # Fallback to base implementation for unknown currency
+                return super(Num2Word_IT, self).to_currency(
+                    val, currency=currency, cents=cents, separator=separator,
+                    adjective=adjective)
+
+            minus_str = "meno" if val < 0 else ""
+            abs_val = abs(val)
+            money_str = self.to_cardinal(abs_val)
+
+            # Proper pluralization for currency
+            if abs_val == 1:
+                currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
+            else:
+                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+
+            # Build result with proper spacing
+            if minus_str:
+                result = "%s %s %s" % (minus_str, money_str, currency_str)
+            else:
+                result = "%s %s" % (money_str, currency_str)
+            return result.strip()
+
+        # For floats, use the parent class implementation
+        return super(Num2Word_IT, self).to_currency(
             val, currency=currency, cents=cents, separator=separator,
             adjective=adjective)
-        # Handle exception. In italian language is "un euro",
-        # "un dollaro" etc. (not "uno euro", "uno dollaro").
-        # There is an exception, some currencies need "una":
-        # e.g. "una sterlina"
-        if currency in CURRENCIES_UNA:
-            list_result = result.split(" ")
-            if list_result[0] == "uno":
-                list_result[0] = list_result[0].replace("uno", "una")
-                result = " ".join(list_result)
-        result = result.replace("uno", "un")
-        return result
-
-# Utils
-# =====
-
-
-def phonetic_contraction(string):
-    return (string
-            .replace("oo", "o")  # ex. "centootto"
-            .replace("ao", "o")  # ex. "settantaotto"
-            .replace("io", "o")  # ex. "ventiotto"
-            .replace("au", "u")  # ex. "trentauno"
-            .replace("iu", "u")  # ex. "ventiunesimo"
-            )
-
-
-def exponent_length_to_string(exponent_length):
-    # We always assume `exponent` to be a multiple of 3. If it's not true, then
-    # Num2Word_IT.big_number_to_cardinal did something wrong.
-    prefix = EXPONENT_PREFIXES[exponent_length // 6]
-    if exponent_length % 6 == 0:
-        return prefix + "ilione"
-    else:
-        return prefix + "iliardo"
-
-
-def accentuate(string):
-    # This is inefficient: it may do several rewritings when deleting
-    # half-sentence accents. However, it is the easiest method and speed is
-    # not crucial (duh), so...
-    return " ".join(
-        # Deletes half-sentence accents and accentuates the last "tre"
-        [w.replace("tré", "tre")[:-3] + "tré"
-         # We shouldn't accentuate a single "tre": is has to be a composite
-         # word.                ~~~~~~~~~~
-         if w[-3:] == "tre" and len(w) > 3
-         # Deletes half-sentence accents anyway
-         #     ~~~~~~~~~~~~~~~~~~~~~~
-         else w.replace("tré", "tre")
-         for w in string.split()
-         ])
-
-
-def omitt_if_zero(number_to_string):
-    return "" if number_to_string == ZERO else number_to_string

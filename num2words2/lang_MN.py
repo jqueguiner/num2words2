@@ -18,7 +18,6 @@
 from __future__ import unicode_literals
 
 from .base import Num2Word_Base
-from .currency import parse_currency_parts
 from .utils import get_digits, splitbyx
 
 ZERO = 'тэг'
@@ -265,15 +264,56 @@ class Num2Word_MN(Num2Word_Base):
 
     def to_currency(self, val, currency='MNT', cents=True, separator=',',
                     adjective=True):
-        left, right, is_negative = parse_currency_parts(val)
-        if isinstance(val, float) and int(right) == 0:  # Бутархай орон нь 0
-            val = int(left) * 100
-        return super(
-            Num2Word_MN, self
-        ).to_currency(
-            val,
-            currency=currency,
-            cents=cents,
-            separator=separator,
-            adjective=adjective,
-        )
+        # If input is an integer, just return the cardinal number
+        if isinstance(val, int):
+            return self.to_cardinal(val)
+
+        # For float/decimal, use the full currency format
+        # Check if value has fractional cents
+        from decimal import Decimal
+
+        from .currency import parse_currency_parts
+        decimal_val = Decimal(str(val))
+        has_fractional_cents = (decimal_val * 100) % 1 != 0
+
+        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
+                                                        keep_precision=has_fractional_cents)
+
+        try:
+            cr1, cr2 = self.CURRENCY_FORMS[currency]
+        except KeyError:
+            raise NotImplementedError(
+                'Currency code "%s" not implemented for "%s"' %
+                (currency, self.__class__.__name__))
+
+        if adjective and currency in self.CURRENCY_ADJECTIVES:
+            from .currency import prefix_currency
+            cr1 = prefix_currency(self.CURRENCY_ADJECTIVES[currency], cr1)
+
+        minus_str = "%s " % self.negword.strip() if is_negative else ""
+        money_str = self._money_verbose(left, currency)
+
+        # Don't include cents if they are zero
+        if right > 0:
+            # Handle fractional cents
+            from decimal import Decimal
+            if isinstance(right, Decimal):
+                # Convert fractional cents (e.g., 65.3 cents)
+                cents_str = self.to_cardinal(float(right)) if cents else str(float(right))
+            else:
+                cents_str = self._cents_verbose(right, currency) \
+                    if cents else str(right)
+            return u'%s%s %s%s %s %s' % (
+                minus_str,
+                money_str,
+                self.pluralize(left, cr1),
+                separator,
+                cents_str,
+                self.pluralize(right, cr2)
+            )
+        else:
+            return u'%s%s %s' % (
+                minus_str,
+                money_str,
+                self.pluralize(left, cr1)
+            )

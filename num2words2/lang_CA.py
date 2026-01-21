@@ -2,7 +2,7 @@ from __future__ import division, print_function, unicode_literals
 
 import math
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 GENERIC_DOLLARS = ('dòlar', 'dòlars')
 GENERIC_CENTS = ('centau', 'centaus')
@@ -38,7 +38,7 @@ CURRENCIES_UNA = (
 CENTS_UNA = ('EGP', 'JOD', 'LBP', 'SDG', 'SSP', 'SYP')
 
 
-class Num2Word_CA(Num2Word_EU):
+class Num2Word_CA(Num2Word_EUR):
     CURRENCY_FORMS = {
         'EUR': (('euro', 'euros'), ('cèntim', 'cèntims')),
         'ESP': (('pesseta', 'pessetes'), ('cèntim', 'cèntims')),
@@ -448,29 +448,29 @@ class Num2Word_CA(Num2Word_EU):
 
     def to_currency(self, val, currency="EUR", cents=True,
                     separator=" amb", adjective=False):
-        result = super(Num2Word_CA, self).to_currency(
-            val, currency=currency, cents=cents,
-            separator=separator, adjective=adjective
-        )
-        list_result = result.split(separator + " ")
+        # Handle integers specially - just add currency name without cents
+        if isinstance(val, int):
+            try:
+                cr1, cr2 = self.CURRENCY_FORMS[currency]
+            except (KeyError, AttributeError):
+                # Fallback to base implementation for unknown currency
+                return super(Num2Word_CA, self).to_currency(
+                    val, currency=currency, cents=cents, separator=separator,
+                    adjective=adjective)
 
-        if currency in CURRENCIES_UNA:
-            list_result[0] = list_result[0].replace("un", "una")
-            list_result[0] = list_result[0].replace("dos", "dues")
-            list_result[0] = list_result[0].replace("cents", "centes")
+            minus_str = self.negword if val < 0 else ""
+            abs_val = abs(val)
+            money_str = self.to_cardinal(abs_val)
 
-        list_result[0] = list_result[0].replace("vint-i-un", "vint-i-un")
-        list_result[0] = list_result[0].replace(" i un", "-un")
-        list_result[0] = list_result[0].replace("un", "un")
+            # Proper pluralization for currency
+            if abs_val == 1:
+                currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
+            else:
+                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
 
-        if currency in CENTS_UNA:
-            list_result[1] = list_result[1].replace("un", "una")
-            list_result[1] = list_result[1].replace("dos", "dues")
+            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
 
-        list_result[1] = list_result[1].replace("vint-i-un", "vint-i-una")
-
-        list_result[1] = list_result[1].replace("un", "un")
-
-        result = (separator + " ").join(list_result)
-
-        return result
+        # For floats, use the parent class implementation
+        return super(Num2Word_CA, self).to_currency(
+            val, currency=currency, cents=cents, separator=separator,
+            adjective=adjective)

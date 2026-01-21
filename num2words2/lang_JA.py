@@ -17,6 +17,8 @@
 
 from __future__ import division, print_function, unicode_literals
 
+from decimal import Decimal
+
 from .base import Num2Word_Base
 from .compat import strtype, to_s
 from .currency import parse_currency_parts, prefix_currency
@@ -341,7 +343,11 @@ ERA_START = [
 
 class Num2Word_JA(Num2Word_Base):
     CURRENCY_FORMS = {
-        'JPY': (('円', 'えん'), ()),
+        'JPY': (('円', 'えん'), ('銭', '銭')),  # Adding sen (1/100 yen) support
+        'EUR': (('ユーロ', 'ユーロ'), ('セント', 'セント')),
+        'USD': (('ドル', 'ドル'), ('セント', 'セント')),
+        'GBP': (('ポンド', 'ポンド'), ('ペンス', 'ペンス')),
+        'CNY': (('元', '元'), ('分', '分')),  # Chinese yuan with fen (1/100 yuan)
     }
 
     def set_high_numwords(self, high):
@@ -494,6 +500,14 @@ class Num2Word_JA(Num2Word_Base):
 
     def to_currency(self, val, currency="JPY", cents=False, separator="",
                     adjective=False, reading=False, prefer=None):
+        # Check if value has fractional cents
+        decimal_val = Decimal(str(val))
+        has_fractional_cents = (decimal_val * 100) % 1 != 0
+
+        # Convert integers to float to ensure currency format
+        if isinstance(val, int):
+            val = float(val)
+
         left, right, is_negative = parse_currency_parts(
             val, is_int_with_cents=cents)
 
@@ -511,13 +525,21 @@ class Num2Word_JA(Num2Word_Base):
 
         minus_str = self.negword if is_negative else ""
 
+        if has_fractional_cents and cr2:
+            # Handle fractional cents using to_cardinal_float
+            right_str = self.to_cardinal_float(right / 100.0, reading=reading, prefer=prefer)
+            cr2_str = (cr2[1] if reading else cr2[0]) if cr2 else ''
+        else:
+            # Handle normal integer cents
+            right_str = self.to_cardinal(right, reading=reading, prefer=prefer) if cr2 and right else ''
+            cr2_str = (cr2[1] if reading else cr2[0]) if (cr2 and right) else ''
+
         return '%s%s%s%s%s' % (
             minus_str,
             self.to_cardinal(left, reading=reading, prefer=prefer),
             cr1[1] if reading else cr1[0],
-            self.to_cardinal(right, reading=reading, prefer=prefer)
-            if cr2 else '',
-            (cr2[1] if reading else cr2[0]) if cr2 else '',
+            right_str,
+            cr2_str,
         )
 
     def splitnum(self, value, reading, prefer):

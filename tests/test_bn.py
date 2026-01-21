@@ -181,7 +181,7 @@ class Num2WordsBNTest(TestCase):
 
     def test_to_currency(self):
         n = Num2Word_BN()
-        self.assertEqual(n.to_currency(20.0), u'বিশ টাকা')
+        self.assertEqual(n.to_currency(20.0), u'বিশ টাকা শূন্য পয়সা')
         self.assertEqual(n.to_currency(20.50), u'বিশ টাকা পঞ্চাশ পয়সা')
         self.assertEqual(n.to_currency(33.51), u'তেত্রিশ টাকা একান্ন পয়সা')
         self.assertEqual(n.to_currency(99.99),

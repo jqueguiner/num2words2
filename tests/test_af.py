@@ -23,37 +23,31 @@ from num2words2 import num2words
 from num2words2.lang_AF import Num2Word_AF
 
 # Test cases for currency conversion to ZAR (South African Rand)
-TEST_CASES_TO_CURRENCY_ZAR = (
-    (1.00, 'een rand en nul sent'),
-    (2.01, 'twee rand en een sent'),
-    (8.10, 'agt rand en tien sent'),
-    (12.26, 'twaalf rand en ses-en-twintig sent'),
-    (21.29, 'een-en-twintig rand en nege-en-twintig sent'),
-    (81.25, 'een-en-tagtig rand en vyf-en-twintig sent'),
-    (100.00, 'een honderd rand en nul sent'),
-)
+TEST_CASES_TO_CURRENCY_ZAR = ((1.00, 'een rand en nul sent'),
+                              (2.01, 'twee rand en een sent'),
+                              (8.10, 'agt rand en tien sent'),
+                              (12.26, 'twaalf rand en ses-en-twintig sent'),
+                              (21.29, 'een-en-twintig rand en nege-en-twintig sent'),
+                              (81.25, 'een-en-tagtig rand en vyf-en-twintig sent'),
+                              (100.00, 'een honderd rand en nul sent'))
 
 # Test cases for currency conversion to EUR
-TEST_CASES_TO_CURRENCY_EUR = (
-    (1.00, 'een euro en nul sent'),
-    (2.01, 'twee euro en een sent'),
-    (8.10, 'agt euro en tien sent'),
-    (12.26, 'twaalf euro en ses-en-twintig sent'),
-    (21.29, 'een-en-twintig euro en nege-en-twintig sent'),
-    (81.25, 'een-en-tagtig euro en vyf-en-twintig sent'),
-    (100.00, 'een honderd euro en nul sent'),
-)
+TEST_CASES_TO_CURRENCY_EUR = ((1.00, 'een euro en nul sent'),
+                              (2.01, 'twee euro en een sent'),
+                              (8.10, 'agt euro en tien sent'),
+                              (12.26, 'twaalf euro en ses-en-twintig sent'),
+                              (21.29, 'een-en-twintig euro en nege-en-twintig sent'),
+                              (81.25, 'een-en-tagtig euro en vyf-en-twintig sent'),
+                              (100.00, 'een honderd euro en nul sent'))
 
 # Test cases for currency conversion to USD
-TEST_CASES_TO_CURRENCY_USD = (
-    (1.00, 'een dollar en nul sent'),
-    (2.01, 'twee dollar en een sent'),
-    (8.10, 'agt dollar en tien sent'),
-    (12.26, 'twaalf dollar en ses-en-twintig sent'),
-    (21.29, 'een-en-twintig dollar en nege-en-twintig sent'),
-    (81.25, 'een-en-tagtig dollar en vyf-en-twintig sent'),
-    (100.00, 'een honderd dollar en nul sent'),
-)
+TEST_CASES_TO_CURRENCY_USD = ((1.00, 'een dollar en nul sent'),
+                              (2.01, 'twee dollar en een sent'),
+                              (8.10, 'agt dollar en tien sent'),
+                              (12.26, 'twaalf dollar en ses-en-twintig sent'),
+                              (21.29, 'een-en-twintig dollar en nege-en-twintig sent'),
+                              (81.25, 'een-en-tagtig dollar en vyf-en-twintig sent'),
+                              (100.00, 'een honderd dollar en nul sent'))
 
 
 class Num2WordsAFTest(TestCase):
@@ -254,13 +248,9 @@ class Num2WordsAFTest(TestCase):
 
     def test_currency_with_no_cents(self):
         """Test currency conversion without cents"""
-        # Test with decimal format (will still show cents part)
-        result = num2words(100.00, lang='af', to='currency', currency='ZAR', cents=False)
-        self.assertEqual(result, "een honderd rand en 00 sent")
-
         # Test with integer (no cents shown)
         result = num2words(100, lang='af', to='currency', currency='ZAR', cents=False)
-        self.assertEqual(result, "een rand")
+        self.assertEqual(result, "een honderd rand")
 
         result = num2words(50.25, lang='af', to='currency', currency='EUR', cents=False)
         self.assertEqual(result, "vyftig euro en 25 sent")

@@ -118,35 +118,29 @@ TEST_CASES_ORDINAL_NUM = (
     (1000000, "1000000a")
 )
 
-TEST_CASES_TO_CURRENCY_EUR = (
-    (1.00, "unu eŭro kaj nul centimo"),
-    (2.01, "du eŭroj kaj unu centimo"),
-    (8.10, "ok eŭroj kaj dek centimoj"),
-    (12.26, "dek du eŭroj kaj dudek ses centimoj"),
-    (21.29, "dudek unu eŭroj kaj dudek naŭ centimoj"),
-    (81.25, "okdek unu eŭroj kaj dudek kvin centimoj"),
-    (100.00, "cent eŭroj kaj nul centimo"),
-)
+TEST_CASES_TO_CURRENCY_EUR = ((1, 'unu eŭro'),
+                              (2.01, "du eŭroj kaj unu centimo"),
+                              (8.10, "ok eŭroj kaj dek centimoj"),
+                              (12.26, "dek du eŭroj kaj dudek ses centimoj"),
+                              (21.29, "dudek unu eŭroj kaj dudek naŭ centimoj"),
+                              (81.25, "okdek unu eŭroj kaj dudek kvin centimoj"),
+                              (100, 'cent eŭroj'))
 
-TEST_CASES_TO_CURRENCY_FRF = (
-    (1.00, "unu franko kaj nul centimo"),
-    (2.01, "du frankoj kaj unu centimo"),
-    (8.10, "ok frankoj kaj dek centimoj"),
-    (12.27, "dek du frankoj kaj dudek sep centimoj"),
-    (21.29, "dudek unu frankoj kaj dudek naŭ centimoj"),
-    (81.25, "okdek unu frankoj kaj dudek kvin centimoj"),
-    (100.00, "cent frankoj kaj nul centimo"),
-)
+TEST_CASES_TO_CURRENCY_FRF = ((1, 'unu franko'),
+                              (2.01, "du frankoj kaj unu centimo"),
+                              (8.10, "ok frankoj kaj dek centimoj"),
+                              (12.27, "dek du frankoj kaj dudek sep centimoj"),
+                              (21.29, "dudek unu frankoj kaj dudek naŭ centimoj"),
+                              (81.25, "okdek unu frankoj kaj dudek kvin centimoj"),
+                              (100, 'cent frankoj'))
 
-TEST_CASES_TO_CURRENCY_USD = (
-    (1.00, "unu dolaro kaj nul cendo"),
-    (2.01, "du dolaroj kaj unu cendo"),
-    (8.10, "ok dolaroj kaj dek cendoj"),
-    (12.26, "dek du dolaroj kaj dudek ses cendoj"),
-    (21.29, "dudek unu dolaroj kaj dudek naŭ cendoj"),
-    (81.25, "okdek unu dolaroj kaj dudek kvin cendoj"),
-    (100.00, "cent dolaroj kaj nul cendo"),
-)
+TEST_CASES_TO_CURRENCY_USD = ((1, 'unu dolaro'),
+                              (2.01, "du dolaroj kaj unu cendo"),
+                              (8.10, "ok dolaroj kaj dek cendoj"),
+                              (12.26, "dek du dolaroj kaj dudek ses cendoj"),
+                              (21.29, "dudek unu dolaroj kaj dudek naŭ cendoj"),
+                              (81.25, "okdek unu dolaroj kaj dudek kvin cendoj"),
+                              (100, 'cent dolaroj'))
 
 
 class Num2WordsEOTest(TestCase):

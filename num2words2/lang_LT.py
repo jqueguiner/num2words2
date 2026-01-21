@@ -137,10 +137,111 @@ class Num2Word_LT(Num2Word_Base):
             return "%s%s" % (base_str, self._int2word(int(n)))
 
     def to_ordinal(self, number):
-        raise NotImplementedError()
+        """Convert to Lithuanian ordinal numbers."""
+        try:
+            num = int(number)
+        except (ValueError, TypeError):
+            return str(number)
 
-    def _cents_verbose(self, number, currency):
-        return self._int2word(number, currency == 'RUB')
+        # Lithuanian ordinals
+        ordinals = {
+            1: 'pirmas',
+            2: 'antras',
+            3: 'trečias',
+            4: 'ketvirtas',
+            5: 'penktas',
+            6: 'šeštas',
+            7: 'septintas',
+            8: 'aštuntas',
+            9: 'devintas',
+            10: 'dešimtas',
+            11: 'vienuoliktas',
+            12: 'dvyliktas',
+            13: 'tryliktas',
+            14: 'keturioliktas',
+            15: 'penkioliktas',
+            16: 'šešioliktas',
+            17: 'septynioliktas',
+            18: 'aštuonioliktas',
+            19: 'devynioliktas',
+            20: 'dvidešimtas',
+            30: 'trisdešimtas',
+            40: 'keturiasdešimtas',
+            50: 'penkiasdešimtas',
+            60: 'šešiasdešimtas',
+            70: 'septyniasdešimtas',
+            80: 'aštuoniasdešimtas',
+            90: 'devyniasdešimtas',
+            100: 'šimtasis',
+            1000: 'tūkstantas',
+        }
+
+        if num in ordinals:
+            return ordinals[num]
+
+        # For other numbers, add 'as' suffix to the cardinal
+        # This is a simplified implementation
+        cardinal = self.to_cardinal(num)
+        return cardinal + 'as'
+
+    def to_currency(self, val, currency='EUR', cents=True, separator='',
+                    adjective=False):
+        if isinstance(val, int):
+            left = abs(val)
+            right = 0
+            is_negative = val < 0
+            is_float = False
+        else:
+            from decimal import Decimal
+
+            from .currency import parse_currency_parts
+
+            # Check if value has fractional cents
+            decimal_val = Decimal(str(val))
+            has_fractional_cents = (decimal_val * 100) % 1 != 0
+
+            left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
+                                                            keep_precision=has_fractional_cents)
+            is_float = True
+
+        try:
+            cr1, cr2 = self.CURRENCY_FORMS[currency]
+        except KeyError:
+            raise NotImplementedError(
+                'Currency code "%s" not implemented for "%s"' %
+                (currency, self.__class__.__name__))
+
+        minus_str = "%s " % self.negword.strip() if is_negative else ""
+        money_str = self.to_cardinal(left)
+
+        # Show cents if right > 0 OR if input was a float (even if 0 cents)
+        if right > 0 or is_float:
+            if right == 0:
+                cents_str = self.to_cardinal(0) if cents else '0'
+            else:
+                # Handle fractional cents
+                from decimal import Decimal
+                if isinstance(right, Decimal):
+                    # Convert fractional cents (e.g., 65.3 cents)
+                    cents_str = self.to_cardinal_float(float(right)) if cents else str(float(right))
+                else:
+                    cents_str = self.to_cardinal(right) if cents else str(right)
+            # Always add comma before cents if no separator specified
+            sep = separator if separator else ', '
+            return u'%s%s %s%s%s %s' % (
+                minus_str,
+                money_str,
+                self.pluralize(left, cr1),
+                sep,
+                cents_str,
+                self.pluralize(right, cr2)
+            )
+        else:
+            return u'%s%s %s' % (
+                minus_str,
+                money_str,
+                self.pluralize(left, cr1)
+            )
 
     def _int2word(self, n, feminine=False):
         if n == 0:

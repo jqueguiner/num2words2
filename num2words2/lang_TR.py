@@ -28,6 +28,12 @@ class Num2Word_TR(Num2Word_Base):
         self.pointword = u"virgül"
         self.CURRENCY_UNIT = u"lira"
         self.CURRENCY_SUBUNIT = u"kuruş"
+
+        self.CURRENCY_FORMS = {
+            'TRY': (('lira', 'lira'), ('kuruş', 'kuruş')),
+            'EUR': (('avro', 'avro'), ('sent', 'sent')),
+            'USD': (('dolar', 'dolar'), ('sent', 'sent')),
+        }
         self.errmsg_nonnum = u"Sadece sayılar yazıya çevrilebilir."
         self.errmsg_floatord = u"Tam sayı olmayan {} sıralamada kullanılamaz."
         self.errmsg_negord = u"Pozitif olmayan {} sıralamada kullanılamaz."
@@ -823,6 +829,29 @@ class Num2Word_TR(Num2Word_Base):
         self.verify_ordinal(value)
         return "%s%s" % (value, self.to_ordinal(value)[-4:])
 
+    def pluralize(self, number, forms):
+        """Return the appropriate plural form."""
+        # Turkish doesn't change the form for plurals in currency
+        # Both "1 lira" and "100 lira" use the same form
+        if isinstance(forms, tuple) and len(forms) >= 2:
+            # Use singular form for all numbers in Turkish
+            return forms[0] if number == 1 else forms[0]
+        return forms
+
+    def to_currency(self, val, currency='EUR', cents=True, separator=',',
+                    adjective=False):
+        """Basic currency support for Turkish."""
+        # For integers, just add "lira"
+        if isinstance(val, int):
+            minus_str = self.negword if val < 0 else ""
+            money_str = self.to_cardinal(abs(val))
+            return "%s%s%s" % (minus_str, money_str, self.CURRENCY_UNIT)
+
+        # For floats, use parent class implementation
+        return super(Num2Word_TR, self).to_currency(
+            val, currency=currency, cents=cents, separator=separator,
+            adjective=adjective)
+
     def to_splitnum(self, val):
         float_digits = str(int(val * 10 ** self.precision))
         if not int(val) == 0:
@@ -851,13 +880,3 @@ class Num2Word_TR(Num2Word_Base):
                 self.order_of_last_zero_digit = i + 1
             else:
                 found = 1
-
-    def to_currency(self, value):
-        if int(value) == 0:
-            return u"bedelsiz"
-        valueparts = self.to_cardinal(value).split(self.pointword)
-        if len(valueparts) == 1:
-            return valueparts[0] + self.CURRENCY_UNIT
-        if len(valueparts) == 2:
-            return self.CURRENCY_UNIT.join(valueparts) + \
-                self.CURRENCY_SUBUNIT

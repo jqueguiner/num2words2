@@ -19,6 +19,12 @@ from __future__ import print_function, unicode_literals
 
 
 class Num2Word_ID():
+    CURRENCY_FORMS = {
+        'IDR': (('rupiah', 'rupiah'), ('sen', 'sen')),
+        'USD': (('dolar', 'dolar'), ('sen', 'sen')),
+        'EUR': (('euro', 'euro'), ('sen', 'sen')),
+    }
+
     BASE = {0: [],
             1: ["satu"],
             2: ["dua"],
@@ -191,11 +197,43 @@ class Num2Word_ID():
         self.verify_ordinal(number)
         return "ke-" + str(number)
 
-    def to_currency(self, value):
-        return self.to_cardinal(value) + " rupiah"
-
     def to_year(self, value):
         return self.to_cardinal(value)
+
+    def to_currency(self, val, currency='IDR', cents=True, separator=' ',
+                    adjective=False):
+        """Convert to currency words."""
+        # Basic implementation for Indonesian Rupiah
+        from decimal import Decimal
+
+        from .currency import parse_currency_parts
+
+        # Check if value has fractional cents
+        decimal_val = Decimal(str(val))
+        has_fractional_cents = (decimal_val * 100) % 1 != 0
+
+        is_integer_input = isinstance(val, int)
+        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
+                                                        keep_precision=has_fractional_cents)
+
+        minus_str = "minus " if is_negative else ""
+        money_str = self.to_cardinal(left)
+
+        # For integers, don't show sen (cents)
+        if is_integer_input or currency == 'IDR':
+            # Indonesian Rupiah doesn't use cents
+            return "%s%s rupiah" % (minus_str, money_str)
+
+        # For other currencies with cents
+        if isinstance(right, Decimal) and has_fractional_cents:
+            # Convert fractional cents (e.g., 65.3 cents)
+            cents_str = self.to_cardinal(float(right)) if cents else str(float(right))
+        else:
+            cents_str = self.to_cardinal(int(right) if isinstance(right, Decimal) else right) if right > 0 else ""
+
+        if cents_str:
+            return "%s%s rupiah %s sen" % (minus_str, money_str, cents_str)
+        return "%s%s rupiah" % (minus_str, money_str)
 
     def verify_ordinal(self, value):
         if not value == int(value):

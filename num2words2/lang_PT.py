@@ -19,16 +19,17 @@ from __future__ import division, unicode_literals
 
 import re
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 DOLLAR = ('dólar', 'dólares')
 CENTS = ('cêntimo', 'cêntimos')
 
 
-class Num2Word_PT(Num2Word_EU):
+class Num2Word_PT(Num2Word_EUR):
 
     CURRENCY_FORMS = {
         'AUD': (DOLLAR, CENTS),
+        'BRL': (('real', 'reais'), ('centavo', 'centavos')),
         'CAD': (DOLLAR, CENTS),
         'EUR': (('euro', 'euros'), CENTS),
         'GBP': (('libra', 'libras'), ('péni', 'pence')),
@@ -217,7 +218,45 @@ class Num2Word_PT(Num2Word_EU):
 
     def to_currency(self, val, currency='EUR', cents=True, separator=' e',
                     adjective=False):
-        # change negword because base.to_currency() does not need space after
+        # Track if input was originally an integer (not float)
+        is_integer = isinstance(val, int)
+
+        # Handle integers specially - just add currency name without cents
+        if is_integer:
+            try:
+                cr1, cr2 = self.CURRENCY_FORMS[currency]
+            except KeyError:
+                return self.to_cardinal(val)
+
+            # change negword for currency
+            backup_negword = self.negword
+            self.negword = self.negword[:-1]
+
+            minus_str = "%s " % self.negword.strip() if val < 0 else ""
+            abs_val = abs(int(val) if isinstance(val, float) else val)
+            money_str = self.to_cardinal(abs_val)
+
+            # restore negword
+            self.negword = backup_negword
+
+            # Proper pluralization for currency
+            if abs_val == 1:
+                currency_str = cr1[0]  # singular
+            else:
+                currency_str = cr1[1] if len(cr1) > 1 else cr1[0]  # plural
+
+            result = "%s%s %s" % (minus_str, money_str, currency_str)
+
+            # transforms "milhões euros" em "milhões de euros"
+            for ext in ('milhão', 'milhões', 'bilião', 'biliões', 'trilião', 'triliões'):
+                if re.match('.*{} (?={})'.format(ext, currency_str), result):
+                    result = result.replace(
+                        '{}'.format(ext), '{} de'.format(ext), 1
+                    )
+
+            return result.strip()
+
+        # For floats with non-zero decimal part, use the parent class implementation
         backup_negword = self.negword
         self.negword = self.negword[:-1]
         result = super(Num2Word_PT, self).to_currency(
@@ -236,6 +275,6 @@ class Num2Word_PT(Num2Word_EU):
                 result = result.replace(
                     '{}'.format(ext), '{} de'.format(ext), 1
                 )
-        # do not print "e zero cêntimos"
-        result = result.replace(' e zero cêntimos', '')
+        # For floats, keep "e zero cêntimos" to show it's a precise amount
+        # Only remove for integers (but we handle integers separately now)
         return result

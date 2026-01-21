@@ -103,3 +103,41 @@ class Num2Word_VI(object):
 
     def to_ordinal(self, number):
         return self.to_cardinal(number)
+
+    def to_ordinal_num(self, number):
+        """Convert to abbreviated ordinal form in Vietnamese"""
+        # Vietnamese typically uses "thứ" + number for ordinals
+        return "thứ " + str(number)
+
+    def to_year(self, val, longval=True):
+        """Convert number to year representation in Vietnamese"""
+        if val < 0:
+            # BC years (trước Công nguyên)
+            return "năm " + self.to_cardinal(-val) + " trước Công nguyên"
+        else:
+            # AD years (just "năm" + number)
+            return "năm " + self.to_cardinal(val)
+
+    def to_currency(self, val, currency='VND', cents=True, separator=',',
+                    adjective=False):
+        """
+        Convert amount to currency format
+        """
+        from decimal import Decimal
+
+        # Check if value has fractional cents
+        decimal_val = Decimal(str(val))
+        has_fractional_cents = (decimal_val * 100) % 1 != 0
+
+        # If input is an integer, just return the cardinal number
+        if isinstance(val, int):
+            return self.to_cardinal(val) + " đồng"
+
+        # For floats with fractional cents
+        if has_fractional_cents:
+            # Vietnamese doesn't typically use cents, but for consistency
+            # we'll handle fractional amounts
+            return self.to_cardinal_float(val) + " đồng"
+
+        # For floats, use the full currency format with dong
+        return self.to_cardinal(val) + " đồng"

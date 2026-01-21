@@ -170,10 +170,16 @@ class Num2Word_SW(Num2Word_Base):
         Convert number to currency format in Swahili.
         """
         # Import the parse function from the base currency module
+        # Check if value has fractional cents
+        from decimal import Decimal
+
         from .currency import parse_currency_parts
+        decimal_val = Decimal(str(val))
+        has_fractional_cents = (decimal_val * 100) % 1 != 0
 
         # For Swahili, treat integers as whole currency units, not cents
-        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False)
+        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
+                                                        keep_precision=has_fractional_cents)
 
         try:
             cr1, cr2 = self.CURRENCY_FORMS[currency]
@@ -190,7 +196,13 @@ class Num2Word_SW(Num2Word_Base):
 
         # Only include cents if there are actual cents or explicitly decimal
         if has_decimal or right > 0:
-            cents_str = self.to_cardinal(right) if cents else "%02d" % right
+            # Handle fractional cents
+            from decimal import Decimal
+            if isinstance(right, Decimal):
+                # Convert fractional cents (e.g., 65.3 cents)
+                cents_str = self.to_cardinal_float(float(right)) if cents else str(float(right))
+            else:
+                cents_str = self.to_cardinal(right) if cents else "%02d" % right
             return u'%s%s %s%s %s %s' % (
                 minus_str,
                 money_str,

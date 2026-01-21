@@ -17,6 +17,8 @@
 
 from __future__ import unicode_literals
 
+from decimal import Decimal
+
 from .base import Num2Word_Base
 from .currency import parse_currency_parts
 
@@ -239,6 +241,10 @@ class Num2Word_MS(Num2Word_Base):
 
     def to_currency(self, n, currency='MYR'):
         try:
+            # Check if value has fractional cents
+            decimal_val = Decimal(str(n))
+            has_fractional_cents = (decimal_val * 100) % 1 != 0
+
             left, right, is_negative = parse_currency_parts(n)
 
             if currency not in self.CURRENCY_FORMS:
@@ -259,7 +265,12 @@ class Num2Word_MS(Num2Word_Base):
 
             # Handle cents if non-zero
             if right > 0:
-                right_words = self._int_to_cardinal(right)
+                if has_fractional_cents:
+                    # For fractional cents, use float representation
+                    fractional_cents = right / 100.0
+                    right_words = self.to_cardinal(fractional_cents)
+                else:
+                    right_words = self._int_to_cardinal(right)
                 result.append(right_words)
                 result.append(cr_minor[0])
 

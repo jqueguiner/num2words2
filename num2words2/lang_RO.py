@@ -17,15 +17,21 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from . import lang_EU
+from . import lang_EUR
 
 
-class Num2Word_RO(lang_EU.Num2Word_EU):
+class Num2Word_RO(lang_EUR.Num2Word_EUR):
     GIGA_SUFFIX = "iliard/e"
     MEGA_SUFFIX = "ilion"
     # inflection for mi/billion follows different rule
     MEGA_SUFFIX_I = "ilioane"
     GIGA_SUFFIX_I = "iliarde"
+
+    CURRENCY_FORMS = {
+        'RON': (('leu', 'lei', 'de lei'), ('ban', 'bani', 'de bani')),
+        'EUR': (('euro', 'euro', 'de euro'), ('cent', 'cenţi', 'de cenţi')),
+        'USD': (('dolar', 'dolari', 'de dolari'), ('cent', 'cenţi', 'de cenţi')),
+    }
 
     def setup(self):
         super(Num2Word_RO, self).setup()
@@ -99,8 +105,11 @@ fi convertit în cuvinte (abs(%s) > %s)."
         if value == 1:
             return "primul"
         else:
-            value = self.to_cardinal(value)
-        return "al %slea" % (value)
+            cardinal = self.to_cardinal(value)
+            # For ordinals, change "o" to "una" for hundreds and thousands
+            cardinal = cardinal.replace("o sută", "una sută")
+            cardinal = cardinal.replace("o mie", "una mie")
+        return "al %slea" % (cardinal)
 
     def to_ordinal_num(self, value):
         self.verify_ordinal(value)
@@ -139,7 +148,7 @@ fi convertit în cuvinte (abs(%s) > %s)."
         # romanian currency has a particularity for numeral: one
         self.gen_numwords[1] = "una"
         result = super(Num2Word_RO, self).to_currency(
-            int(round(val * 100)),
+            val,  # Don't multiply by 100 - pass the value as is
             currency,
             True,
             separator,

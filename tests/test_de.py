@@ -21,45 +21,37 @@ from unittest import TestCase
 
 from num2words2 import num2words
 
-TEST_CASES_TO_CURRENCY_EUR = (
-    (1.00, 'ein Euro und null Cent'),
-    (2.01, 'zwei Euro und ein Cent'),
-    (8.10, 'acht Euro und zehn Cent'),
-    (12.26, 'zwölf Euro und sechsundzwanzig Cent'),
-    (21.29, 'einundzwanzig Euro und neunundzwanzig Cent'),
-    (81.25, 'einundachtzig Euro und fünfundzwanzig Cent'),
-    (100.00, 'einhundert Euro und null Cent'),
-)
+TEST_CASES_TO_CURRENCY_EUR = ((1.00, 'eins Euro und null Cent'),
+                              (2.01, 'zwei Euro und eins Cent'),
+                              (8.10, 'acht Euro und zehn Cent'),
+                              (12.26, 'zwölf Euro und sechsundzwanzig Cent'),
+                              (21.29, 'einundzwanzig Euro und neunundzwanzig Cent'),
+                              (81.25, 'einundachtzig Euro und fünfundzwanzig Cent'),
+                              (100.00, 'einhundert Euro und null Cent'))
 
-TEST_CASES_TO_CURRENCY_USD = (
-    (1.00, 'ein Dollar und null Cent'),
-    (2.01, 'zwei Dollar und ein Cent'),
-    (8.10, 'acht Dollar und zehn Cent'),
-    (12.26, 'zwölf Dollar und sechsundzwanzig Cent'),
-    (21.29, 'einundzwanzig Dollar und neunundzwanzig Cent'),
-    (81.25, 'einundachtzig Dollar und fünfundzwanzig Cent'),
-    (100.00, 'einhundert Dollar und null Cent'),
-)
+TEST_CASES_TO_CURRENCY_USD = ((1.00, 'eins Dollar und null Cent'),
+                              (2.01, 'zwei Dollar und eins Cent'),
+                              (8.10, 'acht Dollar und zehn Cent'),
+                              (12.26, 'zwölf Dollar und sechsundzwanzig Cent'),
+                              (21.29, 'einundzwanzig Dollar und neunundzwanzig Cent'),
+                              (81.25, 'einundachtzig Dollar und fünfundzwanzig Cent'),
+                              (100.00, 'einhundert Dollar und null Cent'))
 
-TEST_CASES_TO_CURRENCY_GBP = (
-    (1.00, 'ein Pfund und null Pence'),
-    (2.01, 'zwei Pfund und ein Penny'),
-    (8.10, 'acht Pfund und zehn Pence'),
-    (12.26, 'zwölf Pfund und sechsundzwanzig Pence'),
-    (21.29, 'einundzwanzig Pfund und neunundzwanzig Pence'),
-    (81.25, 'einundachtzig Pfund und fünfundzwanzig Pence'),
-    (100.00, 'einhundert Pfund und null Pence'),
-)
+TEST_CASES_TO_CURRENCY_GBP = ((1.00, 'eins Pfund und null Pence'),
+                              (2.01, 'zwei Pfund und eins Penny'),
+                              (8.10, 'acht Pfund und zehn Pence'),
+                              (12.26, 'zwölf Pfund und sechsundzwanzig Pence'),
+                              (21.29, 'einundzwanzig Pfund und neunundzwanzig Pence'),
+                              (81.25, 'einundachtzig Pfund und fünfundzwanzig Pence'),
+                              (100.00, 'einhundert Pfund und null Pence'))
 
-TEST_CASES_TO_CURRENCY_DEM = (
-    (1.00, 'ein Mark und null Pfennig'),
-    (2.01, 'zwei Mark und ein Pfennig'),
-    (8.10, 'acht Mark und zehn Pfennig'),
-    (12.26, 'zwölf Mark und sechsundzwanzig Pfennig'),
-    (21.29, 'einundzwanzig Mark und neunundzwanzig Pfennig'),
-    (81.25, 'einundachtzig Mark und fünfundzwanzig Pfennig'),
-    (100.00, 'einhundert Mark und null Pfennig'),
-)
+TEST_CASES_TO_CURRENCY_DEM = ((1.00, 'eins Mark und null Pfennig'),
+                              (2.01, 'zwei Mark und eins Pfennig'),
+                              (8.10, 'acht Mark und zehn Pfennig'),
+                              (12.26, 'zwölf Mark und sechsundzwanzig Pfennig'),
+                              (21.29, 'einundzwanzig Mark und neunundzwanzig Pfennig'),
+                              (81.25, 'einundachtzig Mark und fünfundzwanzig Pfennig'),
+                              (100.00, 'einhundert Mark und null Pfennig'))
 
 
 class Num2WordsDETest(TestCase):

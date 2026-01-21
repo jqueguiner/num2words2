@@ -159,15 +159,15 @@ class Num2WordsHYTest(TestCase):
         """Test basic currency conversion."""
         # Basic currency tests
         self.assertEqual(
-            num2words(1.0, lang="hy", to="currency", currency="AMD"),
+            num2words(1, lang="hy", to="currency", currency="AMD"),
             "մեկ դրամ",
         )
         self.assertEqual(
-            num2words(2.0, lang="hy", to="currency", currency="AMD"),
+            num2words(2, lang="hy", to="currency", currency="AMD"),
             "երկու դրամ",
         )
         self.assertEqual(
-            num2words(100.0, lang="hy", to="currency", currency="EUR"),
+            num2words(100, lang="hy", to="currency", currency="EUR"),
             "հարյուր եվրո",
         )
 
@@ -201,7 +201,7 @@ class Num2WordsHYTest(TestCase):
             "մեկ դոլար ամբողջ հինգ տասներորդ ցենտ",
         )
         self.assertEqual(
-            num2words(100.00, lang="hy", to="currency", currency="USD"),
+            num2words(100, lang="hy", to="currency", currency="USD"),
             "հարյուր դոլար",
         )
         self.assertEqual(

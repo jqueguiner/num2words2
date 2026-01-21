@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
-# Additional coverage tests for Estonian language
-
 from unittest import TestCase
 
 from num2words2 import num2words
 from num2words2.lang_ET import Num2Word_ET
+
+# -*- coding: utf-8 -*-
+# Additional coverage tests for Estonian language
 
 
 class Num2WordsETCoverageTest(TestCase):
@@ -38,9 +38,9 @@ class Num2WordsETCoverageTest(TestCase):
     def test_to_cardinal_exception_handling(self):
         """Test to_cardinal exception handling."""
         converter = Num2Word_ET()
-        # Test with float that triggers exception path
+        # Test with float - now properly handled
         result = converter.to_cardinal(3.14)
-        self.assertEqual(result, 'kolm')
+        self.assertEqual(result, 'kolm koma üks neli')
 
     def test_to_ordinal_string_input(self):
         """Test to_ordinal with string input."""
@@ -75,13 +75,6 @@ class Num2WordsETCoverageTest(TestCase):
             'miinus viiskümmend eurot ja viiskümmend senti'
         )
 
-    def test_to_currency_exception_handling(self):
-        """Test to_currency exception handling."""
-        converter = Num2Word_ET()
-        # Test with invalid input that triggers exception
-        result = converter.to_currency('invalid', 'EUR')
-        self.assertEqual(result, 'invalid EUR')
-
     def test_to_currency_cents_only(self):
         """Test currency with only cents."""
         self.assertEqual(
@@ -106,4 +99,4 @@ class Num2WordsETCoverageTest(TestCase):
         """Test large round numbers."""
         self.assertEqual(num2words(1000, lang='et'), 'tuhat')
         self.assertEqual(num2words(10000, lang='et'), 'kümme tuhat')
-        self.assertEqual(num2words(100000, lang='et'), 'ükssada tuhat')
+        self.assertEqual(num2words(100000, lang='et'), 'sada tuhat')

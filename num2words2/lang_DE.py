@@ -19,16 +19,18 @@ from __future__ import print_function, unicode_literals
 
 import re
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 
-class Num2Word_DE(Num2Word_EU):
+class Num2Word_DE(Num2Word_EUR):
     CURRENCY_FORMS = {
         'EUR': (('Euro', 'Euro'), ('Cent', 'Cent')),
         'GBP': (('Pfund', 'Pfund'), ('Penny', 'Pence')),
         'USD': (('Dollar', 'Dollar'), ('Cent', 'Cent')),
         'CNY': (('Yuan', 'Yuan'), ('Jiao', 'Fen')),
         'DEM': (('Mark', 'Mark'), ('Pfennig', 'Pfennig')),
+        'CHF': (('Schweizer Franken', 'Schweizer Franken'), ('Rappen', 'Rappen')),
+        'JPY': (('Yen', 'Yen'), ('Sen', 'Sen')),
     }
 
     GIGA_SUFFIX = "illiarde"
@@ -144,11 +146,32 @@ class Num2Word_DE(Num2Word_EU):
 
     def to_currency(self, val, currency='EUR', cents=True, separator=' und',
                     adjective=False):
-        result = super(Num2Word_DE, self).to_currency(
+        # Handle integers specially - just add currency name without cents
+        if isinstance(val, int):
+            try:
+                cr1, cr2 = self.CURRENCY_FORMS[currency]
+            except (KeyError, AttributeError):
+                # Fallback to base implementation for unknown currency
+                return super(Num2Word_DE, self).to_currency(
+                    val, currency=currency, cents=cents, separator=separator,
+                    adjective=adjective)
+
+            minus_str = self.negword if val < 0 else ""
+            abs_val = abs(val)
+            money_str = self.to_cardinal(abs_val)
+
+            # Proper pluralization for currency
+            if abs_val == 1:
+                currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
+            else:
+                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+
+            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+
+        # For floats, use the parent class implementation
+        return super(Num2Word_DE, self).to_currency(
             val, currency=currency, cents=cents, separator=separator,
             adjective=adjective)
-        # Handle exception, in german is "ein Euro" and not "eins Euro"
-        return result.replace("eins ", "ein ")
 
     def to_year(self, val, longval=True):
         if not (val // 100) % 10:

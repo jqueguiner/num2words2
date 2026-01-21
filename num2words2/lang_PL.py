@@ -167,6 +167,18 @@ class Num2Word_PL(Num2Word_Base):
                 'centów'
             )
         ),
+        'GBP': (
+            (
+                'funt brytyjski',
+                'funty brytyjskie',
+                'funtów brytyjskich'
+            ),
+            (
+                'pens',
+                'pensy',
+                'pensów'
+            )
+        ),
     }
 
     def setup(self):
@@ -179,9 +191,16 @@ class Num2Word_PL(Num2Word_Base):
             is_negative = n.startswith('-')
             abs_n = n[1:] if is_negative else n
             left, right = abs_n.split('.')
-            leading_zero_count = len(right) - len(right.lstrip('0'))
-            decimal_part = ((ZERO[0] + ' ') * leading_zero_count +
-                            self._int2word(int(right)))
+
+            # Say each decimal digit individually
+            decimal_parts = []
+            for digit in right:
+                if digit == '0':
+                    decimal_parts.append(ZERO[0])
+                else:
+                    decimal_parts.append(ONES[int(digit)][0])
+            decimal_part = ' '.join(decimal_parts)
+
             result = u'%s %s %s' % (
                 self._int2word(int(left)),
                 self.pointword,
@@ -191,7 +210,14 @@ class Num2Word_PL(Num2Word_Base):
                 result = self.negword + ' ' + result
             return result
         else:
-            return self._int2word(int(n))
+            # Handle negative integers
+            is_negative = n.startswith('-')
+            if is_negative:
+                abs_n = n[1:]
+                result = self._int2word(int(abs_n))
+                return self.negword + ' ' + result
+            else:
+                return self._int2word(int(n))
 
     def pluralize(self, n, forms):
         if n == 1:
@@ -222,6 +248,39 @@ class Num2Word_PL(Num2Word_Base):
                 words.append(HUNDREDS[n3][0])
             words.append(TWENTIES_ORDINALS[n2][0])
             words.append(ONES_ORDINALS[n1][0])
+
+    def to_currency(self, val, currency='EUR', cents=True, separator=',',
+                    adjective=False):
+        # Handle integers specially - just add currency name without cents
+        if isinstance(val, int):
+            try:
+                cr1, cr2 = self.CURRENCY_FORMS[currency]
+            except (KeyError, AttributeError):
+                # Fallback to base implementation for unknown currency
+                return super(Num2Word_PL, self).to_currency(
+                    val, currency=currency, cents=cents, separator=separator,
+                    adjective=adjective)
+
+            minus_str = self.negword if val < 0 else ""
+            abs_val = abs(val)
+            money_str = self.to_cardinal(abs_val)
+
+            # For Polish, check if number ends with "jeden" (one)
+            # Numbers ending in compound "jeden" (like 21, 121, 10121) get special treatment
+            # They use the second form (nominative plural for 2-4)
+            if abs_val > 1 and money_str.endswith("jeden"):
+                # Use nominative plural form (2-4) for compound numbers ending with "jeden"
+                currency_str = cr1[1] if len(cr1) > 1 else cr1[0]
+            else:
+                # Use the pluralize method for proper currency form selection
+                currency_str = self.pluralize(abs_val, cr1)
+
+            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+
+        # For floats, use the parent class implementation
+        return super(Num2Word_PL, self).to_currency(
+            val, currency=currency, cents=cents, separator=separator,
+            adjective=adjective)
 
     def to_ordinal(self, number):
         if number % 1 != 0:

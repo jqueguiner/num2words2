@@ -271,6 +271,10 @@ class Num2Word_RU(Num2Word_Base):
             ('польский злотый', 'польских слотых', 'польских злотых'),
             ('грош', 'гроша', 'грошей')
         ),
+        'GBP': (
+            ('фунт стерлингов', 'фунта стерлингов', 'фунтов стерлингов'),
+            ('пенни', 'пенни', 'пенни')
+        ),
     }
 
     def setup(self):
@@ -280,7 +284,23 @@ class Num2Word_RU(Num2Word_Base):
 
     def to_cardinal(self, number, case=D_CASE, plural=D_PLURAL,
                     gender=D_GENDER, animate=D_ANIMATE):
-        n = str(number).replace(',', '.')
+        # Handle scientific notation
+        if isinstance(number, str) and ('e' in number.lower() or 'E' in number):
+            number = float(number)
+
+        # Convert float to proper format if needed
+        if isinstance(number, float):
+            # For very small numbers close to zero, just return zero
+            if abs(number) < 0.01:
+                return self._int2word(0, cardinal=True, case=case,
+                                      plural=plural, gender=gender,
+                                      animate=animate)
+            # Convert to string with proper precision
+            n = str(number)
+        else:
+            n = str(number)
+
+        n = n.replace(',', '.')
         if '.' in n:
             is_negative = n.startswith('-')
             abs_n = n[1:] if is_negative else n
@@ -297,6 +317,9 @@ class Num2Word_RU(Num2Word_Base):
                 result = self.negword + ' ' + result
             return result
         else:
+            # Handle scientific notation in integer strings
+            if 'e' in n.lower() or 'E' in n:
+                n = str(int(float(n)))
             return self._int2word(int(n), cardinal=True, case=case,
                                   plural=plural, gender=gender,
                                   animate=animate)
@@ -316,6 +339,37 @@ class Num2Word_RU(Num2Word_Base):
             return forms[1]
         return forms[2]
 
+    def to_currency(self, val, currency='EUR', cents=True, separator=',',
+                    adjective=False):
+        # Handle scientific notation that results in whole numbers
+        # (e.g., 1e+18 becomes 1000000000000000000.0)
+        if isinstance(val, float) and val == int(val):
+            val = int(val)
+
+        # Handle integers specially - just add currency name without cents
+        if isinstance(val, int):
+            try:
+                cr1, cr2 = self.CURRENCY_FORMS[currency]
+            except (KeyError, AttributeError):
+                # Fallback to base implementation for unknown currency
+                return super(Num2Word_RU, self).to_currency(
+                    val, currency=currency, cents=cents, separator=separator,
+                    adjective=adjective)
+
+            minus_str = self.negword if val < 0 else ""
+            abs_val = abs(val)
+            money_str = self.to_cardinal(abs_val)
+
+            # Use the pluralize method for proper currency form selection
+            currency_str = self.pluralize(abs_val, cr1)
+
+            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+
+        # For floats, use the parent class implementation
+        return super(Num2Word_RU, self).to_currency(
+            val, currency=currency, cents=cents, separator=separator,
+            adjective=adjective)
+
     def to_ordinal(self, number, case=D_CASE, plural=D_PLURAL, gender=D_GENDER,
                    animate=D_ANIMATE):
         self.verify_ordinal(number)
@@ -329,9 +383,19 @@ class Num2Word_RU(Num2Word_Base):
         return self._int2word(number, gender='m')
 
     def _cents_verbose(self, number, currency):
+        # Handle scientific notation or very small decimals
+        if isinstance(number, str) and ('e' in number.lower() or 'E' in number):
+            number = float(number)
+        # Convert float to int if it represents a whole number
+        if isinstance(number, float):
+            # For very small numbers, round to avoid scientific notation issues
+            number = round(number * 100) / 100  # Round to 2 decimal places
+            if number == int(number):
+                number = int(number)
+
         if currency in ('UAH', 'RUB', 'BYN'):
-            return self._int2word(number, gender='f')
-        return self._int2word(number, gender='m')
+            return self._int2word(int(number), gender='f')
+        return self._int2word(int(number), gender='m')
 
     def _int2word(self, n, feminine=False, cardinal=True, case=D_CASE,
                   plural=D_PLURAL, gender=D_GENDER, animate=D_ANIMATE):

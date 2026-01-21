@@ -19,7 +19,7 @@ from __future__ import division, print_function, unicode_literals
 
 import math
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 GENERIC_DOLLARS = ('dólar', 'dólares')
 GENERIC_CENTS = ('centavo', 'centavos')
@@ -31,7 +31,7 @@ CURRENCIES_UNA = ('SLL', 'SEK', 'NOK', 'CZK', 'DKK', 'ISK',
 CENTS_UNA = ('EGP', 'JOD', 'LBP', 'SDG', 'SSP', 'SYP')
 
 
-class Num2Word_ES(Num2Word_EU):
+class Num2Word_ES(Num2Word_EUR):
     CURRENCY_FORMS = {
         'EUR': (('euro', 'euros'), ('céntimo', 'céntimos')),
         'ESP': (('peseta', 'pesetas'), ('céntimo', 'céntimos')),
@@ -362,55 +362,38 @@ class Num2Word_ES(Num2Word_EU):
 
     def to_currency(self, val, currency='EUR', cents=True, separator=' con',
                     adjective=False):
+        # Handle integers specially - just add currency name without cents
+        if isinstance(val, int):
+            try:
+                cr1, cr2 = self.CURRENCY_FORMS[currency]
+            except (KeyError, AttributeError):
+                # Fallback to base implementation for unknown currency
+                return super(Num2Word_ES, self).to_currency(
+                    val, currency=currency, cents=cents, separator=separator,
+                    adjective=adjective)
+
+            minus_str = self.negword if val < 0 else ""
+            abs_val = abs(val)
+            money_str = self.to_cardinal(abs_val)
+
+            # Convert "uno" to "un" for currency
+            if abs_val == 1:
+                money_str = "un"
+                currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
+            else:
+                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+
+            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+
+        # For floats, use the parent class implementation but fix "uno" -> "un"
         result = super(Num2Word_ES, self).to_currency(
             val, currency=currency, cents=cents, separator=separator,
             adjective=adjective)
-        # Handle exception: In Spanish it's "un euro" and not "uno euro",
-        # except in these currencies, where it's "una": leona, corona,
-        # libra, lira, rupia, lempira, peseta.
-        # The same goes for "veintiuna", "treinta y una"...
-        # Also, this needs to be handled separately for "dollars" and
-        # "cents".
-        # All "cents" are masculine except for: piastra.
-        # Source: https://www.rae.es/dpd/una (section 2.2)
-
-        # split "dollars" part from "cents" part
-        list_result = result.split(separator + " ")
-
-        # "DOLLARS" PART (list_result[0])
-
-        # Feminine currencies ("una libra", "trescientas libras"...)
-        if currency in CURRENCIES_UNA:
-
-            # "una libra", "veintiuna libras", "treinta y una libras"...
-            list_result[0] = list_result[0].replace("uno", "una")
-
-            # "doscientas libras", "trescientas libras"...
-            list_result[0] = list_result[0].replace("cientos", "cientas")
-
-        # Masc.: Correct orthography for the specific case of "veintiún":
-        list_result[0] = list_result[0].replace("veintiuno", "veintiún")
-
-        # Masculine currencies: general case ("un euro", "treinta y un
-        # euros"...):
-        list_result[0] = list_result[0].replace("uno", "un")
-
-        # "CENTS" PART (list_result[1])
-
-        # Feminine "cents" ("una piastra", "veintiuna piastras"...)
-        if currency in CENTS_UNA:
-
-            # "una piastra", "veintiuna piastras", "treinta y una piastras"...
-            list_result[1] = list_result[1].replace("uno", "una")
-
-        # Masc.: Correct orthography for the specific case of "veintiún":
-        list_result[1] = list_result[1].replace("veintiuno", "veintiún")
-
-        # Masculine "cents": general case ("un centavo", "treinta y un
-        # centavos"...):
-        list_result[1] = list_result[1].replace("uno", "un")
-
-        # join back "dollars" part with "cents" part
-        result = (separator + " ").join(list_result)
-
+        # Convert "uno euro" to "un euro"
+        result = result.replace("veintiuno euro", "veintiún euro")
+        result = result.replace("veintiuno céntimo", "veintiún céntimo")
+        result = result.replace("uno euro", "un euro")
+        result = result.replace("uno céntimo", "un céntimo")
+        result = result.replace("uno centavo", "un centavo")
+        result = result.replace("uno dólar", "un dólar")
         return result

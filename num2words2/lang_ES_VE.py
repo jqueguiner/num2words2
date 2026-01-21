@@ -22,11 +22,22 @@ from .lang_ES import Num2Word_ES
 
 class Num2Word_ES_VE(Num2Word_ES):
 
-    def to_currency(self, val, longval=True, old=False):
-        hightxt = "bolívar/es" if old else "bolívar/es fuerte/s"
-        result = self.to_splitnum(
-            val, hightxt=hightxt, lowtxt="centavo/s",
-            divisor=1, jointxt="y", longval=longval
+    CURRENCY_FORMS = {
+        'VES': (('bolívar', 'bolívares'), ('centavo', 'centavos')),
+        'VEB': (('bolívar', 'bolívares'), ('centavo', 'centavos')),  # Old currency
+        'EUR': (('euro', 'euros'), ('céntimo', 'céntimos')),
+        'USD': (('dólar', 'dólares'), ('centavo', 'centavos')),
+    }
+
+    def to_currency(self, val, currency='VES', cents=True, separator=' y', adjective=False, old=False):
+        # Handle the old parameter for backward compatibility
+        if old:
+            # For old Venezuelan Bolívar (VEB)
+            currency = 'VEB' if currency == 'VES' else currency
+
+        # Use parent class implementation with our currency forms
+        result = super(Num2Word_ES_VE, self).to_currency(
+            val, currency=currency, cents=cents, separator=separator, adjective=adjective
         )
         # Handle exception, in spanish is "un euro" and not "uno euro"
         return result.replace("uno", "un")

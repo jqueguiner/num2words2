@@ -148,8 +148,85 @@ class Num2Word_LV(Num2Word_Base):
         form = 0 if (n % 10 == 1 and n % 100 != 11) else 1 if n != 0 else 2
         return forms[form]
 
+    def to_currency(self, val, currency='EUR', cents=True, separator=',',
+                    adjective=False):
+        # Handle integers specially - just add currency name without cents
+        if isinstance(val, int):
+            try:
+                cr1, cr2 = self.CURRENCY_FORMS[currency]
+            except (KeyError, AttributeError):
+                # Fallback to base implementation for unknown currency
+                return super(Num2Word_LV, self).to_currency(
+                    val, currency=currency, cents=cents, separator=separator,
+                    adjective=adjective)
+
+            minus_str = self.negword if val < 0 else ""
+            abs_val = abs(val)
+            money_str = self.to_cardinal(abs_val)
+
+            # Proper pluralization for currency
+            if abs_val == 1:
+                currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
+            else:
+                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+
+            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+
+        # For floats, use the parent class implementation
+        return super(Num2Word_LV, self).to_currency(
+            val, currency=currency, cents=cents, separator=separator,
+            adjective=adjective)
+
     def to_ordinal(self, number):
-        raise NotImplementedError()
+        """Convert to Latvian ordinal numbers."""
+        try:
+            num = int(number)
+        except (ValueError, TypeError):
+            return str(number)
+
+        # Latvian ordinals
+        ordinals = {
+            1: 'pirmais',
+            2: 'otrais',
+            3: 'trešais',
+            4: 'ceturtais',
+            5: 'piektais',
+            6: 'sestais',
+            7: 'septītais',
+            8: 'astotais',
+            9: 'devītais',
+            10: 'desmitais',
+            11: 'vienpadsmitais',
+            12: 'divpadsmitais',
+            13: 'trīspadsmitais',
+            14: 'četrpadsmitais',
+            15: 'piecpadsmitais',
+            16: 'sešpadsmitais',
+            17: 'septiņpadsmitais',
+            18: 'astoņpadsmitais',
+            19: 'deviņpadsmitais',
+            20: 'divdesmitais',
+            30: 'trīsdesmitais',
+            40: 'četrdesmitais',
+            50: 'piecdesmitais',
+            60: 'sešdesmitais',
+            70: 'septiņdesmitais',
+            80: 'astoņdesmitais',
+            90: 'deviņdesmitais',
+            100: 'simtais',
+            1000: 'tūkstošais',
+        }
+
+        if num in ordinals:
+            return ordinals[num]
+
+        # For other numbers, add 'ais' suffix to the cardinal
+        # This is a simplified implementation
+        cardinal = self.to_cardinal(num)
+        # Remove trailing 's' if present and add 'ais'
+        if cardinal.endswith('s'):
+            return cardinal[:-1] + 'ais'
+        return cardinal + 'ais'
 
     def _int2word(self, n):
         if n == 0:

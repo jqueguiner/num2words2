@@ -16,15 +16,17 @@
 # MA 02110-1301 USA
 
 
+from decimal import Decimal
+
 from num2words2.currency import parse_currency_parts
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 DOLLAR = ('dolar', 'dolar')
 CENTS = ('sentavu', 'sentavu')
 
 
-class Num2Word_TET(Num2Word_EU):
+class Num2Word_TET(Num2Word_EUR):
 
     CURRENCY_FORMS = {
         'AUD': (DOLLAR, CENTS),
@@ -47,10 +49,10 @@ class Num2Word_TET(Num2Word_EU):
         self.count = 0
 
         self.mid_numwords = [
-            (1000, "rihun"), (100, "atus"), (90, "sianulu"),
-            (80, "ualunulu"), (70, "hitunulu"), (60, "neenulu"),
-            (50, "limanulu"), (40, "haatnulu"), (30, "tolunulu"),
-            (20, "ruanulu")
+            (1000, "rihun"), (100, "atus"), (90, "sia nulu"),
+            (80, "ualu nulu"), (70, "hitu nulu"), (60, "neen nulu"),
+            (50, "lima nulu"), (40, "haat nulu"), (30, "tolu nulu"),
+            (20, "rua nulu")
         ]
         self.low_numwords = [
             "sanulu",
@@ -220,7 +222,14 @@ class Num2Word_TET(Num2Word_EU):
             str: Formatted string
 
         """
-        left, right, is_negative = parse_currency_parts(val)
+        # Check if value has fractional cents
+        decimal_val = Decimal(str(val))
+        has_fractional_cents = (decimal_val * 100) % 1 != 0
+
+        # Check if input is an integer - don't show cents for integers
+        is_integer_input = isinstance(val, int)
+
+        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False)
 
         try:
             cr1, cr2 = self.CURRENCY_FORMS[currency]
@@ -232,8 +241,23 @@ class Num2Word_TET(Num2Word_EU):
 
         minus_str = "%s " % self.negword.strip() if is_negative else ""
         money_str = self._money_verbose(left, currency)
-        cents_str = self._cents_verbose(right, currency) \
-            if cents else self._cents_terse(right, currency)
+
+        # For integers, never show cents
+        if is_integer_input:
+            curr_name = self.pluralize(left, cr1)
+            return u'%s%s %s' % (
+                minus_str,
+                curr_name,
+                money_str
+            )
+
+        if has_fractional_cents and right > 0:
+            # Handle fractional cents using to_cardinal_float
+            fractional_cents = right / 100.0
+            cents_str = self.to_cardinal_float(fractional_cents) if hasattr(self, 'to_cardinal_float') else self.to_cardinal(fractional_cents)
+        else:
+            cents_str = self._cents_verbose(right, currency) \
+                if cents else self._cents_terse(right, currency)
 
         if right == 0:
             return u'%s%s %s' % (
@@ -242,10 +266,20 @@ class Num2Word_TET(Num2Word_EU):
                 money_str
             )
         else:
-            return u'%s%s %s %s %s' % (
-                minus_str,
-                self.pluralize(left, cr1),
-                money_str,
-                self.pluralize(right, cr2),
-                cents_str
-            )
+            if has_fractional_cents:
+                # For fractional cents, use different formatting
+                return u'%s%s %s %s %s' % (
+                    minus_str,
+                    self.pluralize(left, cr1),
+                    money_str,
+                    cents_str,
+                    self.pluralize(1, cr2)  # Use singular for fractional
+                )
+            else:
+                return u'%s%s %s %s %s' % (
+                    minus_str,
+                    self.pluralize(left, cr1),
+                    money_str,
+                    self.pluralize(right, cr2),
+                    cents_str
+                )

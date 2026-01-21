@@ -17,10 +17,10 @@
 
 from __future__ import print_function, unicode_literals
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 
-class Num2Word_NL(Num2Word_EU):
+class Num2Word_NL(Num2Word_EUR):
     CURRENCY_FORMS = {
         'EUR': (('euro', 'euro'), ('cent', 'cent')),
         'GBP': (('pond', 'pond'), ('penny', 'pence')),
@@ -127,6 +127,35 @@ class Num2Word_NL(Num2Word_EU):
         word = ctext + ntext
         return word, val
 
+    def to_currency(self, val, currency='EUR', cents=True, separator=' en',
+                    adjective=False):
+        # Handle integers specially - just add currency name without cents
+        if isinstance(val, int):
+            try:
+                cr1, cr2 = self.CURRENCY_FORMS[currency]
+            except (KeyError, AttributeError):
+                # Fallback to base implementation for unknown currency
+                return super(Num2Word_NL, self).to_currency(
+                    val, currency=currency, cents=cents, separator=separator,
+                    adjective=adjective)
+
+            minus_str = self.negword if val < 0 else ""
+            abs_val = abs(val)
+            money_str = self.to_cardinal(abs_val)
+
+            # Proper pluralization for currency
+            if abs_val == 1:
+                currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
+            else:
+                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+
+            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+
+        # For floats, use the parent class implementation
+        return super(Num2Word_NL, self).to_currency(
+            val, currency=currency, cents=cents, separator=separator,
+            adjective=adjective)
+
     def to_ordinal(self, value):
         self.verify_ordinal(value)
         outword = self.to_cardinal(value)
@@ -153,6 +182,23 @@ class Num2Word_NL(Num2Word_EU):
         return forms[0]
 
     def to_year(self, val, longval=True):
+        # For years 1100-1999, use the "[number]honderd" form
+        # e.g. 1600 -> "zestienhonderd" not "duizendzeshonderd"
+        if 1100 <= val <= 1999:
+            hundreds = val // 100
+            remainder = val % 100
+
+            # Convert the hundreds part (11-19)
+            result = self.to_cardinal(hundreds) + "honderd"
+
+            # Add remainder if any
+            if remainder:
+                remainder_text = self.to_cardinal(remainder)
+                result = result + remainder_text
+
+            return result
+
+        # For other years, use standard logic
         if not (val // 100) % 10:
             return self.to_cardinal(val)
         return self.to_splitnum(val, hightxt="honderd", longval=longval)

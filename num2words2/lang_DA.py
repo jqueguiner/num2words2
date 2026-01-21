@@ -17,12 +17,21 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from . import lang_EU
+from . import lang_EUR
 
 
-class Num2Word_DA(lang_EU.Num2Word_EU):
+class Num2Word_DA(lang_EUR.Num2Word_EUR):
     GIGA_SUFFIX = "illiarder"
     MEGA_SUFFIX = "illioner"
+
+    CURRENCY_FORMS = {
+        'DKK': (('krone', 'kroner'), ('øre', 'øre')),
+        'EUR': (('euro', 'euro'), ('cent', 'cent')),
+        'USD': (('dollar', 'dollars'), ('cent', 'cent')),
+        'GBP': (('pund', 'pund'), ('penny', 'pence')),
+        'SEK': (('krone', 'kroner'), ('øre', 'øre')),
+        'NOK': (('krone', 'kroner'), ('øre', 'øre')),
+    }
 
     def setup(self):
         super(Num2Word_DA, self).setup()
@@ -67,6 +76,13 @@ class Num2Word_DA(lang_EU.Num2Word_EU):
         ctext, cnum, ntext, nnum = curr + next
         if next[1] == 100 or next[1] == 1000:
             lst = list(next)
+            # Special handling: don't concat "et" directly for 10000
+            if cnum == 10 and nnum == 1000:
+                # 10 * 1000 = "ti tusind" with space
+                return ("ti tusind", 10000)
+            elif cnum == 100 and nnum == 1000:
+                # 100 * 1000 = "ethundrede tusind" with space
+                return ("ethundrede tusind", 100000)
             lst[0] = 'et' + lst[0]
             next = tuple(lst)
 
@@ -117,13 +133,34 @@ class Num2Word_DA(lang_EU.Num2Word_EU):
             return str(value) + "en"
         return str(value) + "ende"
 
-    def to_currency(self, val, longval=True):
-        if val // 100 == 1 or val == 1:
-            ret = self.to_splitnum(val, hightxt="kr", lowtxt="\xf8re",
-                                   jointxt="og", longval=longval)
-            return "en " + ret[3:]
-        return self.to_splitnum(val, hightxt="kr", lowtxt="\xf8re",
-                                jointxt="og", longval=longval)
+    def to_currency(self, val, currency='DKK', cents=True, separator=',',
+                    adjective=False, longval=True):
+        # Handle integers specially - just add currency name without cents
+        if isinstance(val, int):
+            try:
+                cr1, cr2 = self.CURRENCY_FORMS[currency]
+            except (KeyError, AttributeError):
+                # Fallback to base implementation for unknown currency
+                return super(Num2Word_DA, self).to_currency(
+                    val, currency=currency, cents=cents, separator=separator,
+                    adjective=adjective)
+
+            minus_str = self.negword if val < 0 else ""
+            abs_val = abs(val)
+            money_str = self.to_cardinal(abs_val)
+
+            # Proper pluralization for currency
+            if abs_val == 1:
+                currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
+            else:
+                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+
+            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+
+        # For floats, use the parent class implementation
+        return super(Num2Word_DA, self).to_currency(
+            val, currency=currency, cents=cents, separator=separator,
+            adjective=adjective)
 
     def to_year(self, val, longval=True):
         if val == 1:

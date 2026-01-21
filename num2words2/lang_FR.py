@@ -17,20 +17,21 @@
 
 from __future__ import print_function, unicode_literals
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 
-class Num2Word_FR(Num2Word_EU):
+class Num2Word_FR(Num2Word_EUR):
     CURRENCY_FORMS = {
         'EUR': (('euro', 'euros'), ('centime', 'centimes')),
         'USD': (('dollar', 'dollars'), ('cent', 'cents')),
         'FRF': (('franc', 'francs'), ('centime', 'centimes')),
         'GBP': (('livre', 'livres'), ('penny', 'pence')),
         'CNY': (('yuan', 'yuans'), ('fen', 'jiaos')),
+        'JPY': (('yen', 'yens'), ('sen', 'sens')),
     }
 
     def setup(self):
-        Num2Word_EU.setup(self)
+        Num2Word_EUR.setup(self)
 
         self.negword = "moins "
         self.pointword = "virgule"
@@ -72,7 +73,7 @@ class Num2Word_FR(Num2Word_EU):
 
         if nnum < cnum < 100:
             if nnum % 10 == 1 and cnum != 80:
-                return ("%s et %s" % (ctext, ntext), cnum + nnum)
+                return ("%s-et-%s" % (ctext, ntext), cnum + nnum)
             return ("%s-%s" % (ctext, ntext), cnum + nnum)
         if nnum > cnum:
             return ("%s %s" % (ctext, ntext), cnum * nnum)
@@ -104,6 +105,28 @@ class Num2Word_FR(Num2Word_EU):
 
     def to_currency(self, val, currency='EUR', cents=True, separator=' et',
                     adjective=False):
+        # Handle integers specially - just add currency name without cents
+        if isinstance(val, int):
+            try:
+                cr1, cr2 = self.CURRENCY_FORMS[currency]
+            except KeyError:
+                # Fallback to base implementation for unknown currency
+                return self.to_cardinal(val)
+
+            minus_str = "%s " % self.negword.strip() if val < 0 else ""
+            abs_val = abs(val)
+            money_str = self.to_cardinal(abs_val)
+
+            # Proper pluralization for currency
+            # In French, 0 and 1 use singular
+            if abs_val <= 1:
+                currency_str = cr1[0]  # singular
+            else:
+                currency_str = cr1[1] if len(cr1) > 1 else cr1[0]  # plural
+
+            return u'%s%s %s' % (minus_str, money_str, currency_str)
+
+        # For floats, use the original implementation
         result = super(Num2Word_FR, self).to_currency(
             val, currency=currency, cents=cents, separator=separator,
             adjective=adjective)

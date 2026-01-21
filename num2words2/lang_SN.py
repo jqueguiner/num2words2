@@ -56,6 +56,21 @@ class Num2Word_SN(Num2Word_Base):
             10: 'gumi'
         }
 
+        # Forms used after "ne" (and)
+        self.ones_after_ne = {
+            0: 'zero',
+            1: 'imwe',
+            2: 'piri',
+            3: 'tatu',
+            4: 'china',
+            5: 'shanu',
+            6: 'nhatu',
+            7: 'nomwe',
+            8: 'sere',
+            9: 'pfumbamwe',
+            10: 'gumi'
+        }
+
         # Numbers for tens when used in compound forms
         self.tens_forms = {
             2: 'maviri',
@@ -112,7 +127,7 @@ class Num2Word_SN(Num2Word_Base):
 
         # Numbers 11-19
         if number < 20:
-            return "gumi ne" + self.ones[number - 10]
+            return "gumi ne" + self.ones_after_ne[number - 10]
 
         # Numbers 20-99
         if number < 100:
@@ -121,7 +136,7 @@ class Num2Word_SN(Num2Word_Base):
                 return "makumi " + self.tens_forms[tens]
             else:
                 return ("makumi " + self.tens_forms[tens] + " ne" +
-                        self.ones[units])
+                        self.ones_after_ne[units])
 
         # Numbers 100-999
         if number < 1000:
@@ -130,7 +145,11 @@ class Num2Word_SN(Num2Word_Base):
                 if remainder == 0:
                     return "zana"
                 else:
-                    return "zana ne" + self._int_to_sn_word(remainder)
+                    # Use ones_after_ne for single digits
+                    if remainder < 10:
+                        return "zana ne" + self.ones_after_ne[remainder]
+                    else:
+                        return "zana ne" + self._int_to_sn_word(remainder)
             else:
                 if remainder == 0:
                     return "mazana " + self.tens_forms[hundreds]
@@ -145,7 +164,11 @@ class Num2Word_SN(Num2Word_Base):
                 if remainder == 0:
                     return "churu"
                 else:
-                    return "churu ne" + self._int_to_sn_word(remainder)
+                    # Use ones_after_ne for single digits
+                    if remainder < 10:
+                        return "churu ne" + self.ones_after_ne[remainder]
+                    else:
+                        return "churu ne" + self._int_to_sn_word(remainder)
             else:
                 if remainder == 0:
                     if thousands < 10:
@@ -169,8 +192,13 @@ class Num2Word_SN(Num2Word_Base):
             if remainder == 0:
                 return "zvuru " + self._int_to_sn_word(ten_thousands)
             else:
-                return ("zvuru " + self._int_to_sn_word(ten_thousands) +
-                        " ne" + self._int_to_sn_word(remainder))
+                # Use ones_after_ne for single digit remainders
+                if remainder < 10:
+                    return ("zvuru " + self._int_to_sn_word(ten_thousands) +
+                            " ne" + self.ones_after_ne[remainder])
+                else:
+                    return ("zvuru " + self._int_to_sn_word(ten_thousands) +
+                            " ne" + self._int_to_sn_word(remainder))
 
         # Numbers 100000-999999
         if number < 1000000:
@@ -188,7 +216,11 @@ class Num2Word_SN(Num2Word_Base):
                 if remainder == 0:
                     return "miriyoni"
                 else:
-                    return "miriyoni ne" + self._int_to_sn_word(remainder)
+                    # Use ones_after_ne for single digits
+                    if remainder < 10:
+                        return "miriyoni ne" + self.ones_after_ne[remainder]
+                    else:
+                        return "miriyoni ne" + self._int_to_sn_word(remainder)
             else:
                 if remainder == 0:
                     if millions == 2:
@@ -334,11 +366,16 @@ class Num2Word_SN(Num2Word_Base):
         result = []
         value = self.float_to_value(n)
 
+        # Check if value has fractional cents
+        from decimal import Decimal
+        decimal_val = Decimal(str(n))
+        has_fractional_cents = (decimal_val * 100) % 1 != 0
+
         if value < 0:
             result.append(self.negword)
             value = abs(value)
 
-        integer_part, decimal_part = self._split_currency(value)
+        integer_part, decimal_part = self._split_currency(value, has_fractional_cents)
 
         # Get currency forms
         if currency not in self.CURRENCY_FORMS:
@@ -370,7 +407,13 @@ class Num2Word_SN(Num2Word_Base):
 
         # Minor currency unit (cents)
         if cents and decimal_part:
-            if decimal_part == 1:
+            # Handle fractional cents
+            from decimal import Decimal
+            if isinstance(decimal_part, Decimal):
+                # Convert fractional cents (e.g., 65.3 cents)
+                result.append(separator + minor_singular + " " +
+                              self.to_cardinal_float(float(decimal_part)))
+            elif decimal_part == 1:
                 result.append(separator + minor_singular + " rimwe")
             else:
                 # For cents, use minor_singular without "ma" prefix
@@ -379,10 +422,17 @@ class Num2Word_SN(Num2Word_Base):
 
         return " ".join(result)
 
-    def _split_currency(self, value):
+    def _split_currency(self, value, has_fractional_cents=False):
         """Split a currency value into integer and decimal parts."""
-        integer_part = int(value)
-        decimal_part = int(round((value - integer_part) * 100))
+        if has_fractional_cents:
+            # Keep precision for fractional cents
+            from decimal import Decimal
+            decimal_val = Decimal(str(value))
+            integer_part = int(decimal_val)
+            decimal_part = decimal_val * 100 - (integer_part * 100)
+        else:
+            integer_part = int(value)
+            decimal_part = int(round((value - integer_part) * 100))
         return integer_part, decimal_part
 
     def to_year(self, number):

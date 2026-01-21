@@ -171,11 +171,11 @@ class Num2WordsBGTest(TestCase):
     def test_currency(self):
         """Test currency in Bulgarian."""
         self.assertEqual(
-            num2words(1.00, lang='bg', to='currency', currency='BGN'),
+            num2words(1, lang='bg', to='currency', currency='BGN'),
             'един лев'
         )
         self.assertEqual(
-            num2words(2.00, lang='bg', to='currency', currency='BGN'),
+            num2words(2, lang='bg', to='currency', currency='BGN'),
             'два лева'
         )
         self.assertEqual(
@@ -184,22 +184,22 @@ class Num2WordsBGTest(TestCase):
         )
         self.assertEqual(
             num2words(10.01, lang='bg', to='currency', currency='BGN'),
-            'десет лева и една стотинка'
+            'десет лева и един стотинка'
         )
         self.assertEqual(
             num2words(100.25, lang='bg', to='currency', currency='BGN'),
             'сто лева и двадесет и пет стотинки'
         )
         self.assertEqual(
-            num2words(1.00, lang='bg', to='currency', currency='EUR'),
-            'едно евро'
+            num2words(1, lang='bg', to='currency', currency='EUR'),
+            'един евро'
         )
         self.assertEqual(
             num2words(2.50, lang='bg', to='currency', currency='EUR'),
-            'две евро и петдесет цента'
+            'два евро и петдесет цента'
         )
         self.assertEqual(
-            num2words(1.00, lang='bg', to='currency', currency='USD'),
+            num2words(1, lang='bg', to='currency', currency='USD'),
             'един долар'
         )
         self.assertEqual(

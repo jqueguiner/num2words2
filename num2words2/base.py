@@ -283,7 +283,35 @@ class Num2Word_Base(object):
 
         Handles whole numbers and decimal numbers differently
         """
-        left, right, is_negative = parse_currency_parts(val)
+        # Handle integers separately - no cents shown
+        if isinstance(val, int):
+            try:
+                cr1, cr2 = self.CURRENCY_FORMS[currency]
+            except KeyError:
+                raise NotImplementedError(
+                    'Currency code "%s" not implemented for "%s"' %
+                    (currency, self.__class__.__name__))
+
+            if adjective and currency in self.CURRENCY_ADJECTIVES:
+                cr1 = prefix_currency(self.CURRENCY_ADJECTIVES[currency], cr1)
+
+            minus_str = "%s " % self.negword.strip() if val < 0 else ""
+            money_str = self._money_verbose(abs(val), currency)
+
+            return u'%s%s %s' % (
+                minus_str,
+                money_str,
+                self.pluralize(abs(val), cr1)
+            )
+
+        # For floats, show full currency with cents
+        # Check if value has more than 2 decimal places
+        from decimal import Decimal
+        decimal_val = Decimal(str(val))
+        has_fractional_cents = (decimal_val * 100) % 1 != 0
+
+        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
+                                                        keep_precision=has_fractional_cents)
 
         try:
             cr1, cr2 = self.CURRENCY_FORMS[currency]
@@ -305,7 +333,28 @@ class Num2Word_Base(object):
         # Only include cents if:
         # 1. Input has decimal point OR
         # 2. Cents are non-zero
-        if has_decimal or right > 0:
+        if has_decimal or (isinstance(right, Decimal) and right > 0) or (isinstance(right, int) and right > 0):
+            # Handle fractional cents
+            if isinstance(right, Decimal):
+                # Split into whole cents and fraction
+                whole_cents = int(right)
+                fractional_part = right - whole_cents
+
+                if fractional_part > 0:
+                    # Convert fractional cents (e.g., 65.3 cents)
+                    cents_str = self.to_cardinal(float(right))
+                    return u'%s%s %s%s %s %s' % (
+                        minus_str,
+                        money_str,
+                        self.pluralize(left, cr1),
+                        separator,
+                        cents_str,
+                        cr2[1] if isinstance(cr2, tuple) and len(cr2) > 1 else cr2
+                    )
+                else:
+                    # No fractional part, use normal processing
+                    right = whole_cents
+
             cents_str = self._cents_verbose(right, currency) \
                 if cents else self._cents_terse(right, currency)
 

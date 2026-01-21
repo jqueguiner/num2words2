@@ -88,7 +88,7 @@ class Num2Word_SQ(Num2Word_Base):
             9: "i nënti",
             10: "i dhjeti",
             20: "i njezeti",
-            100: "i një qindi",
+            100: "i njëqindi",
             1000: "i një mijti",
         }
 
@@ -104,7 +104,7 @@ class Num2Word_SQ(Num2Word_Base):
             if nnum == 1000:
                 return ("një mijë", 1000)
             if nnum == 100:
-                return ("një qind", 100)
+                return ("njëqind", 100)  # Combined as one word
             if nnum < 100:
                 return next
             ctext = "një"
@@ -150,7 +150,7 @@ class Num2Word_SQ(Num2Word_Base):
         elif value == 20:
             return "i njezeti"
         elif value == 100:
-            return "i një qindi"
+            return "i njëqindi"
         elif value == 1000:
             return "i një mijti"
         else:
@@ -200,10 +200,20 @@ class Num2Word_SQ(Num2Word_Base):
         val = abs(val)
 
         if currency in self.CURRENCY_FORMS:
+            # Check if value has fractional cents
+            from decimal import Decimal
+            decimal_val = Decimal(str(val))
+            has_fractional_cents = (decimal_val * 100) % 1 != 0
+
             if isinstance(val, float):
                 # Handle decimal values
-                whole = int(val)
-                cents_value = int(round((val - whole) * 100))
+                if has_fractional_cents:
+                    # Keep precision for fractional cents
+                    whole = int(decimal_val)
+                    cents_value = decimal_val * 100 - (whole * 100)
+                else:
+                    whole = int(val)
+                    cents_value = int(round((val - whole) * 100))
             else:
                 whole = int(val)
                 cents_value = 0
@@ -219,8 +229,15 @@ class Num2Word_SQ(Num2Word_Base):
                     # Join the main currency part first, then add separator
                     main_part = ' '.join(result)
                     result = [main_part + separator]
-                result.append(self.to_cardinal(cents_value))
-                result.append(self.pluralize(cents_value, self.CURRENCY_FORMS[currency][1]))
+                # Handle fractional cents
+                from decimal import Decimal
+                if isinstance(cents_value, Decimal):
+                    # Convert fractional cents (e.g., 65.3 cents)
+                    result.append(self.to_cardinal_float(float(cents_value)))
+                    result.append(self.pluralize(int(cents_value), self.CURRENCY_FORMS[currency][1]))
+                else:
+                    result.append(self.to_cardinal(cents_value))
+                    result.append(self.pluralize(cents_value, self.CURRENCY_FORMS[currency][1]))
 
             if is_negative:
                 result.insert(0, self.negword.strip())

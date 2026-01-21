@@ -94,6 +94,33 @@ class Num2Word_KZ(Num2Word_Base):
     def pluralize(self, n, form):
         return form
 
+    def to_ordinal(self, number):
+        """Convert to ordinal in Kazakh"""
+        if number == 0:
+            return ZERO + 'інші'
+
+        # Get the cardinal form
+        cardinal = self.to_cardinal(number)
+
+        # In Kazakh, ordinals are formed by adding suffixes
+        # The suffix depends on the last sound of the number
+        # Common suffixes: -ыншы/-інші, -ншы/-нші
+
+        # Check last character to determine suffix
+        if cardinal[-1] in 'аоұыеэ':
+            return cardinal + 'ншы'
+        elif cardinal[-1] in 'әіүө':
+            return cardinal + 'нші'
+        elif cardinal[-1] in 'бвгғджзйклмнңпрстфхһцчшщ':
+            # After consonants
+            if any(v in cardinal[-2:] for v in 'аоұы'):
+                return cardinal + 'ыншы'
+            else:
+                return cardinal + 'інші'
+        else:
+            # Default case
+            return cardinal + 'інші'
+
     def _cents_verbose(self, number, currency):
         return self._int2word(number, currency == 'KZT')
 
@@ -132,7 +159,3 @@ class Num2Word_KZ(Num2Word_Base):
                 words.append(THOUSANDS[i])
 
         return ' '.join(words)
-
-    def to_ordinal(self, number):
-        # TODO: Implement to_ordinal
-        raise NotImplementedError()

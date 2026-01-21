@@ -27,6 +27,12 @@ class Num2Word_HI(Num2Word_Base):
     Hindi (HI) Num2Word class
     """
 
+    CURRENCY_FORMS = {
+        'INR': (('रुपया', 'रुपये'), ('पैसा', 'पैसे')),
+        'USD': (('डॉलर', 'डॉलर'), ('सेंट', 'सेंट')),
+        'EUR': (('यूरो', 'यूरो'), ('सेंट', 'सेंट')),
+    }
+
     _irregular_ordinals = {
         0: "शून्य",
         1: "पहला",
@@ -170,13 +176,51 @@ class Num2Word_HI(Num2Word_Base):
     def merge(self, lpair, rpair):
         ltext, lnum = lpair
         rtext, rnum = rpair
-        if lnum == 1 and rnum < 100:
+        # Remove "एक" prefix for certain major units (but keep for हज़ार)
+        if lnum == 1 and rnum in [100, 100000, 10000000]:  # सौ, लाख, करोड़ (but not हज़ार)
+            return rtext, rnum
+        elif lnum == 1 and rnum < 100:
             return rtext, rnum
         elif lnum >= 100 > rnum:
             return "%s %s" % (ltext, rtext), lnum + rnum
         elif rnum > lnum:
             return "%s %s" % (ltext, rtext), lnum * rnum
         return "%s %s" % (ltext, rtext), lnum + rnum
+
+    def pluralize(self, count, forms):
+        """Return the proper plural form for Hindi"""
+        if count == 1:
+            return forms[0]
+        return forms[1] if len(forms) > 1 else forms[0]
+
+    def to_currency(self, val, currency='INR', cents=True, separator=',',
+                    adjective=False):
+        # Handle integers specially - just add currency name without cents
+        if isinstance(val, int):
+            try:
+                cr1, cr2 = self.CURRENCY_FORMS[currency]
+            except (KeyError, AttributeError):
+                # Fallback to base implementation for unknown currency
+                return super(Num2Word_HI, self).to_currency(
+                    val, currency=currency, cents=cents, separator=separator,
+                    adjective=adjective)
+
+            minus_str = self.negword if val < 0 else ""
+            abs_val = abs(val)
+            money_str = self.to_cardinal(abs_val)
+
+            # Proper pluralization for currency
+            if abs_val == 1:
+                currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
+            else:
+                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+
+            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+
+        # For floats, use the parent class implementation
+        return super(Num2Word_HI, self).to_currency(
+            val, currency=currency, cents=cents, separator=separator,
+            adjective=adjective)
 
     def to_ordinal(self, value):
         if value in self._irregular_ordinals:

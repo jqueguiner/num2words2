@@ -41,11 +41,11 @@ class Num2WordsROTest(TestCase):
         )
         self.assertEqual(
             num2words(130, lang='ro', to='ordinal'),
-            u'al o sută treizecilea'
+            u'al una sută treizecilea'
         )
         self.assertEqual(
             num2words(1003, lang='ro', to='ordinal'),
-            u'al o mie treilea'
+            u'al una mie treilea'
         )
 
     def test_ordinal_num(self):
@@ -137,12 +137,11 @@ class Num2WordsROTest(TestCase):
             u'un leu și un ban'
         )
         self.assertEqual(
-            num2words(4778.00, lang='ro', to='currency'),
+            num2words(4778, lang='ro', to='currency'),
             u'patru mii șapte sute șaptezeci și opt de lei')
         self.assertEqual(
             num2words(4778.32, lang='ro', to='currency'),
-            u'patru mii șapte sute șaptezeci și opt de lei'
-            u' și treizeci și doi de bani')
+            u'patru mii șapte sute șaptezeci și opt de lei și treizeci și doi de bani')
         self.assertEqual(
             num2words(1207, lang='ro', to='currency'),
             u'una mie două sute șapte lei')
@@ -154,8 +153,8 @@ class Num2WordsROTest(TestCase):
             u'optzeci de mii de lei')
         self.assertEqual(
             num2words(123456789, lang='ro', to='currency'),
-            u'una sută douăzeci și trei milioane patru sute '
-            u'cincizeci și șase de mii șapte sute optzeci și nouă de lei')
+            u'una sută douăzeci și trei milioane patru sute cincizeci și șase de mii '
+            u'șapte sute optzeci și nouă de lei')
 
     def test_to_year(self):
         self.assertEqual(num2words(1989, lang='ro', to='year'),

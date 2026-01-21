@@ -17,13 +17,13 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from . import lang_EU
+from . import lang_EUR
 
 GENERIC_DOLLARS = ("доллар", "доллар")
 GENERIC_CENTS = ("сент", "сент")
 
 
-class Num2Word_TG(lang_EU.Num2Word_EU):
+class Num2Word_TG(lang_EUR.Num2Word_EUR):
     CURRENCY_FORMS = {
         # repalced by EUR
         "EUR": (("евро", "евро"), GENERIC_CENTS),

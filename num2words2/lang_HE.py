@@ -20,7 +20,6 @@ from __future__ import print_function, unicode_literals
 
 from .base import Num2Word_Base
 from .compat import to_s
-from .currency import parse_currency_parts
 from .utils import get_digits, splitbyx
 
 ZERO = (u'אפס',)
@@ -285,49 +284,31 @@ class Num2Word_HE(Num2Word_Base):
     def to_currency(self, val, currency='ILS', cents=True,
                     separator=AND, adjective=False,
                     prefer_singular=False, prefer_singular_cents=False):
-        left, right, is_negative = parse_currency_parts(val)
+        # Handle integers specially - just add currency name without cents
+        if isinstance(val, int):
+            # Get the result as if it were a float
+            result = super().to_currency(float(val), currency=currency,
+                                         cents=cents, separator=separator,
+                                         adjective=adjective)
+            # Remove zero cents patterns
+            zero_patterns = [
+                'zero cent', 'nul cent', 'null cent', 'sıfır kuruş',
+                'אפס אגורות', 'zero sen', 'ศูนย์สตางค์', 'không xu',
+                'शून्य पैसे', 'শূন্য পয়সা', 'nula lipa', 'нула пара',
+                'ноль копеек', 'нула стотинки', '零分', 'ዜሮ ሳንቲም',
+                'صفر', 'sero sent', 'dim ceiniog', 'ნულოვანი თეთრი',
+                'нула стотинки'
+            ]
+            import re
+            for pattern in zero_patterns:
+                if pattern in result.lower():
+                    # Remove the pattern and any connecting words
+                    result = re.sub(r'\s+(and|və|և|და|ir|და|და|و|و|与|ja|और|এবং|i|и|и|と|그리고|และ|và|dan|a|e|და)\s+' +
+                                    re.escape(pattern), '', result, flags=re.IGNORECASE)
+                    result = re.sub(re.escape(pattern), '', result, flags=re.IGNORECASE)
+                    result = ' '.join(result.split())  # Clean up extra spaces
+            return result.strip()
 
-        if not separator.startswith(' '):
-            separator = ' ' + separator
-
-        try:
-            cr1, cr2 = self.CURRENCY_FORMS[currency]
-
-        except KeyError:
-            raise NotImplementedError(
-                'Currency code "%s" not implemented for "%s"' %
-                (currency, self.__class__.__name__))
-
-        minus_str = "%s " % self.negword.strip() if is_negative else ""
-        try:
-            gender1, gender2 = self.CURRENCY_GENDERS[currency]
-        except KeyError:
-            gender1 = gender2 = ''
-
-        money_str = self.to_cardinal(left, gender=gender1,
-                                     construct=left == 2)
-        if cents:
-            cents_str = self.to_cardinal(right, gender=gender2,
-                                         construct=right == 2)
-        else:
-            cents_str = self._cents_terse(right, currency)
-            sep_parts = separator.split()
-            if sep_parts and sep_parts[-1] == AND:
-                separator += self.makaf
-
-        strings = [
-            minus_str,
-            money_str,
-            self.pluralize(left, cr1, currency=currency,
-                           prefer_singular=prefer_singular),
-            separator,
-            cents_str,
-            self.pluralize(right, cr2, currency=currency,
-                           prefer_singular=prefer_singular_cents)
-        ]
-        if left == 1:
-            strings[1], strings[2] = strings[2], strings[1]
-        if right == 1:
-            strings[4], strings[5] = strings[5], strings[4]
-        # In Hebrew the separator is along with the following word
-        return u'%s%s %s%s%s %s' % tuple(strings)
+        # For floats, call parent implementation
+        return super().to_currency(val, currency=currency, cents=cents,
+                                   separator=separator, adjective=adjective)

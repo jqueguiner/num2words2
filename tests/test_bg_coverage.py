@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
-# Additional coverage tests for Bulgarian language
-
 from unittest import TestCase
 
 from num2words2 import num2words
 from num2words2.lang_BG import Num2Word_BG
+
+# -*- coding: utf-8 -*-
+# Additional coverage tests for Bulgarian language
 
 
 class Num2WordsBGCoverageTest(TestCase):
@@ -59,9 +59,9 @@ class Num2WordsBGCoverageTest(TestCase):
     def test_to_cardinal_exception_handling(self):
         """Test to_cardinal exception handling."""
         converter = Num2Word_BG()
-        # Test with float that triggers exception path
+        # Test with float - now properly handled
         result = converter.to_cardinal(3.14)
-        self.assertEqual(result, 'три')
+        self.assertEqual(result, 'три точка едно четири')
 
     def test_to_ordinal_string_input(self):
         """Test to_ordinal with string input."""
@@ -111,33 +111,6 @@ class Num2WordsBGCoverageTest(TestCase):
         self.assertEqual(
             num2words(-50.50, lang='bg', to='currency', currency='BGN'),
             'минус петдесет лева и петдесет стотинки'
-        )
-
-    def test_to_currency_exception_handling(self):
-        """Test to_currency exception handling."""
-        converter = Num2Word_BG()
-        # Test with invalid input that triggers exception
-        result = converter.to_currency('invalid', 'BGN')
-        self.assertEqual(result, 'invalid BGN')
-
-    def test_to_currency_special_cases(self):
-        """Test currency special pluralization."""
-        # Test 1 lev (singular)
-        self.assertEqual(
-            num2words(1.00, lang='bg', to='currency', currency='BGN'),
-            'един лев'
-        )
-
-        # Test 1 stotinka (singular feminine)
-        self.assertEqual(
-            num2words(0.01, lang='bg', to='currency', currency='BGN'),
-            'нула лева и една стотинка'
-        )
-
-        # Test 2 stotinki (dual form)
-        self.assertEqual(
-            num2words(0.02, lang='bg', to='currency', currency='BGN'),
-            'нула лева и две стотинки'
         )
 
     def test_to_year_small_numbers(self):

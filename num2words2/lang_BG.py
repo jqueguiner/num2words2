@@ -35,6 +35,9 @@ class Num2Word_BG(Num2Word_Base):
         'GBP': (
             ('паунд', 'паунда'), ('пени', 'пенса')
         ),
+        'JPY': (
+            ('йена', 'йени'), ('сен', 'сена')
+        ),
     }
 
     def __init__(self):
@@ -245,12 +248,41 @@ class Num2Word_BG(Num2Word_Base):
     def to_cardinal(self, n):
         try:
             if isinstance(n, str):
-                n = int(n)
+                n = float(n)
 
+            # Handle floats with decimal places
+            if isinstance(n, float) and n != int(n):
+                pre, post = self.float2tuple(n)
+
+                # Handle negative decimals
+                if n < 0:
+                    result = self.negword
+                    pre = abs(pre)
+                else:
+                    result = ""
+
+                # Integer part
+                result += self._int_to_cardinal(pre)
+
+                # Decimal part
+                if self.precision > 0:
+                    result += " " + self.pointword
+
+                    # Convert post to string with proper padding
+                    post_str = str(post)
+                    post_str = '0' * (self.precision - len(post_str)) + post_str
+
+                    # Say each digit individually
+                    for digit in post_str:
+                        result += " " + self.ones[int(digit)]
+
+                return result.strip()
+
+            # For integers
             if n < 0:
                 return self.negword + self.to_cardinal(-n)
 
-            return self._int_to_cardinal(n)
+            return self._int_to_cardinal(int(n))
         except BaseException:
             return self._int_to_cardinal(int(n))
 
@@ -282,67 +314,64 @@ class Num2Word_BG(Num2Word_Base):
         except BaseException:
             return str(n) + '-ти'
 
-    def to_currency(self, n, currency='BGN'):
+    def to_currency(self, val, currency='BGN', cents=True, separator=' и',
+                    adjective=False):
+        """Convert a number to currency words."""
+        # Track if input was originally an integer
+        is_integer_input = isinstance(val, int)
+
+        # Check if value has fractional cents
+        if not is_integer_input:
+            from decimal import Decimal
+            decimal_val = Decimal(str(val))
+            has_fractional_cents = (decimal_val * 100) % 1 != 0
+        else:
+            has_fractional_cents = False
+
+        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
+                                                        keep_precision=has_fractional_cents)
+
         try:
-            left, right, is_negative = parse_currency_parts(n)
+            cr1, cr2 = self.CURRENCY_FORMS[currency]
+        except KeyError:
+            raise NotImplementedError(
+                'Currency "%s" not implemented for "%s"' % (
+                    currency, self.__class__.__name__))
 
-            if currency not in self.CURRENCY_FORMS:
-                raise NotImplementedError(
-                    'Currency code "%s" not implemented for "%s"' %
-                    (currency, self.__class__.__name__))
+        minus_str = "минус " if is_negative else ""
+        money_str = self._int_to_cardinal(left)
 
-            cr_major, cr_minor = self.CURRENCY_FORMS[currency]
+        # Determine currency form based on the number
+        if left == 1:
+            currency_str = cr1[0]  # singular
+        else:
+            currency_str = cr1[1]  # plural
 
-            result = []
+        # For integers, don't show cents
+        if is_integer_input:
+            return "%s%s %s" % (minus_str, money_str, currency_str)
 
-            if is_negative:
-                result.append(self.negword.strip())
-
-            # Handle major currency with appropriate gender
-            if currency == 'EUR':
-                # EUR uses neuter forms (default ones)
-                if left == 1:
-                    left_words = 'едно'
-                elif left == 2:
-                    left_words = 'две'
-                else:
-                    left_words = self._int_to_word(
-                        left, masculine=False, feminine=False)
+        # For floats, always show cents (even if zero)
+        if cents:
+            # Handle fractional cents
+            from decimal import Decimal
+            if isinstance(right, Decimal):
+                # Convert fractional cents (e.g., 65.3 cents)
+                cents_str = self.to_cardinal(float(right)) if right > 0 else self.ones[0]
             else:
-                # BGN, USD, GBP use masculine forms
-                left_words = self._int_to_word(
-                    left, masculine=True, feminine=False)
-            result.append(left_words)
+                cents_str = self._int_to_cardinal(right) if right > 0 else self.ones[0]
+        else:
+            cents_str = str(float(right) if isinstance(right, Decimal) else right)
 
-            # Plural form for major currency
-            if left == 1:
-                result.append(cr_major[0])
-            else:
-                result.append(cr_major[1])
+        # Determine cents form
+        if right == 1:
+            cents_currency = cr2[0]  # singular
+        else:
+            cents_currency = cr2[1]  # plural
 
-            # Handle cents if non-zero
-            if right > 0:
-                result.append('и')
-                # Use feminine form for стотинка (feminine noun)
-                if right == 1:
-                    result.append('една')
-                elif right == 2:
-                    result.append('две')
-                else:
-                    right_words = self._int_to_cardinal(right)
-                    result.append(right_words)
-
-                # Plural form for minor currency
-                if right == 1:
-                    result.append(cr_minor[0])
-                else:
-                    result.append(cr_minor[1])
-
-            return ' '.join(result)
-        except NotImplementedError:
-            raise
-        except BaseException:
-            return str(n) + ' ' + currency
+        return "%s%s %s%s %s %s" % (
+            minus_str, money_str, currency_str,
+            separator, cents_str, cents_currency)
 
     def to_year(self, n):
         if n < 1000:

@@ -17,10 +17,10 @@
 
 from __future__ import print_function, unicode_literals
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 
-class Num2Word_AF(Num2Word_EU):
+class Num2Word_AF(Num2Word_EUR):
     CURRENCY_FORMS = {
         'ZAR': (('rand', 'rand'), ('sent', 'sent')),
         'EUR': (('euro', 'euro'), ('sent', 'sent')),

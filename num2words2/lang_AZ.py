@@ -88,7 +88,11 @@ class Num2Word_AZ(Num2Word_Base):
 
     CURRENCY_INTEGRAL = ('manat', 'manat')
     CURRENCY_FRACTION = ('qəpik', 'qəpik')
-    CURRENCY_FORMS = {'AZN': (CURRENCY_INTEGRAL, CURRENCY_FRACTION)}
+    CURRENCY_FORMS = {
+        'AZN': (CURRENCY_INTEGRAL, CURRENCY_FRACTION),
+        'EUR': (('avro', 'avro'), ('sent', 'sent')),
+        'USD': (('dollar', 'dollar'), ('sent', 'sent')),
+    }
 
     def setup(self):
         super().setup()

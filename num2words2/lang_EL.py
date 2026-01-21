@@ -17,10 +17,10 @@
 
 from __future__ import print_function, unicode_literals
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 
-class Num2Word_EL(Num2Word_EU):
+class Num2Word_EL(Num2Word_EUR):
     CURRENCY_FORMS = {
         'EUR': (('ευρώ', 'ευρώ'), ('λεπτό', 'λεπτά')),
         'USD': (('δολάριο', 'δολάρια'), ('σεντ', 'σεντς')),
@@ -28,7 +28,7 @@ class Num2Word_EL(Num2Word_EU):
     }
 
     def setup(self):
-        Num2Word_EU.setup(self)
+        Num2Word_EUR.setup(self)
 
         self.negword = "μείον "
         self.pointword = "κόμμα"
@@ -273,13 +273,20 @@ class Num2Word_EL(Num2Word_EU):
 
     def to_currency(self, val, currency='EUR', cents=True, separator=' και',
                     adjective=False):
+        from decimal import Decimal
+
         from .currency import parse_currency_parts, prefix_currency
+
+        # Check if value has fractional cents
+        decimal_val = Decimal(str(val))
+        has_fractional_cents = (decimal_val * 100) % 1 != 0
 
         # Fix the currency parsing issue - integers should be treated as whole units
         if isinstance(val, int):
             left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False)
         else:
-            left, right, is_negative = parse_currency_parts(val)
+            left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
+                                                            keep_precision=has_fractional_cents)
 
         try:
             cr1, cr2 = self.CURRENCY_FORMS[currency]
@@ -301,8 +308,13 @@ class Num2Word_EL(Num2Word_EU):
         # 1. Input has decimal point OR
         # 2. Cents are non-zero
         if has_decimal or right > 0:
-            cents_str = self._cents_verbose(right, currency) \
-                if cents else self._cents_terse(right, currency)
+            # Handle fractional cents
+            if isinstance(right, Decimal) and has_fractional_cents:
+                # Convert fractional cents (e.g., 65.3 cents)
+                cents_str = self.to_cardinal_float(float(right)) if cents else str(float(right))
+            else:
+                cents_str = self._cents_verbose(int(right) if isinstance(right, Decimal) else right, currency) \
+                    if cents else self._cents_terse(int(right) if isinstance(right, Decimal) else right, currency)
 
             return u'%s%s %s%s %s %s' % (
                 minus_str,

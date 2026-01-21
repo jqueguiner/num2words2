@@ -210,10 +210,20 @@ class Num2Word_HA(Num2Word_Base):
         is_negative = value < 0
         value = abs(value)
 
+        # Check if value has fractional cents
+        from decimal import Decimal
+        decimal_val = Decimal(str(value))
+        has_fractional_cents = (decimal_val * 100) % 1 != 0
+
         if cents:
-            # Convert to cents for processing
-            cents_value = int(round(value * 100))
-            major_units, minor_units = divmod(cents_value, 100)
+            if has_fractional_cents:
+                # Keep precision for fractional cents
+                major_units = int(decimal_val)
+                minor_units = decimal_val * 100 - (major_units * 100)
+            else:
+                # Convert to cents for processing
+                cents_value = int(round(value * 100))
+                major_units, minor_units = divmod(cents_value, 100)
         else:
             major_units = int(value)
             minor_units = 0
@@ -231,11 +241,18 @@ class Num2Word_HA(Num2Word_Base):
         # Minor currency unit
         if minor_units > 0:
             minor_name = currency_forms[1][0]  # Use singular form
-            if major_units > 0:
-                result.append("da " + minor_name + " " + self.to_cardinal(minor_units))
-
+            # Handle fractional minor units
+            from decimal import Decimal
+            if isinstance(minor_units, Decimal):
+                # Convert fractional cents (e.g., 65.3 kobo)
+                minor_words = self.to_cardinal(float(minor_units))
             else:
-                result.append(minor_name + " " + self.to_cardinal(minor_units))
+                minor_words = self.to_cardinal(minor_units)
+
+            if major_units > 0:
+                result.append("da " + minor_name + " " + minor_words)
+            else:
+                result.append(minor_name + " " + minor_words)
 
         if not result:
             # Handle zero case

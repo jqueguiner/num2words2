@@ -36,8 +36,7 @@ CLASSIFIERS = [
     'Topic :: Text Processing :: Linguistic',
 ]
 
-LONG_DESC = open('README.rst', 'rt', encoding="utf-8").read() + '\n\n' + \
-    open('CHANGES.rst', 'rt', encoding="utf-8").read()
+LONG_DESC = open('README.rst', 'rt', encoding="utf-8").read()
 
 
 setup(

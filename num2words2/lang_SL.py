@@ -18,18 +18,33 @@
 
 from __future__ import unicode_literals
 
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 
-class Num2Word_SL(Num2Word_EU):
+class Num2Word_SL(Num2Word_EUR):
     GIGA_SUFFIX = "ilijard"
     MEGA_SUFFIX = "ilijon"
+
+    CURRENCY_FORMS = {
+        'EUR': (('evro', 'evra', 'evre', 'evrov'), ('cent', 'centa', 'cente', 'centov'), ''),
+        'USD': (('dolar', 'dolarja', 'dolarje', 'dolarjev'), ('cent', 'centa', 'cente', 'centov'), ''),
+    }
+
+    def pluralize(self, n, forms):
+        if n % 100 == 1:
+            return forms[0]
+        elif n % 100 == 2:
+            return forms[1]
+        elif n % 100 in [3, 4]:
+            return forms[2]
+        else:
+            return forms[3]
 
     def setup(self):
         super(Num2Word_SL, self).setup()
 
         self.negword = "minus "
-        self.pointword = "celih"
+        self.pointword = "vejica"
         self.errmsg_nonnum = "Only numbers may be converted to words."
         self.errmsg_toobig = (
             "Number is too large to convert to words (abs(%s) > %s)."
@@ -141,7 +156,69 @@ class Num2Word_SL(Num2Word_EU):
         word = ctext + ntext
         return (word, val)
 
+    def to_cardinal_float(self, value):
+        from .compat import to_s
+        pre, post = self.float2tuple(float(value))
+
+        post_str = to_s(post)
+        post_str = '0' * (self.precision - len(post_str)) + post_str
+
+        out = [self.to_cardinal(pre)]
+        if value < 0 and pre == 0:
+            out = [self.negword.strip()] + out
+
+        if self.precision:
+            out.append(self.title(self.pointword))
+            out.append(self.to_cardinal(int(post_str)))
+
+        return " ".join(out)
+
     def to_ordinal(self, value):
+        """Convert to Slovenian ordinal numbers."""
+        self.verify_ordinal(value)  # This will raise TypeError for floats
+
+        try:
+            num = int(value)
+        except (ValueError, TypeError):
+            return str(value)
+
+        # Simple ordinals mapping for common numbers
+        ordinals = {
+            1: 'prvi',
+            2: 'drugi',
+            3: 'tretji',
+            4: 'četrti',
+            5: 'peti',
+            6: 'šesti',
+            7: 'sedmi',
+            8: 'osmi',
+            9: 'deveti',
+            10: 'deseti',
+            11: 'enajsti',
+            12: 'dvanajsti',
+            13: 'trinajsti',
+            14: 'štirinajsti',
+            15: 'petnajsti',
+            16: 'šestnajsti',
+            17: 'sedemnajsti',
+            18: 'osemnajsti',
+            19: 'devetnajsti',
+            20: 'dvajseti',
+            30: 'trideseti',
+            40: 'štirideseti',
+            50: 'petdeseti',
+            60: 'šestdeseti',
+            70: 'sedemdeseti',
+            80: 'osemdeseti',
+            90: 'devetdeseti',
+            100: 'stoti',
+            1000: 'tisoči',
+        }
+
+        if num in ordinals:
+            return ordinals[num]
+
+        # For complex ordinals, use the flag method
         self.verify_ordinal(value)
         self.ordflag = True
         outword = self.to_cardinal(value)
@@ -157,15 +234,73 @@ class Num2Word_SL(Num2Word_EU):
         self.verify_ordinal(value)
         return str(value) + "."
 
-    def to_currency(self, val, longval=True, old=False):
-        if old:
-            return self.to_splitnum(val, hightxt="evro/a/v",
-                                    lowtxt="stotin/a/i/ov",
-                                    jointxt="in", longval=longval)
-        return super(Num2Word_SL, self).to_currency(val, jointxt="in",
-                                                    longval=longval)
+    def to_currency(self, val, currency='EUR', cents=True, separator=' in',
+                    adjective=False):
+        # Track if input was originally an integer
+        is_integer_input = isinstance(val, int)
+
+        # Handle parsing currency parts manually to avoid `is_int_with_cents` issue
+        if is_integer_input:
+            left = abs(val)
+            right = 0
+            is_negative = val < 0
+        else:
+            from decimal import Decimal
+
+            from .currency import parse_currency_parts
+
+            # Check if value has fractional cents
+            decimal_val = Decimal(str(val))
+            has_fractional_cents = (decimal_val * 100) % 1 != 0
+
+            left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
+                                                            keep_precision=has_fractional_cents)
+
+        try:
+            cr1_forms, cr2_forms, cur_separator = self.CURRENCY_FORMS[currency]
+        except KeyError:
+            raise NotImplementedError(
+                'Currency code "%s" not implemented for "%s"' %
+                (currency, self.__class__.__name__))
+
+        minus_str = "%s " % self.negword.strip() if is_negative else ""
+        money_str = self.to_cardinal(left)
+
+        # For integers, never show cents
+        # For floats, always show cents (even if zero)
+        if not is_integer_input:
+            # Always show cents for floats
+            # Handle fractional cents
+            from decimal import Decimal
+            if isinstance(right, Decimal):
+                # Convert fractional cents (e.g., 65.3 cents)
+                cents_str = self.to_cardinal_float(float(right)) if right > 0 else 'nič'
+            else:
+                cents_str = self.to_cardinal(right) if right > 0 else 'nič'
+            if cur_separator:  # Only add separator if it's not empty
+                return u'%s%s %s%s %s %s' % (
+                    minus_str,
+                    money_str,
+                    self.pluralize(left, cr1_forms),
+                    cur_separator,
+                    cents_str,
+                    self.pluralize(right, cr2_forms)
+                )
+            else:
+                return u'%s%s %s %s %s' % (  # No separator
+                    minus_str,
+                    money_str,
+                    self.pluralize(left, cr1_forms),
+                    cents_str,
+                    self.pluralize(right, cr2_forms)
+                )
+        else:
+            # Integer: no cents
+            return u'%s%s %s' % (
+                minus_str,
+                money_str,
+                self.pluralize(left, cr1_forms)
+            )
 
     def to_year(self, val, longval=True):
-        if not (val // 100) % 10:
-            return self.to_cardinal(val)
-        return self.to_splitnum(val, hightxt="hundert", longval=longval)
+        return self.to_cardinal(val)

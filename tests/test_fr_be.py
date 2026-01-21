@@ -55,23 +55,23 @@ TEST_CASES_ORDINAL = (
 )
 
 TEST_CASES_TO_CURRENCY_EUR = (
-    (1.00, 'un euro et zéro centimes'),
+    (1, 'un euro'),
     (2.01, 'deux euros et un centime'),
     (8.10, 'huit euros et dix centimes'),
     (12.26, 'douze euros et vingt-six centimes'),
     (21.29, 'vingt et un euros et vingt-neuf centimes'),
     (81.25, 'quatre-vingt et un euros et vingt-cinq centimes'),
-    (100.00, 'cent euros et zéro centimes'),
+    (100, 'cent euros'),
 )
 
 TEST_CASES_TO_CURRENCY_FRF = (
-    (1.00, 'un franc et zéro centimes'),
+    (1, 'un franc'),
     (2.01, 'deux francs et un centime'),
     (8.10, 'huit francs et dix centimes'),
     (12.27, 'douze francs et vingt-sept centimes'),
     (21.29, 'vingt et un francs et vingt-neuf centimes'),
     (81.25, 'quatre-vingt et un francs et vingt-cinq centimes'),
-    (100.00, 'cent francs et zéro centimes'),
+    (100, 'cent francs'),
 )
 
 # Lang to execute current test

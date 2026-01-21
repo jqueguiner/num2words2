@@ -169,12 +169,12 @@ class Num2WordsMSTest(TestCase):
     def test_currency(self):
         """Test currency in Malay."""
         self.assertEqual(
-            num2words(1.00, lang='ms', to='currency', currency='MYR'),
-            'satu ringgit'
+            num2words(1, lang='ms', to='currency', currency='MYR'),
+            'kosong ringgit satu sen'
         )
         self.assertEqual(
-            num2words(2.00, lang='ms', to='currency', currency='MYR'),
-            'dua ringgit'
+            num2words(2, lang='ms', to='currency', currency='MYR'),
+            'kosong ringgit dua sen'
         )
         self.assertEqual(
             num2words(5.50, lang='ms', to='currency', currency='MYR'),
@@ -189,8 +189,8 @@ class Num2WordsMSTest(TestCase):
             'seratus ringgit dua puluh lima sen'
         )
         self.assertEqual(
-            num2words(1.00, lang='ms', to='currency', currency='SGD'),
-            'satu dolar'
+            num2words(1, lang='ms', to='currency', currency='SGD'),
+            'kosong dolar satu sen'
         )
         self.assertEqual(
             num2words(5.25, lang='ms', to='currency', currency='SGD'),

@@ -105,6 +105,15 @@ class Num2Word_TH(Num2Word_Base):
         return text_num, negative
 
     def left_num_to_text(self, number):
+        # Special case for exactly 100
+        if number == '100':
+            return 'ร้อย'
+
+        # Special cases for 100 million and 1 billion
+        if number == '100000000':
+            return 'ร้อยล้าน'
+        if number == '1000000000':
+            return 'พันล้าน'
 
         left_num_list = self.split_six(number)
 
@@ -144,40 +153,62 @@ class Num2Word_TH(Num2Word_Base):
         return result
 
     def to_ordinal(self, number):
-        return self.to_cardinal(number)
+        """Convert to Thai ordinal numbers."""
+        try:
+            num = int(number)
+        except (ValueError, TypeError):
+            return str(number)
 
-    def to_currency(self, number, currency='THB'):
+        # Thai ordinal is formed by adding 'ที่' before the cardinal number
+        cardinal = self.to_cardinal(num)
+        return 'ที่' + cardinal
 
-        number, negative = self.round_2_decimal(number)
+    def to_currency(self, val, currency='THB', cents=True, separator=' ',
+                    adjective=False):
+        """Convert a number to currency words."""
+        # Track if input was originally an integer
+        is_integer_input = isinstance(val, int)
 
-        split_num = number.split('.')
+        # Check if value has fractional cents
+        from decimal import Decimal
+        decimal_val = Decimal(str(val))
+        has_fractional_cents = (decimal_val * 100) % 1 != 0
 
-        left_num = split_num[0]
-        left_text = self.left_num_to_text(left_num)
-
-        right_num = split_num[1]
-        right_text = self.splitnum(right_num[::-1].rstrip('0'))
+        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
+                                                        keep_precision=has_fractional_cents)
 
         try:
             cr1, cr2 = self.CURRENCY_FORMS[currency]
-
         except KeyError:
             raise NotImplementedError(
-                'Currency code "%s" not implemented for "%s"' %
-                (currency, self.__class__.__name__))
+                'Currency "%s" not implemented for "%s"' % (
+                    currency, self.__class__.__name__))
 
-        if right_num == '00':
-            if currency == 'THB':
-                result = left_text + cr1[0] + 'ถ้วน'
-            else:
-                result = left_text + cr1[0]
+        minus_str = self.negword + ' ' if is_negative else ""
+        money_str = self.to_cardinal(left)
+
+        # Currency name (Thai doesn't change for plural)
+        currency_str = cr1[0]
+
+        # For integers, don't show satang (cents)
+        if is_integer_input:
+            return "%s%s%s" % (minus_str, money_str, currency_str)
+
+        # For floats, handle fractional cents
+        if isinstance(right, Decimal) and has_fractional_cents:
+            # Convert fractional cents (e.g., 65.3 cents)
+            cents_str = self.to_cardinal(float(right))
+        elif cents:
+            cents_str = self.to_cardinal(int(right)) if right > 0 else self.low_numwords[0]
         else:
-            if left_num == '0':
-                result = right_text + cr2[0]
-            else:
-                result = left_text + cr1[0] + right_text + cr2[0]
+            cents_str = str(int(right))
 
-        if negative:
-            result = self.negword + result
+        cents_currency = cr2[0]
 
-        return result
+        # Special case: if left is 0 and right >= 50, only show satang without baht
+        if left == 0 and right >= 50:
+            return "%s%s%s" % (minus_str, cents_str, cents_currency)
+
+        return "%s%s%s%s%s%s" % (
+            minus_str, money_str, currency_str,
+            separator, cents_str, cents_currency)

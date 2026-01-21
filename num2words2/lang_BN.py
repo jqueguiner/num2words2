@@ -123,7 +123,8 @@ class Num2Word_BN:
 
         return words.strip()
 
-    def to_currency(self, val):
+    def to_currency(self, val, currency='BDT', cents=True, separator=',',
+                    adjective=False):
         """
         This function represent a number to word in bangla taka and paisa.
         example:
@@ -132,14 +133,38 @@ class Num2Word_BN:
         9999.15 = নয় হাজার নয়শত নিরানব্বই টাকা পনের পয়সা
         and so on.
         """
+        # Check for too large numbers first
+        if abs(val) >= MAX_NUMBER:
+            raise NumberTooLargeError(
+                f"Number is too large. Max: {MAX_NUMBER}"
+            )
 
+        # Check if value has fractional cents
+        decimal_val = Decimal(str(val))
+        has_fractional_cents = (decimal_val * 100) % 1 != 0
+
+        # Handle integers specially - just add currency name without paisa
+        if isinstance(val, int):
+            number = self.str_to_number(val)
+            self._is_smaller_than_max_number(number)
+            return f'{self._number_to_bengali_word(int(number))} টাকা'.strip()
+
+        # For floats, include paisa
         dosomik_word = None
         number = self.str_to_number(val)
         number, decimal_part = self.parse_paisa(number)
         self._is_smaller_than_max_number(number)
 
-        if decimal_part > 0:
-            dosomik_word = f' {self._number_to_bengali_word(decimal_part)} পয়সা'  # noqa: E501
+        # Always show paisa for floats, even if it's zero
+        if decimal_part == 0:
+            dosomik_word = ' শূন্য পয়সা'  # "zero paisa" in Bengali
+        elif decimal_part > 0:
+            if has_fractional_cents:
+                # Handle fractional paisa using to_cardinal for fractional decimal values
+                fractional_paisa = float(decimal_part)
+                dosomik_word = f' {self.to_cardinal(fractional_paisa)} পয়সা'
+            else:
+                dosomik_word = f' {self._number_to_bengali_word(decimal_part)} পয়সা'
 
         words = f'{self._number_to_bengali_word(number)} টাকা'
 

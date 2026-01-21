@@ -1045,6 +1045,35 @@ class Num2Word_UK(Num2Word_Base):
                 last_fragment_string += ONES_ORDINALS[n1][1]
                 words.append(last_fragment_string)
 
+    def to_currency(self, val, currency='EUR', cents=True, separator=',',
+                    adjective=False):
+        # Handle integers specially - just add currency name without cents
+        if isinstance(val, int):
+            try:
+                cr1, cr2 = self.CURRENCY_FORMS[currency]
+            except (KeyError, AttributeError):
+                # Fallback to base implementation for unknown currency
+                return super(Num2Word_UK, self).to_currency(
+                    val, currency=currency, cents=cents, separator=separator,
+                    adjective=adjective)
+
+            minus_str = self.negword if val < 0 else ""
+            abs_val = abs(val)
+            money_str = self.to_cardinal(abs_val)
+
+            # Proper pluralization for currency
+            if abs_val == 1:
+                currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
+            else:
+                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+
+            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+
+        # For floats, use the parent class implementation
+        return super(Num2Word_UK, self).to_currency(
+            val, currency=currency, cents=cents, separator=separator,
+            adjective=adjective)
+
     def to_ordinal(self, number):
         self.verify_ordinal(number)
 

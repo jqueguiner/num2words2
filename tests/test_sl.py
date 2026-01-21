@@ -199,7 +199,7 @@ class Num2WordsSLTest(TestCase):
             "milijarda osemsto trije milijoni šeststo tri tisoč osemsto ena")
 
     def test_cardinal_for_decimal_number(self):
-        self.assertEqual(num2words(3.48, lang='sl'), "tri celih štiri osem")
+        self.assertEqual(num2words(3.48, lang='sl'), "tri vejica oseminštirideset")
 
     def test_ordinal_for_negative_numbers(self):
         self.assertRaises(TypeError, num2words, -12, ordinal=True, lang='sl')
@@ -209,6 +209,6 @@ class Num2WordsSLTest(TestCase):
 
     def test_negative_decimals(self):
         # Comprehensive test for negative decimals including -0.4
-        self.assertEqual(num2words(-0.4, lang="sl"), "minus nič celih štiri")
-        self.assertEqual(num2words(-0.5, lang="sl"), "minus nič celih pet")
-        self.assertEqual(num2words(-1.4, lang="sl"), "minus ena celih štiri")
+        self.assertEqual(num2words(-0.4, lang="sl"), "minus nič vejica štiri")
+        self.assertEqual(num2words(-0.5, lang="sl"), "minus nič vejica pet")
+        self.assertEqual(num2words(-1.4, lang="sl"), "minus ena vejica štiri")

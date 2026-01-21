@@ -60,14 +60,14 @@ TWENTIES = {
 
 HUNDREDS = {
     1: ('sto',),
-    2: ('dvěstě',),
-    3: ('třista',),
-    4: ('čtyřista',),
-    5: ('pětset',),
-    6: ('šestset',),
-    7: ('sedmset',),
-    8: ('osmset',),
-    9: ('devětset',),
+    2: ('dvě stě',),
+    3: ('tři sta',),
+    4: ('čtyři sta',),
+    5: ('pět set',),
+    6: ('šest set',),
+    7: ('sedm set',),
+    8: ('osm set',),
+    9: ('devět set',),
 }
 
 THOUSANDS = {
@@ -87,16 +87,22 @@ THOUSANDS = {
 class Num2Word_CS(Num2Word_Base):
     CURRENCY_FORMS = {
         'CZK': (
-            ('koruna', 'koruny', 'korun'), ('halíř', 'halíře', 'haléřů')
+            ('koruna', 'koruny', 'korun'),
+            ('haléř', 'haléře', 'haléřů')
         ),
         'EUR': (
-            ('euro', 'euro', 'euro'), ('cent', 'centy', 'centů')
+            ('euro', 'euro', 'euro'),  # Euro doesn't decline in Czech
+            ('centů', 'centů', 'centů')  # Cents always in genitive plural
+        ),
+        'USD': (
+            ('dolar', 'dolary', 'dolarů'),
+            ('cent', 'centy', 'centů')
         ),
     }
 
     def setup(self):
         self.negword = "mínus"
-        self.pointword = "celá"
+        self.pointword = "čárka"
 
     def to_cardinal(self, number):
         n = str(number).replace(',', '.')
@@ -104,9 +110,16 @@ class Num2Word_CS(Num2Word_Base):
             is_negative = n.startswith('-')
             abs_n = n[1:] if is_negative else n
             left, right = abs_n.split('.')
-            leading_zero_count = len(right) - len(right.lstrip('0'))
-            decimal_part = ((ZERO[0] + ' ') * leading_zero_count +
-                            self._int2word(int(right)))
+
+            # Say each decimal digit individually
+            decimal_parts = []
+            for digit in right:
+                if digit == '0':
+                    decimal_parts.append(ZERO[0])
+                else:
+                    decimal_parts.append(ONES[int(digit)][0])
+            decimal_part = ' '.join(decimal_parts)
+
             result = u'%s %s %s' % (
                 self._int2word(int(left)),
                 self.pointword,
@@ -116,7 +129,14 @@ class Num2Word_CS(Num2Word_Base):
                 result = self.negword + ' ' + result
             return result
         else:
-            return self._int2word(int(n))
+            # Handle negative integers
+            is_negative = n.startswith('-')
+            if is_negative:
+                abs_n = n[1:]
+                result = self._int2word(int(abs_n))
+                return self.negword + ' ' + result
+            else:
+                return self._int2word(int(n))
 
     def pluralize(self, n, forms):
         if n == 1:
@@ -127,8 +147,82 @@ class Num2Word_CS(Num2Word_Base):
             form = 2
         return forms[form]
 
+    def to_currency(self, val, currency='EUR', cents=True, separator=',',
+                    adjective=False):
+        # Handle integers specially - just add currency name without cents
+        if isinstance(val, int):
+            try:
+                cr1, cr2 = self.CURRENCY_FORMS[currency]
+            except (KeyError, AttributeError):
+                # Fallback to base implementation for unknown currency
+                return super(Num2Word_CS, self).to_currency(
+                    val, currency=currency, cents=cents, separator=separator,
+                    adjective=adjective)
+
+            minus_str = self.negword if val < 0 else ""
+            abs_val = abs(val)
+            money_str = self.to_cardinal(abs_val)
+
+            # Proper pluralization for currency
+            if abs_val == 1:
+                currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
+            else:
+                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+
+            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+
+        # For floats, use the parent class implementation
+        return super(Num2Word_CS, self).to_currency(
+            val, currency=currency, cents=cents, separator=separator,
+            adjective=adjective)
+
     def to_ordinal(self, number):
-        raise NotImplementedError()
+        """Convert to Czech ordinal numbers."""
+        try:
+            num = int(number)
+        except (ValueError, TypeError):
+            return str(number)
+
+        # Czech ordinals for 1-20
+        ordinals = {
+            1: 'první',
+            2: 'druhý',
+            3: 'třetí',
+            4: 'čtvrtý',
+            5: 'pátý',
+            6: 'šestý',
+            7: 'sedmý',
+            8: 'osmý',
+            9: 'devátý',
+            10: 'desátý',
+            11: 'jedenáctý',
+            12: 'dvanáctý',
+            13: 'třináctý',
+            14: 'čtrnáctý',
+            15: 'patnáctý',
+            16: 'šestnáctý',
+            17: 'sedmnáctý',
+            18: 'osmnáctý',
+            19: 'devatenáctý',
+            20: 'dvacátý',
+            30: 'třicátý',
+            40: 'čtyřicátý',
+            50: 'padesátý',
+            60: 'šedesátý',
+            70: 'sedmdesátý',
+            80: 'osmdesátý',
+            90: 'devadesátý',
+            100: 'stý',
+            1000: 'tisící',
+        }
+
+        if num in ordinals:
+            return ordinals[num]
+
+        # For other numbers, use cardinal + 'ý' suffix
+        # This is a simplified implementation
+        cardinal = self.to_cardinal(num)
+        return cardinal + 'ý'
 
     def _int2word(self, n):
         if n == 0:
@@ -154,7 +248,11 @@ class Num2Word_CS(Num2Word_Base):
             if n2 == 1:
                 words.append(TENS[n1][0])
             elif n1 > 0 and not (i > 0 and x == 1):
-                words.append(ONES[n1][0])
+                # Check if we need feminine form for 2 with miliarda/biliarda
+                if n1 == 2 and i in [3, 5, 7]:  # miliarda, biliarda, triliarda
+                    words.append('dvě')
+                else:
+                    words.append(ONES[n1][0])
 
             if i > 0:
                 words.append(self.pluralize(x, THOUSANDS[i]))

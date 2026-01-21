@@ -22,9 +22,17 @@ from . import lang_EN
 
 class Num2Word_EN_NG(lang_EN.Num2Word_EN):
 
-    CURRENCY_FORMS = {'NGN': (('naira', 'naira'), ('kobo', 'kobo'))}
+    CURRENCY_FORMS = {
+        'NGN': (('naira', 'naira'), ('kobo', 'kobo')),
+        'EUR': (('euro', 'euros'), ('cent', 'cents')),
+        'USD': (('dollar', 'dollars'), ('cent', 'cents')),
+    }
 
-    CURRENCY_ADJECTIVES = {'NGN': 'Nigerian'}
+    CURRENCY_ADJECTIVES = {
+        'NGN': 'Nigerian',
+        'EUR': 'European',
+        'USD': 'US',
+    }
 
     def to_currency(
         self, val, currency='NGN',

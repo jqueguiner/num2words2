@@ -165,11 +165,11 @@ class Num2WordsTATest(TestCase):
     def test_currency(self):
         """Test currency in Tamil."""
         self.assertEqual(
-            num2words(1.00, lang='ta', to='currency', currency='INR'),
+            num2words(1, lang='ta', to='currency', currency='INR'),
             'ஒன்று ரூபாய்'
         )
         self.assertEqual(
-            num2words(2.00, lang='ta', to='currency', currency='INR'),
+            num2words(2, lang='ta', to='currency', currency='INR'),
             'இரண்டு ரூபாய்'
         )
         self.assertEqual(
@@ -185,7 +185,7 @@ class Num2WordsTATest(TestCase):
             'நூறு ரூபாய் இருபது ஐந்து பைசா'
         )
         self.assertEqual(
-            num2words(1.00, lang='ta', to='currency', currency='USD'),
+            num2words(1, lang='ta', to='currency', currency='USD'),
             'ஒன்று டாலர்'
         )
         self.assertEqual(

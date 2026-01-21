@@ -17,13 +17,17 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from . import lang_EU
+from . import lang_EUR
 
 
-class Num2Word_NO(lang_EU.Num2Word_EU):
-    GIGA_SUFFIX = "illard"
+class Num2Word_NO(lang_EUR.Num2Word_EUR):
+    GIGA_SUFFIX = "illiard"
     MEGA_SUFFIX = "illion"
-    CURRENCY_FORMS = {'NOK': (('krone', 'kroner'), ('øre', 'øre'))}
+    CURRENCY_FORMS = {
+        'NOK': (('krone', 'kroner'), ('øre', 'øre')),
+        'EUR': (('euro', 'euro'), ('cent', 'cent')),
+        'USD': (('dollar', 'dollar'), ('cent', 'cent')),
+    }
 
     def set_high_numwords(self, high):
         cap = 3 + 6 * len(high)
@@ -85,6 +89,23 @@ class Num2Word_NO(lang_EU.Num2Word_EU):
         elif lnum >= 100 > rnum:
             return ("%s og %s" % (ltext, rtext), lnum + rnum)
         elif rnum > lnum:
+            # Special case for Norwegian: use "ett" before "tusen" but not "en" before "hundre"
+            if lnum == 1 and rnum == 1000:
+                return ("ett %s" % rtext, lnum * rnum)
+            elif lnum == 100 and rnum == 1000:
+                # 100000 should be "hundre tusen" not "en hundre tusen"
+                return ("hundre tusen", 100000)
+            # Handle Norwegian plural forms for million and milliard
+            if rnum == 10**6:
+                if lnum == 1:
+                    return ("en million", lnum * rnum)
+                else:
+                    return ("%s millioner" % ltext, lnum * rnum)
+            elif rnum == 10**9:
+                if lnum == 1:
+                    return ("en milliard", lnum * rnum)
+                else:
+                    return ("%s milliarder" % ltext, lnum * rnum)
             return ("%s %s" % (ltext, rtext), lnum * rnum)
         return ("%s %s" % (ltext, rtext), lnum + rnum)
 

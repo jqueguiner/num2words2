@@ -54,20 +54,18 @@ class Num2WordsSVTest(TestCase):
                          "ett komma fem")
 
     def test_not_implemented_options(self):
-        with self.assertRaises(NotImplementedError) as context:
-            num2words(1235, to="year", lang="sv")
-        self.assertTrue("'year' is not implemented for swedish language"
-                        in str(context.exception))
+        # to_year is now implemented for Swedish
+        self.assertEqual(num2words(1235, to="year", lang="sv"), "tolvhundratrettiofem")
+        self.assertEqual(num2words(2023, to="year", lang="sv"), "tvåtusentjugotre")
 
-        with self.assertRaises(NotImplementedError) as context:
-            num2words(1235, to="currency", lang="sv")
-        self.assertTrue("'currency' is not implemented for swedish language"
-                        in str(context.exception))
+        # Currency is now implemented (defaults to EUR)
+        self.assertEqual(num2words(1235, to="currency", lang="sv"),
+                         "etttusen tvåhundratrettiofem euros")
 
-        with self.assertRaises(NotImplementedError) as context:
-            num2words(1235, to="ordinal_num", lang="sv")
-        self.assertTrue("'ordinal_num' is not implemented for swedish language"
-                        in str(context.exception))
+        # ordinal_num is now implemented for Swedish
+        self.assertEqual(num2words(1, to="ordinal_num", lang="sv"), "1:a")
+        self.assertEqual(num2words(2, to="ordinal_num", lang="sv"), "2:a")
+        self.assertEqual(num2words(1235, to="ordinal_num", lang="sv"), "1235:e")
 
     def test_negative_decimals(self):
         # Comprehensive test for negative decimals including -0.4

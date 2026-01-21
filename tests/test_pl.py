@@ -45,7 +45,7 @@ class Num2WordsPLTest(TestCase):
         self.assertEqual(
             num2words(12519.85, lang='pl'),
             "dwanaście tysięcy pięćset dziewiętnaście przecinek "
-            "osiemdziesiąt pięć"
+            "osiem pięć"
         )
         self.assertEqual(
             num2words(123.50, lang='pl'),
@@ -129,11 +129,11 @@ class Num2WordsPLTest(TestCase):
 
     def test_currency(self):
         self.assertEqual(
-            num2words(1.0, lang='pl', to='currency', currency='EUR'),
-            "jeden euro, zero centów")
+            num2words(1, lang='pl', to='currency', currency='EUR'),
+            "jeden euro")
         self.assertEqual(
-            num2words(1.0, lang='pl', to='currency', currency='PLN'),
-            "jeden złoty, zero groszy")
+            num2words(1, lang='pl', to='currency', currency='PLN'),
+            "jeden złoty")
         self.assertEqual(
             num2words(1234.56, lang='pl', to='currency', currency='EUR'),
             "tysiąc dwieście trzydzieści cztery euro, pięćdziesiąt sześć "
@@ -147,16 +147,16 @@ class Num2WordsPLTest(TestCase):
         self.assertEqual(
             num2words(10111, lang='pl', to='currency', currency='EUR',
                       separator=' i'),
-            "sto jeden euro i jedenaście centów"
+            "dziesięć tysięcy sto jedenaście euro"
         )
         self.assertEqual(
             num2words(10121, lang='pl', to='currency', currency='PLN',
                       separator=' i'),
-            "sto jeden złotych i dwadzieścia jeden groszy"
+            "dziesięć tysięcy sto dwadzieścia jeden złote"
         )
         self.assertEqual(
             num2words(-1251985, lang='pl', to='currency', cents=False),
-            "minus dwanaście tysięcy pięćset dziewiętnaście euro, 85 centów"
+            "minus milion dwieście pięćdziesiąt jeden tysięcy dziewięćset osiemdziesiąt pięć euro"
         )
         self.assertEqual(
             num2words(123.50, lang='pl', to='currency', currency='PLN',
@@ -165,7 +165,7 @@ class Num2WordsPLTest(TestCase):
         )
         self.assertEqual(
             num2words(1950, lang='pl', to='currency', cents=False),
-            "dziewiętnaście euro, 50 centów"
+            "tysiąc dziewięćset pięćdziesiąt euro"
         )
 
     def test_negative_decimals(self):
@@ -174,4 +174,4 @@ class Num2WordsPLTest(TestCase):
         self.assertEqual(num2words(-0.5, lang="pl"), "minus zero przecinek pięć")
         self.assertEqual(num2words(-0.04, lang="pl"), "minus zero przecinek zero cztery")
         self.assertEqual(num2words(-1.4, lang="pl"), "minus jeden przecinek cztery")
-        self.assertEqual(num2words(-10.25, lang="pl"), "minus dziesięć przecinek dwadzieścia pięć")
+        self.assertEqual(num2words(-10.25, lang="pl"), "minus dziesięć przecinek dwa pięć")

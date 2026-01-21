@@ -17,10 +17,10 @@
 
 from __future__ import division, print_function, unicode_literals
 
-from . import lang_EU
+from . import lang_EUR
 
 
-class Num2Word_SV(lang_EU.Num2Word_EU):
+class Num2Word_SV(lang_EUR.Num2Word_EUR):
     GIGA_SUFFIX = "iljarder"
     MEGA_SUFFIX = "iljoner"
 
@@ -79,8 +79,40 @@ class Num2Word_SV(lang_EU.Num2Word_EU):
         elif rnum >= 1000000 and lnum > 1:
             return ("%s %s" % (ltext, rtext), lnum + rnum)
         elif rnum > lnum:
+            # Special case: Swedish doesn't use "ett" before "hundra" in compounds
+            if lnum == 100 and rnum == 1000:
+                return ("hundratusen", 100000)
             return ("%s%s" % (ltext, rtext), lnum * rnum)
         return ("%s %s" % (ltext, rtext), lnum + rnum)
+
+    def to_currency(self, val, currency='EUR', cents=True, separator=',',
+                    adjective=False):
+        # Handle integers specially - just add currency name without cents
+        if isinstance(val, int):
+            try:
+                cr1, cr2 = self.CURRENCY_FORMS[currency]
+            except (KeyError, AttributeError):
+                # Fallback to base implementation for unknown currency
+                return super(Num2Word_SV, self).to_currency(
+                    val, currency=currency, cents=cents, separator=separator,
+                    adjective=adjective)
+
+            minus_str = self.negword if val < 0 else ""
+            abs_val = abs(val)
+            money_str = self.to_cardinal(abs_val)
+
+            # Proper pluralization for currency
+            if abs_val == 1:
+                currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
+            else:
+                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+
+            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+
+        # For floats, use the parent class implementation
+        return super(Num2Word_SV, self).to_currency(
+            val, currency=currency, cents=cents, separator=separator,
+            adjective=adjective)
 
     def to_ordinal(self, value):
         self.verify_ordinal(value)
@@ -105,13 +137,33 @@ class Num2Word_SV(lang_EU.Num2Word_EU):
         return " ".join(outwords)
 
     def to_ordinal_num(self, value):
-        raise NotImplementedError(
-            "'ordinal_num' is not implemented for swedish language")
+        """Convert to abbreviated ordinal form in Swedish"""
+        # Swedish uses :e, :a, :de, :te etc. for ordinals
+        if value == 1 or value == 2:
+            return str(value) + ':a'
+        elif str(value).endswith(('1', '2')) and value not in (11, 12):
+            return str(value) + ':a'
+        elif str(value).endswith(('3', '4', '5', '6', '7', '8', '9', '0')):
+            return str(value) + ':e'
+        else:
+            return str(value) + ':e'
 
     def to_year(self, val, longval=True):
-        raise NotImplementedError(
-            "'year' is not implemented for swedish language")
-
-    def to_currency(self, val, longval=True):
-        raise NotImplementedError(
-            "'currency' is not implemented for swedish language")
+        """Convert number to year representation in Swedish"""
+        if val < 0:
+            # BC years
+            return self.to_cardinal(-val) + " f.Kr."
+        elif val < 1000:
+            # Years before 1000
+            return self.to_cardinal(val)
+        elif val < 2000:
+            # Years 1000-1999: typically "nittonhundra" style
+            century = val // 100
+            remainder = val % 100
+            if remainder == 0:
+                return self.to_cardinal(century) + "hundra"
+            else:
+                return self.to_cardinal(century) + "hundra" + self.to_cardinal(remainder)
+        else:
+            # Years 2000+: typically "tvåtusen" style
+            return self.to_cardinal(val)

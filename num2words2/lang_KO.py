@@ -23,9 +23,9 @@ from .currency import parse_currency_parts
 
 class Num2Word_KO(Num2Word_Base):
     CURRENCY_FORMS = {
-        'KRW': ('원', None),
+        'KRW': ('원',),  # KRW doesn't use fractional units
         'USD': ('달러', '센트'),
-        'JPY': ('엔', None)
+        'JPY': ('엔',)  # JPY doesn't use fractional units
     }
 
     def set_high_numwords(self, high):
@@ -115,34 +115,61 @@ class Num2Word_KO(Num2Word_Base):
         self.verify_ordinal(value)
         return "%s 번째" % (value)
 
+    def to_currency(self, val, currency='KRW', cents=True, separator=' ',
+                    adjective=False):
+        """Convert a number to currency words."""
+        # Track if input was originally an integer
+        is_integer_input = isinstance(val, int)
+
+        # Check if value has fractional cents
+        from decimal import Decimal
+        decimal_val = Decimal(str(val))
+        has_fractional_cents = (decimal_val * 100) % 1 != 0
+
+        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
+                                                        keep_precision=has_fractional_cents)
+
+        try:
+            curr_forms = self.CURRENCY_FORMS[currency]
+            major = curr_forms[0]
+            minor = curr_forms[1] if len(curr_forms) > 1 else None
+        except KeyError:
+            raise NotImplementedError(
+                'Currency "%s" not implemented for "%s"' % (
+                    currency, self.__class__.__name__))
+
+        minus_str = self.negword if is_negative else ""
+        money_str = self.to_cardinal(left)
+
+        # For currencies without minor units
+        if minor is None:
+            # Raise error if decimals provided for currency without minor unit
+            if not is_integer_input and right > 0:
+                raise ValueError("Currency '%s' does not support decimals" % currency)
+            return "%s%s%s" % (minus_str, money_str, major)
+
+        # For currencies with minor units
+        # For integers, don't show cents
+        if is_integer_input:
+            return "%s%s%s" % (minus_str, money_str, major)
+
+        # For floats, handle fractional cents
+        if isinstance(right, Decimal) and has_fractional_cents:
+            # Convert fractional cents (e.g., 65.3 cents)
+            cents_str = self.to_cardinal_float(float(right))
+        elif cents:
+            cents_str = self.to_cardinal(int(right)) if right > 0 else self.to_cardinal(0)
+        else:
+            cents_str = str(int(right))
+
+        return "%s%s%s%s%s%s" % (
+            minus_str, money_str, major,
+            separator, cents_str, minor)
+
     def to_year(self, val, suffix=None, longval=True):
         if val < 0:
             val = abs(val)
             suffix = '기원전' if not suffix else suffix
         valtext = self.to_cardinal(val)
-        return ("%s년" % valtext if not suffix
-                else "%s %s년" % (suffix, valtext))
-
-    def to_currency(self, val, currency="KRW", cents=False, separator="",
-                    adjective=False):
-        left, right, is_negative = parse_currency_parts(
-            val, is_int_with_cents=cents)
-
-        try:
-            cr1, cr2 = self.CURRENCY_FORMS[currency]
-            if (cents or right) and not cr2:
-                raise ValueError('Decimals not supported for "%s"' % currency)
-        except KeyError:
-            raise NotImplementedError(
-                'Currency code "%s" not implemented for "%s"' %
-                (currency, self.__class__.__name__))
-
-        minus_str = self.negword if is_negative else ""
-        return '%s%s%s%s%s' % (
-            minus_str,
-            ''.join(self.to_cardinal(left).split()),
-            cr1,
-            ' ' + self.to_cardinal(right)
-            if cr2 else '',
-            cr2 if cr2 else '',
-        )
+        return (valtext if not suffix
+                else "%s %s" % (suffix, valtext))

@@ -34,62 +34,67 @@ class Num2WordsCSTest(TestCase):
         self.assertEqual(num2words(2012, lang='cs'), "dva tisíce dvanáct")
         self.assertEqual(
             num2words(10.02, lang='cs'),
-            "deset celá nula dva"
+            "deset čárka nula dva"
         )
         self.assertEqual(
             num2words(15.007, lang='cs'),
-            "patnáct celá nula nula sedm"
+            "patnáct čárka nula nula sedm"
         )
         self.assertEqual(
             num2words(12519.85, lang='cs'),
-            "dvanáct tisíc pětset devatenáct celá osmdesát pět"
+            "dvanáct tisíc pět set devatenáct čárka osm pět"
         )
         self.assertEqual(
             num2words(123.50, lang='cs'),
-            "sto dvacet tři celá pět"
+            "sto dvacet tři čárka pět"
         )
         self.assertEqual(
             num2words(1234567890, lang='cs'),
-            "miliarda dvěstě třicet čtyři miliony pětset šedesát "
-            "sedm tisíc osmset devadesát"
+            "miliarda dvě stě třicet čtyři miliony pět set šedesát "
+            "sedm tisíc osm set devadesát"
         )
         self.assertEqual(
             num2words(215461407892039002157189883901676, lang='cs'),
-            "dvěstě patnáct quintillionů čtyřista šedesát jedna kvadriliard "
-            "čtyřista sedm kvadrilionů osmset devadesát dva triliardy třicet "
-            "devět trilionů dva biliardy sto padesát sedm bilionů sto "
-            "osmdesát devět miliard osmset osmdesát tři miliony "
-            "devětset jedna tisíc šestset sedmdesát šest"
+            "dvě stě patnáct quintillionů čtyři sta šedesát jedna kvadriliard "
+            "čtyři sta sedm kvadrilionů osm set devadesát dvě triliardy třicet "
+            "devět trilionů dvě biliardy sto padesát sedm bilionů sto "
+            "osmdesát devět miliard osm set osmdesát tři miliony "
+            "devět set jedna tisíc šest set sedmdesát šest"
         )
         self.assertEqual(
             num2words(719094234693663034822824384220291, lang='cs'),
-            "sedmset devatenáct quintillionů devadesát "
-            "čtyři kvadriliardy dvěstě třicet čtyři "
-            "kvadriliony šestset devadesát tři triliardy "
-            "šestset šedesát tři triliony třicet čtyři biliardy osmset "
-            "dvacet dva biliony osmset dvacet čtyři "
-            "miliardy třista osmdesát čtyři miliony dvěstě dvacet "
-            "tisíc dvěstě devadesát jedna"
+            "sedm set devatenáct quintillionů devadesát "
+            "čtyři kvadriliardy dvě stě třicet čtyři "
+            "kvadriliony šest set devadesát tři triliardy "
+            "šest set šedesát tři triliony třicet čtyři biliardy osm set "
+            "dvacet dva biliony osm set dvacet čtyři "
+            "miliardy tři sta osmdesát čtyři miliony dvě stě dvacet "
+            "tisíc dvě stě devadesát jedna"
         )
 
     def test_to_ordinal(self):
-        # @TODO: implement to_ordinal
-        with self.assertRaises(NotImplementedError):
-            num2words(1, lang='cs', to='ordinal')
+        # Test Czech ordinals
+        self.assertEqual(num2words(1, lang='cs', to='ordinal'), 'první')
+        self.assertEqual(num2words(2, lang='cs', to='ordinal'), 'druhý')
+        self.assertEqual(num2words(3, lang='cs', to='ordinal'), 'třetí')
+        self.assertEqual(num2words(10, lang='cs', to='ordinal'), 'desátý')
+        self.assertEqual(num2words(20, lang='cs', to='ordinal'), 'dvacátý')
+        self.assertEqual(num2words(100, lang='cs', to='ordinal'), 'stý')
+        self.assertEqual(num2words(1000, lang='cs', to='ordinal'), 'tisící')
 
     def test_currency(self):
         self.assertEqual(
-            num2words(10.0, lang='cs', to='currency', currency='EUR'),
-            "deset euro, nula centů")
+            num2words(10, lang='cs', to='currency', currency='EUR'),
+            "deset euro")
         self.assertEqual(
-            num2words(1.0, lang='cs', to='currency', currency='CZK'),
-            "jedna koruna, nula haléřů")
+            num2words(1, lang='cs', to='currency', currency='CZK'),
+            "jedna koruna")
         self.assertEqual(
             num2words(1234.56, lang='cs', to='currency', currency='EUR'),
-            "tisíc dvěstě třicet čtyři euro, padesát šest centů")
+            "tisíc dvě stě třicet čtyři euro, padesát šest centů")
         self.assertEqual(
             num2words(1234.56, lang='cs', to='currency', currency='CZK'),
-            "tisíc dvěstě třicet čtyři koruny, padesát šest haléřů")
+            "tisíc dvě stě třicet čtyři koruny, padesát šest haléřů")
         self.assertEqual(
             num2words(101.11, lang='cs', to='currency', currency='EUR',
                       separator=' a'),
@@ -101,7 +106,7 @@ class Num2WordsCSTest(TestCase):
         )
         self.assertEqual(
             num2words(-12519.85, lang='cs', to='currency', cents=False),
-            "mínus dvanáct tisíc pětset devatenáct euro, 85 centů"
+            "mínus dvanáct tisíc pět set devatenáct euro, 85 centů"
         )
         self.assertEqual(
             num2words(123.50, lang='cs', to='currency', currency='CZK',
@@ -115,6 +120,6 @@ class Num2WordsCSTest(TestCase):
 
     def test_negative_decimals(self):
         # Comprehensive test for negative decimals including -0.4
-        self.assertEqual(num2words(-0.4, lang="cs"), "mínus nula celá čtyři")
-        self.assertEqual(num2words(-0.5, lang="cs"), "mínus nula celá pět")
-        self.assertEqual(num2words(-1.4, lang="cs"), "mínus jedna celá čtyři")
+        self.assertEqual(num2words(-0.4, lang="cs"), "mínus nula čárka čtyři")
+        self.assertEqual(num2words(-0.5, lang="cs"), "mínus nula čárka pět")
+        self.assertEqual(num2words(-1.4, lang="cs"), "mínus jedna čárka čtyři")

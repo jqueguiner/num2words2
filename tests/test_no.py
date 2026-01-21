@@ -32,15 +32,15 @@ class Num2WordsNOTest(TestCase):
         self.assertEqual(num2words(45, to="cardinal", lang="no"), "førtifem")
         self.assertEqual(num2words(92, to="cardinal", lang="no"), "nittito")
         self.assertEqual(num2words(1345, to="cardinal", lang="no"),
-                         "en tusen tre hundre og førtifem")
+                         "ett tusen tre hundre og førtifem")
         self.assertEqual(num2words(4435, to="cardinal", lang="no"),
                          "fire tusen fire hundre og trettifem")
         self.assertEqual(num2words(1004435, to="cardinal", lang="no"),
                          "en million fire tusen fire hundre og trettifem")
         self.assertEqual(num2words(4335000, to="cardinal", lang="no"),
-                         "fire million tre hundre og trettifem tusen")
+                         "fire millioner tre hundre og trettifem tusen")
         self.assertEqual(num2words(14004535, to="cardinal", lang="no"),
-                         "fjorten million fire tusen fem hundre og trettifem")
+                         "fjorten millioner fire tusen fem hundre og trettifem")
         self.assertEqual(num2words(1.5, to="cardinal", lang="no"),
                          "en komma fem")
 
@@ -54,9 +54,9 @@ class Num2WordsNOTest(TestCase):
         self.assertEqual(num2words(100, to="ordinal", lang="no"),
                          "en hundrede")
         self.assertEqual(num2words(1000, to="ordinal", lang="no"),
-                         "en tusende")
+                         "ett tusende")
         self.assertEqual(num2words(1435, to="ordinal", lang="no"),
-                         "en tusen fire hundre og trettifemte")
+                         "ett tusen fire hundre og trettifemte")
         self.assertEqual(num2words(1000000, to="ordinal", lang="no"),
                          "en millionte")
 
@@ -74,12 +74,12 @@ class Num2WordsNOTest(TestCase):
                          "to tusen og femten")
 
     def test_currency(self):
-        self.assertEqual(num2words(1.00, to="currency", lang="no"), "en krone")
-        self.assertEqual(num2words(2.00, to="currency", lang="no"),
+        self.assertEqual(num2words(1, to="currency", lang="no"), "en krone")
+        self.assertEqual(num2words(2, to="currency", lang="no"),
                          "to kroner")
         self.assertEqual(num2words(2.50, to="currency", lang="no"),
                          "to kroner og femti øre")
-        self.assertEqual(num2words(135.00, to="currency", lang="no"),
+        self.assertEqual(num2words(135, to="currency", lang="no"),
                          "en hundre og trettifem kroner")
         self.assertEqual(num2words(135.59, to="currency", lang="no"),
                          "en hundre og trettifem kroner og femtini øre")

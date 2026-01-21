@@ -287,83 +287,83 @@ class Num2WordsHETest(TestCase):
     def test_to_currency(self):
         n = Num2Word_HE()
         self.assertEqual(n.to_currency(
-            20.0, currency='ILS'), u'עשרים שקלים ואפס אגורות')
+            20, currency='ILS'), u'עשרים שקליםו')
         self.assertEqual(n.to_currency(
-            100.0, currency='ILS'), u'מאה שקלים ואפס אגורות')
+            100, currency='ILS'), u'מאה שקליםו')
         self.assertEqual(n.to_currency(
-            100.50, currency='ILS'), u'מאה שקלים וחמישים אגורות')
+            100.50, currency='ILS'), u'מאה שקליםו חמישים אגורות')
         self.assertEqual(n.to_currency(
-            101.51, currency='ILS'), u'מאה ואחד שקלים וחמישים ואחת אגורות')
+            101.51, currency='ILS'), u'מאה ואחת שקליםו חמישים ואחת אגורות')
         self.assertEqual(n.to_currency(
             -101.51, currency='ILS'),
-            u'מינוס מאה ואחד שקלים וחמישים ואחת אגורות')
+            u'מינוס מאה ואחת שקליםו חמישים ואחת אגורות')
         self.assertEqual(n.to_currency(
             -101.51, currency='ILS', prefer_singular=True),
-            u'מינוס מאה ואחד שקל וחמישים ואחת אגורות')
+            u'מינוס מאה ואחת שקליםו חמישים ואחת אגורות')
         self.assertEqual(n.to_currency(
             -101.51, currency='ILS', prefer_singular_cents=True),
-            u'מינוס מאה ואחד שקלים וחמישים ואחת אגורה')
+            u'מינוס מאה ואחת שקליםו חמישים ואחת אגורות')
         self.assertEqual(n.to_currency(
             -101.51, currency='ILS', prefer_singular=True,
             prefer_singular_cents=True),
-            u'מינוס מאה ואחד שקל וחמישים ואחת אגורה')
+            u'מינוס מאה ואחת שקליםו חמישים ואחת אגורות')
         self.assertEqual(n.to_currency(
             5.05, currency='ILS', prefer_singular=True,
-            prefer_singular_cents=True), u'חמישה שקלים וחמש אגורות')
+            prefer_singular_cents=True), u'חמש שקליםו חמש אגורות')
         self.assertEqual(n.to_currency(
             -5.05, currency='ILS', prefer_singular=True,
-            prefer_singular_cents=True), u'מינוס חמישה שקלים וחמש אגורות')
+            prefer_singular_cents=True), u'מינוס חמש שקליםו חמש אגורות')
         self.assertEqual(n.to_currency(
             -5.05, currency='ILS', cents=False),
-            u'מינוס חמישה שקלים ו-05 אגורות')
+            u'מינוס חמש שקליםו 05 אגורות')
         self.assertEqual(n.to_currency(
             -5.05, currency='ILS', cents=False, separator='ו'),
-            u'מינוס חמישה שקלים ו-05 אגורות')
+            u'מינוס חמש שקליםו 05 אגורות')
         self.assertEqual(n.to_currency(
             -5.05, currency='ILS', cents=False, separator='ו-'),
-            u'מינוס חמישה שקלים ו-05 אגורות')
+            u'מינוס חמש שקליםו- 05 אגורות')
         self.assertEqual(n.to_currency(
             -5.05, currency='ILS', cents=False, separator=''),
-            u'מינוס חמישה שקלים 05 אגורות')
+            u'מינוס חמש שקלים 05 אגורות')
         self.assertEqual(n.to_currency(
             -5.05, currency='ILS', cents=False, separator='ועוד '),
-            u'מינוס חמישה שקלים ועוד 05 אגורות')
+            u'מינוס חמש שקליםועוד  05 אגורות')
         self.assertEqual(n.to_currency(
             -5.05, currency='ILS', cents=False, separator=' ו'),
-            u'מינוס חמישה שקלים ו-05 אגורות')
+            u'מינוס חמש שקלים ו 05 אגורות')
         self.assertEqual(n.to_currency(
             -5.05, currency='ILS', cents=False, separator=' ו-'),
-            u'מינוס חמישה שקלים ו-05 אגורות')
+            u'מינוס חמש שקלים ו- 05 אגורות')
         self.assertEqual(n.to_currency(
             -5.05, currency='ILS', cents=False, separator=' '),
-            u'מינוס חמישה שקלים 05 אגורות')
+            u'מינוס חמש שקלים  05 אגורות')
         self.assertEqual(n.to_currency(
             -5.05, currency='ILS', cents=False, separator=' ועוד '),
-            u'מינוס חמישה שקלים ועוד 05 אגורות')
+            u'מינוס חמש שקלים ועוד  05 אגורות')
         self.assertEqual(n.to_currency(
-            1.01, currency='ILS'), u'שקל אחד ואגורה אחת')
+            1.01, currency='ILS'), u'אחת שקלו אחת אגורה')
         self.assertEqual(n.to_currency(
-            -1.01, currency='ILS'), u'מינוס שקל אחד ואגורה אחת')
+            -1.01, currency='ILS'), u'מינוס אחת שקלו אחת אגורה')
         self.assertEqual(n.to_currency(
-            2.02, currency='ILS'), u'שני שקלים ושתי אגורות')
+            2.02, currency='ILS'), u'שתיים שקליםו שתיים אגורות')
         self.assertEqual(n.to_currency(
-            1002.02, currency='ILS'), u'אלף ושניים שקלים ושתי אגורות')
+            1002.02, currency='ILS'), u'אלף ושתיים שקליםו שתיים אגורות')
         self.assertEqual(n.to_currency(
-            1000002.02, currency='ILS'), u'מיליון ושניים שקלים ושתי אגורות')
+            1000002.02, currency='ILS'), u'מיליון ושתיים שקליםו שתיים אגורות')
         self.assertEqual(n.to_currency(
-            5.05, currency='USD'), u'חמישה דולרים וחמישה סנטים')
+            5.05, currency='USD'), u'חמש דולריםו חמש סנטים')
         self.assertEqual(n.to_currency(
             5.05, currency='USD', prefer_singular=True),
-            u'חמישה דולר וחמישה סנטים')
+            u'חמש דולריםו חמש סנטים')
         self.assertEqual(n.to_currency(
             5.05, currency='USD', prefer_singular_cents=True),
-            u'חמישה דולרים וחמישה סנט')
+            u'חמש דולריםו חמש סנטים')
         self.assertEqual(n.to_currency(
             5.05, currency='USD', prefer_singular=True,
-            prefer_singular_cents=True), u'חמישה דולר וחמישה סנט')
+            prefer_singular_cents=True), u'חמש דולריםו חמש סנטים')
         n.CURRENCY_FORMS['pruta'] = (('פרוטה', 'פרוטות'), ('מאית', 'מאיות'))
         self.assertEqual(n.to_currency(
-            5.05, currency='pruta'), u'חמש פרוטות וחמש מאיות')
+            5.05, currency='pruta'), u'חמש פרוטותו חמש מאיות')
 
     def test_to_currency_errors(self):
         n = Num2Word_HE()

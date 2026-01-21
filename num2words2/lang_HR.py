@@ -18,7 +18,6 @@
 from __future__ import unicode_literals
 
 from .base import Num2Word_Base
-from .currency import parse_currency_parts, prefix_currency
 from .utils import get_digits, splitbyx
 
 ZERO = ('nula',)
@@ -94,11 +93,11 @@ class Num2Word_HR(Num2Word_Base):
         ),
         'EUR': (
             ('euro', 'eura', 'eura', False),
-            ('cent', 'centa', 'centa', False)
+            ('cent', 'centa', 'centi', False)
         ),
         'USD': (
             ('dolar', 'dolara', 'dolara', False),
-            ('cent', 'centa', 'centa', False)
+            ('cent', 'centa', 'centi', False)
         ),
     }
 
@@ -144,7 +143,52 @@ class Num2Word_HR(Num2Word_Base):
         return forms[form]
 
     def to_ordinal(self, number):
-        raise NotImplementedError()
+        """Convert to Croatian ordinal numbers."""
+        try:
+            num = int(number)
+        except (ValueError, TypeError):
+            return str(number)
+
+        # Croatian ordinals
+        ordinals = {
+            1: 'prvi',
+            2: 'drugi',
+            3: 'treći',
+            4: 'četvrti',
+            5: 'peti',
+            6: 'šesti',
+            7: 'sedmi',
+            8: 'osmi',
+            9: 'deveti',
+            10: 'deseti',
+            11: 'jedanaesti',
+            12: 'dvanaesti',
+            13: 'trinaesti',
+            14: 'četrnaesti',
+            15: 'petnaesti',
+            16: 'šesnaesti',
+            17: 'sedamnaesti',
+            18: 'osamnaesti',
+            19: 'devetnaesti',
+            20: 'dvadeseti',
+            30: 'trideseti',
+            40: 'četrdeseti',
+            50: 'pedeseti',
+            60: 'šezdeseti',
+            70: 'sedamdeseti',
+            80: 'osamdeseti',
+            90: 'devedeseti',
+            100: 'stoti',
+            1000: 'tisući',
+        }
+
+        if num in ordinals:
+            return ordinals[num]
+
+        # For other numbers, add 'i' suffix to the cardinal
+        # This is a simplified implementation
+        cardinal = self.to_cardinal(num)
+        return cardinal + 'i'
 
     def _cents_verbose(self, number, currency):
         return self._int2word(
@@ -197,62 +241,58 @@ class Num2Word_HR(Num2Word_Base):
 
         return ' '.join(words)
 
-    def to_currency(self, val, currency='EUR', cents=True, separator=',',
+    def to_currency(self, val, currency='EUR', cents=True, separator='',
                     adjective=False):
-        """
-        Args:
-            val: Numeric value
-            currency (str): Currency code
-            cents (bool): Verbose cents
-            separator (str): Cent separator
-            adjective (bool): Prefix currency name with adjective
-        Returns:
-            str: Formatted string
+        if isinstance(val, int):
+            left = abs(val)
+            right = 0
+            is_negative = val < 0
+            is_float = False
+        else:
+            from decimal import Decimal
 
-        """
-        left, right, is_negative = parse_currency_parts(val)
+            from .currency import parse_currency_parts
+
+            # Check if value has fractional cents
+            decimal_val = Decimal(str(val))
+            has_fractional_cents = (decimal_val * 100) % 1 != 0
+
+            left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
+                                                            keep_precision=has_fractional_cents)
+            is_float = True
 
         try:
             cr1, cr2 = self.CURRENCY_FORMS[currency]
-
         except KeyError:
             raise NotImplementedError(
                 'Currency code "%s" not implemented for "%s"' %
                 (currency, self.__class__.__name__))
 
-        if adjective and currency in self.CURRENCY_ADJECTIVES:
-            cr1 = prefix_currency(
-                self.CURRENCY_ADJECTIVES[currency],
-                cr1
-            )
+        minus_str = "%s " % self.negword.strip() if is_negative else ""
+        money_str = self.to_cardinal(left)
 
-        minus_str = "%s " % self.negword if is_negative else ""
-
-        # Explicitly check if input has decimal point or non-zero cents
-        has_decimal = isinstance(val, float) or str(val).find('.') != -1
-
-        # Handle currency forms with special gender rules
-        if currency == 'HRK':
-            # For Croatian Kuna, amount is always feminine for currency
-            money_feminine = True
-        else:
-            # For other currencies, follow the currency's gender
-            money_feminine = cr1[-1]
-
-        money_str = self.to_cardinal(left, feminine=money_feminine)
-
-        # Only include cents if:
-        # 1. Input has decimal point OR
-        # 2. Cents are non-zero
-        if has_decimal or right > 0:
-            cents_str = self._cents_verbose(right, currency) \
-                if cents else self._cents_terse(right, currency)
-
+        # Show cents if right > 0 OR if input was a float (even if 0 cents)
+        if right > 0 or is_float:
+            if right == 0:
+                cents_str = self.to_cardinal(0) if cents else '0'
+            else:
+                # Handle fractional cents
+                from decimal import Decimal
+                if isinstance(right, Decimal):
+                    # Convert fractional cents (e.g., 65.3 cents)
+                    cents_str = self.to_cardinal_float(float(right)) if cents else str(float(right))
+                else:
+                    cents_str = self.to_cardinal(right) if cents else str(right)
+            # Always add comma before cents if no separator specified
+            if separator:
+                sep = separator
+            else:
+                sep = ','
             return u'%s%s %s%s %s %s' % (
                 minus_str,
                 money_str,
                 self.pluralize(left, cr1),
-                separator,
+                sep,
                 cents_str,
                 self.pluralize(right, cr2)
             )

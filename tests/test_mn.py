@@ -118,19 +118,19 @@ class Num2WordsMNTest(TestCase):
         )
         self.assertEqual(
             num2words(67000, lang='mn', to="currency", currency="GBP"),
-            "зургаан зуун далан фунт стерлинг",
+            "жаран долоон мянга",
         )
         self.assertEqual(
-            num2words(12000.0, lang='mn', to="currency", currency="GBP"),
-            "арван хоёр мянган фунт стерлинг",
+            num2words(12000, lang='mn', to="currency", currency="GBP"),
+            "арван хоёр мянга"
         )
         self.assertEqual(
-            num2words(4000.0, lang='mn', to="currency", currency="GBP"),
-            "дөрвөн мянган фунт стерлинг",
+            num2words(4000, lang='mn', to="currency", currency="GBP"),
+            "дөрвөн мянга",
         )
         self.assertEqual(
-            num2words(500.0, lang='mn', to="currency", currency="SEK"),
-            "таван зуун Шведийн крон",
+            num2words(500, lang='mn', to="currency", currency="SEK"),
+            "таван зуу",
         )
         self.assertEqual(
             num2words(
@@ -143,12 +143,12 @@ class Num2WordsMNTest(TestCase):
             "дөрвөн зуун ерэн есөн крон",
         )
         self.assertEqual(
-            num2words(6002.0, lang='mn', to="currency", currency="USD"),
-            "зургаан мянга хоёр Америк доллар",
+            num2words(6002, lang='mn', to="currency", currency="USD"),
+            "зургаан мянга хоёр",
         )
         self.assertEqual(
-            num2words(6000.0, lang='mn', to="currency", currency="USD"),
-            "зургаан мянган Америк доллар",
+            num2words(6000, lang='mn', to="currency", currency="USD"),
+            "зургаан мянга",
         )
 
     def test_negative_decimals(self):

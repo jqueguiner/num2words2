@@ -54,8 +54,13 @@ class Num2WordsKZTest(TestCase):
         )
 
     def test_to_ordinal(self):
-        with self.assertRaises(NotImplementedError):
-            num2words(1, lang="kz", to="ordinal")
+        self.assertEqual(num2words(1, lang="kz", to="ordinal"), "бірінші")
+        self.assertEqual(num2words(2, lang="kz", to="ordinal"), "екінші")
+        self.assertEqual(num2words(3, lang="kz", to="ordinal"), "үшінші")
+        self.assertEqual(num2words(5, lang="kz", to="ordinal"), "бесінші")
+        self.assertEqual(num2words(10, lang="kz", to="ordinal"), "оныншы")
+        self.assertEqual(num2words(21, lang="kz", to="ordinal"), "жиырма бірінші")
+        self.assertEqual(num2words(100, lang="kz", to="ordinal"), "жүзінші")
 
     def test_to_currency(self):
         self.assertEqual(
@@ -72,12 +77,12 @@ class Num2WordsKZTest(TestCase):
         )
         self.assertEqual(
             num2words(632924.513, lang="kz", to="currency", currency="KZT"),
-            "алты жүз отыз екі мың тоғыз жүз жиырма төрт теңге, елу бір тиын",
+            "алты жүз отыз екі мың тоғыз жүз жиырма төрт теңге, елу бір бүтін үш тиын",
         )
         self.assertEqual(
             num2words(987654321.123, lang="kz", to="currency", currency="KZT"),
             "тоғыз жүз сексен жеті миллион алты жүз елу төрт мың "
-            "үш жүз жиырма бір теңге, он екі тиын",
+            "үш жүз жиырма бір теңге, он екі бүтін үш тиын",
         )
 
     def test_negative_decimals(self):

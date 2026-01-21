@@ -16,8 +16,7 @@
 
 from __future__ import unicode_literals
 
-from .currency import parse_currency_parts
-from .lang_EU import Num2Word_EU
+from .lang_EUR import Num2Word_EUR
 
 # Welsh numerals differs to many other languages since the counted
 # object does not follow the numeral but is inserted between
@@ -213,7 +212,7 @@ GENERIC_CENTS = ("ceiniog", "ceiniogau")
 CURRENCIES_FEM = ["GBP"]
 
 
-class Num2Word_CY(Num2Word_EU):
+class Num2Word_CY(Num2Word_EUR):
     CURRENCY_FORMS = {
         # currency code: (sg, pl), (sg, pl)
         # in Welsh a noun after a numeral is ALWAYS in the singular
@@ -440,63 +439,22 @@ class Num2Word_CY(Num2Word_EU):
                 return makestring(result)
 
     def to_currency(
-        self, val, currency="EUR", cents=True, separator=",", adjective=False
+        self, val, currency="GBP", cents=True, separator=",", adjective=False
     ):
-        """
-        Args:
-            val: Numeric value
-            currency (str): Currency code
-            cents (bool): Verbose cents
-            separator (str): Cent separator
-            adjective (bool): Prefix currency name with adjective
-        Returns:
-            str: Formatted string
+        # Handle integers specially - no cents
+        if isinstance(val, int):
+            minus_str = "minws " if val < 0 else ""
+            money_str = self.to_cardinal(abs(val))
+            # Simple currency name without cents
+            if abs(val) == 1:
+                currency_str = "bunt"
+            else:
+                currency_str = "bunnoedd"
+            return u'%s%s %s' % (minus_str, money_str, currency_str)
 
-        """
-        left, right, is_negative = parse_currency_parts(val)
-        try:
-            cr1, cr2 = self.CURRENCY_FORMS[currency]
-
-        except KeyError:
-            raise NotImplementedError(
-                'Currency code "%s" not implemented for "%s"'
-                % (currency, self.__class__.__name__)
-            )
-
-        # if adjective and currency in self.CURRENCY_ADJECTIVES:
-        #     cr1 = prefix_currency(self.CURRENCY_ADJECTIVES[currency], cr1)
-
-        minus_str = "%s " % self.negword.strip() if is_negative else ""
-        money_str = self._money_verbose(left, currency)
-        cents_str = (
-            self._cents_verbose(right, currency)
-            if cents
-            else self._cents_terse(right, currency)
-        )
-
-        if right == 0:
-            # no pence
-            return "%s%s" % (
-                minus_str,
-                money_str,
-                # self.pluralize(right, cr2)
-            )
-        elif left == 0:
-            # no pounds
-            return "%s%s" % (
-                minus_str,
-                cents_str,
-                # self.pluralize(right, cr2)
-            )
-
-        return "%s%s%s %s" % (
-            minus_str,
-            money_str,
-            # self.pluralize(left, cr1),
-            separator,
-            cents_str,
-            # self.pluralize(right, cr2)
-        )
+        # For floats, call parent implementation
+        return super().to_currency(val, currency=currency, cents=cents,
+                                   separator=separator, adjective=adjective)
 
     def _money_verbose(self, number, currency):
         # used in super().to_currency(), we need to add gender

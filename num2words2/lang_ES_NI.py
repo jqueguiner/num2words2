@@ -23,6 +23,8 @@ from .lang_ES import Num2Word_ES
 class Num2Word_ES_NI(Num2Word_ES):
     CURRENCY_FORMS = {
         'NIO': (('córdoba', 'córdobas'), ('centavo', 'centavos')),
+        'EUR': (('euro', 'euros'), ('céntimo', 'céntimos')),
+        'USD': (('dólar', 'dólares'), ('centavo', 'centavos')),
     }
 
     def to_currency(self, val, currency='NIO', cents=True, separator=' con',

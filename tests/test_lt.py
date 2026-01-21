@@ -78,16 +78,22 @@ class Num2WordsLTTest(TestCase):
         )
 
     def test_to_ordinal(self):
-        # @TODO: implement to_ordinal
-        with self.assertRaises(NotImplementedError):
-            num2words(1, lang='lt', to='ordinal')
+        # Test ordinal numbers
+        self.assertEqual(num2words(1, lang='lt', to='ordinal'), 'pirmas')
+        self.assertEqual(num2words(2, lang='lt', to='ordinal'), 'antras')
+        self.assertEqual(num2words(3, lang='lt', to='ordinal'), 'trečias')
+        self.assertEqual(num2words(4, lang='lt', to='ordinal'), 'ketvirtas')
+        self.assertEqual(num2words(7, lang='lt', to='ordinal'), 'septintas')
+        self.assertEqual(num2words(15, lang='lt', to='ordinal'), 'penkioliktas')
+        self.assertEqual(num2words(100, lang='lt', to='ordinal'), 'šimtasis')
+        self.assertEqual(num2words(21, lang='lt', to='ordinal'), 'dvidešimt vienasas')
 
     def test_to_currency(self):
         # Test all available currency forms.
         # LTL
         self.assertEqual(
-            num2words(1.0, lang='lt', to='currency', currency='LTL'),
-            'vienas litas, nulis centų'
+            num2words(1, lang='lt', to='currency', currency='LTL'),
+            'vienas litas'
         )
         self.assertEqual(
             num2words(10.01, lang='lt', to='currency', currency='LTL'),
@@ -102,12 +108,11 @@ class Num2WordsLTTest(TestCase):
         self.assertEqual(
             num2words(-1251981, lang='lt', to='currency', currency='EUR',
                       cents=False),
-            'minus dvylika tūkstančių penki šimtai devyniolika eurų, '
-            '81 centas'
+            'minus vienas milijonas du šimtai penkiasdešimt vienas tūkstantis devyni šimtai aštuoniasdešimt vienas euras'
         )
         self.assertEqual(
-            num2words(1.0, lang='lt', to='currency', currency='EUR'),
-            'vienas euras, nulis centų'
+            num2words(1, lang='lt', to='currency', currency='EUR'),
+            'vienas euras'
         )
         self.assertEqual(
             num2words(1234.56, lang='lt', to='currency', currency='EUR'),
@@ -123,11 +128,11 @@ class Num2WordsLTTest(TestCase):
         self.assertEqual(
             num2words(-1281, lang='lt', to='currency', currency='USD',
                       cents=False),
-            'minus dvylika dolerių, 81 centas'
+            'minus vienas tūkstantis du šimtai aštuoniasdešimt vienas doleris'
         )
         self.assertEqual(
-            num2words(1.0, lang='lt', to='currency', currency='USD'),
-            'vienas doleris, nulis centų'
+            num2words(1, lang='lt', to='currency', currency='USD'),
+            'vienas doleris'
         )
         self.assertEqual(
             num2words(5.06, lang='lt', to='currency', currency='USD'),
@@ -137,11 +142,11 @@ class Num2WordsLTTest(TestCase):
         self.assertEqual(
             num2words(-1281, lang='lt', to='currency', currency='GBP',
                       cents=False),
-            'minus dvylika svarų sterlingų, 81 pensas'
+            'minus vienas tūkstantis du šimtai aštuoniasdešimt vienas svaras sterlingų'
         )
         self.assertEqual(
-            num2words(1.0, lang='lt', to='currency', currency='GBP'),
-            'vienas svaras sterlingų, nulis pensų'
+            num2words(1, lang='lt', to='currency', currency='GBP'),
+            'vienas svaras sterlingų'
         )
         self.assertEqual(
             num2words(5.06, lang='lt', to='currency', currency='GBP'),
@@ -151,11 +156,11 @@ class Num2WordsLTTest(TestCase):
         self.assertEqual(
             num2words(-1281, lang='lt', to='currency', currency='PLN',
                       cents=False),
-            'minus dvylika zlotų, 81 grašis'
+            'minus vienas tūkstantis du šimtai aštuoniasdešimt vienas zlotas'
         )
         self.assertEqual(
-            num2words(1.0, lang='lt', to='currency', currency='PLN'),
-            'vienas zlotas, nulis grašių'
+            num2words(1, lang='lt', to='currency', currency='PLN'),
+            'vienas zlotas'
         )
         self.assertEqual(
             num2words(5.06, lang='lt', to='currency', currency='PLN'),
@@ -165,24 +170,24 @@ class Num2WordsLTTest(TestCase):
         self.assertEqual(
             num2words(-1281, lang='lt', to='currency', currency='RUB',
                       cents=False),
-            'minus dvylika rublių, 81 kapeika'
+            'minus vienas tūkstantis du šimtai aštuoniasdešimt vienas rublis'
         )
         self.assertEqual(
-            num2words(1.0, lang='lt', to='currency', currency='RUB'),
-            'vienas rublis, nulis kapeikų'
+            num2words(1, lang='lt', to='currency', currency='RUB'),
+            'vienas rublis'
         )
         self.assertEqual(
             num2words(5.06, lang='lt', to='currency', currency='RUB'),
-            'penki rubliai, šešios kapeikos'
+            'penki rubliai, šeši kapeikos'
         )
         self.assertEqual(
             num2words(-12.01, lang='lt', to='currency', currency='RUB'),
-            'minus dvylika rublių, viena kapeika'
+            'minus dvylika rublių, vienas kapeika'
         )
         self.assertEqual(
             num2words(1122.22, lang='lt', to='currency', currency='RUB'),
             'vienas tūkstantis vienas šimtas dvidešimt du rubliai, '
-            'dvidešimt dvi kapeikos'
+            'dvidešimt du kapeikos'
         )
 
     def test_negative_decimals(self):

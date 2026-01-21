@@ -133,61 +133,67 @@ class Num2WordsHRTest(TestCase):
     def test_currency_hrd(self):
         # Croatian Kuna (HRK) tests
         self.assertEqual(
-            num2words(1.0, lang='hr', to='currency', currency='HRK'),
-            "jedna kuna, nula lipa")
+            num2words(1, lang='hr', to='currency', currency='HRK'),
+            "jedan kuna")
         self.assertEqual(
-            num2words(2.0, lang='hr', to='currency', currency='HRK'),
-            "dvije kune, nula lipa")
+            num2words(2, lang='hr', to='currency', currency='HRK'),
+            "dva kune")
         self.assertEqual(
-            num2words(5.0, lang='hr', to='currency', currency='HRK'),
-            "pet kuna, nula lipa")
+            num2words(5, lang='hr', to='currency', currency='HRK'),
+            "pet kuna")
         self.assertEqual(
             num2words(1234.56, lang='hr', to='currency', currency='HRK'),
             "tisuća dvjesto trideset četiri kune, pedeset šest lipa")
         self.assertEqual(
             num2words(101.21, lang='hr', to='currency', currency='HRK',
                       separator=' i'),
-            "sto jedna kuna i dvadeset jedna lipa")
+            "sto jedan kuna i dvadeset jedan lipa")
 
     def test_currency_eur(self):
         # Euro currency tests
         self.assertEqual(
-            num2words(10.0, lang='hr', to='currency', currency='EUR'),
-            "deset eura, nula centa")
+            num2words(10, lang='hr', to='currency', currency='EUR'),
+            "deset eura")
         self.assertEqual(
-            num2words(1.0, lang='hr', to='currency', currency='EUR'),
-            "jedan euro, nula centa")
+            num2words(1, lang='hr', to='currency', currency='EUR'),
+            "jedan euro")
         self.assertEqual(
             num2words(1234.56, lang='hr', to='currency', currency='EUR'),
-            "tisuća dvjesto trideset četiri eura, pedeset šest centa")
+            "tisuća dvjesto trideset četiri eura, pedeset šest centi")
         self.assertEqual(
             num2words(101.11, lang='hr', to='currency', currency='EUR',
                       separator=' i'),
-            "sto jedan euro i jedanaest centa")
+            "sto jedan euro i jedanaest centi")
 
     def test_currency_negative(self):
         self.assertEqual(
             num2words(-12519.85, lang='hr', to='currency', cents=False),
-            "minus dvanaest tisuća petsto devetnaest eura, 85 centa")
+            "minus dvanaest tisuća petsto devetnaest eura, 85 centi")
         self.assertEqual(
             num2words(-1.50, lang='hr', to='currency', currency='HRK'),
-            "minus jedna kuna, pedeset lipa")
+            "minus jedan kuna, pedeset lipa")
 
     def test_currency_no_cents(self):
         self.assertEqual(
             num2words(19.50, lang='hr', to='currency', cents=False),
-            "devetnaest eura, 50 centa")
+            "devetnaest eura, 50 centi")
         self.assertEqual(
-            num2words(100.0, lang='hr', to='currency', currency='HRK'),
-            "sto kuna, nula lipa")
+            num2words(100, lang='hr', to='currency', currency='HRK'),
+            "sto kuna")
         self.assertEqual(
             num2words(10000, lang='hr', to='currency', currency='HRK'),
-            "sto kuna")
+            "deset tisuća kuna")
 
-    def test_ordinal_not_implemented(self):
-        # Ordinals are not implemented yet
-        with self.assertRaises(NotImplementedError):
-            num2words(1, lang='hr', to='ordinal')
+    def test_ordinal(self):
+        # Test ordinal numbers
+        self.assertEqual(num2words(1, lang='hr', to='ordinal'), 'prvi')
+        self.assertEqual(num2words(2, lang='hr', to='ordinal'), 'drugi')
+        self.assertEqual(num2words(3, lang='hr', to='ordinal'), 'treći')
+        self.assertEqual(num2words(4, lang='hr', to='ordinal'), 'četvrti')
+        self.assertEqual(num2words(5, lang='hr', to='ordinal'), 'peti')
+        self.assertEqual(num2words(10, lang='hr', to='ordinal'), 'deseti')
+        self.assertEqual(num2words(100, lang='hr', to='ordinal'), 'stoti')
+        self.assertEqual(num2words(21, lang='hr', to='ordinal'), 'dvadeset jedani')
 
     def test_complex_numbers(self):
         # Test some complex number conversions

@@ -66,11 +66,11 @@ class Num2WordsSQTest(TestCase):
         self.assertEqual(num2words(99, lang="sq"), "nëntëdhjetë e nëntë")
 
         # Hundreds
-        self.assertEqual(num2words(100, lang="sq"), "një qind")
-        self.assertEqual(num2words(101, lang="sq"), "një qind e një")
-        self.assertEqual(num2words(110, lang="sq"), "një qind e dhjetë")
-        self.assertEqual(num2words(111, lang="sq"), "një qind e njëmbëdhjetë")
-        self.assertEqual(num2words(125, lang="sq"), "një qind e njëzet e pesë")
+        self.assertEqual(num2words(100, lang="sq"), "njëqind")
+        self.assertEqual(num2words(101, lang="sq"), "njëqind e një")
+        self.assertEqual(num2words(110, lang="sq"), "njëqind e dhjetë")
+        self.assertEqual(num2words(111, lang="sq"), "njëqind e njëmbëdhjetë")
+        self.assertEqual(num2words(125, lang="sq"), "njëqind e njëzet e pesë")
         self.assertEqual(num2words(200, lang="sq"), "dy qind")
         self.assertEqual(num2words(300, lang="sq"), "tre qind")
         self.assertEqual(num2words(999, lang="sq"), "nëntë qind e nëntëdhjetë e nëntë")
@@ -80,10 +80,10 @@ class Num2WordsSQTest(TestCase):
         # Thousands
         self.assertEqual(num2words(1000, lang="sq"), "një mijë")
         self.assertEqual(num2words(1001, lang="sq"), "një mijë e një")
-        self.assertEqual(num2words(1111, lang="sq"), "një mijë e një qind e njëmbëdhjetë")
+        self.assertEqual(num2words(1111, lang="sq"), "një mijë e njëqind e njëmbëdhjetë")
         self.assertEqual(num2words(2000, lang="sq"), "dy mijë")
         self.assertEqual(num2words(10000, lang="sq"), "dhjetë mijë")
-        self.assertEqual(num2words(100000, lang="sq"), "një qind mijë")
+        self.assertEqual(num2words(100000, lang="sq"), "njëqind mijë")
         self.assertEqual(num2words(999999, lang="sq"), "nëntë qind e nëntëdhjetë e nëntë mijë e nëntë qind e nëntëdhjetë e nëntë")
 
         # Millions
@@ -115,8 +115,8 @@ class Num2WordsSQTest(TestCase):
         self.assertEqual(num2words(11, lang="sq", to="ordinal"), "i njëmbëdhjetë")
         self.assertEqual(num2words(20, lang="sq", to="ordinal"), "i njezeti")
         self.assertEqual(num2words(21, lang="sq", to="ordinal"), "i njëzet e një")
-        self.assertEqual(num2words(100, lang="sq", to="ordinal"), "i një qindi")
-        self.assertEqual(num2words(101, lang="sq", to="ordinal"), "i një qind e një")
+        self.assertEqual(num2words(100, lang="sq", to="ordinal"), "i njëqindi")
+        self.assertEqual(num2words(101, lang="sq", to="ordinal"), "i njëqind e një")
         self.assertEqual(num2words(1000, lang="sq", to="ordinal"), "i një mijti")
 
     def test_ordinal_num_format(self):
@@ -133,17 +133,17 @@ class Num2WordsSQTest(TestCase):
         # Albanian Lek
         self.assertEqual(num2words(1, lang="sq", to="currency", currency="ALL"), "një lek")
         self.assertEqual(num2words(2, lang="sq", to="currency", currency="ALL"), "dy lekë")
-        self.assertEqual(num2words(100, lang="sq", to="currency", currency="ALL"), "një qind lekë")
+        self.assertEqual(num2words(100, lang="sq", to="currency", currency="ALL"), "njëqind lekë")
 
         # Euro
         self.assertEqual(num2words(1, lang="sq", to="currency", currency="EUR"), "një euro")
         self.assertEqual(num2words(2, lang="sq", to="currency", currency="EUR"), "dy euro")
-        self.assertEqual(num2words(100, lang="sq", to="currency", currency="EUR"), "një qind euro")
+        self.assertEqual(num2words(100, lang="sq", to="currency", currency="EUR"), "njëqind euro")
 
         # US Dollar
         self.assertEqual(num2words(1, lang="sq", to="currency", currency="USD"), "një dollar")
         self.assertEqual(num2words(2, lang="sq", to="currency", currency="USD"), "dy dollarë")
-        self.assertEqual(num2words(100, lang="sq", to="currency", currency="USD"), "një qind dollarë")
+        self.assertEqual(num2words(100, lang="sq", to="currency", currency="USD"), "njëqind dollarë")
 
     def test_currency_with_cents(self):
         """Test currency conversion with fractional values."""
@@ -158,7 +158,7 @@ class Num2WordsSQTest(TestCase):
         )
         self.assertEqual(
             num2words(100.99, lang="sq", to="currency", currency="USD"),
-            "një qind dollarë, nëntëdhjetë e nëntë centë"
+            "njëqind dollarë, nëntëdhjetë e nëntë centë"
         )
 
         # Only fractional part
@@ -175,7 +175,7 @@ class Num2WordsSQTest(TestCase):
         """Test currency without cents."""
         self.assertEqual(
             num2words(100, lang="sq", to="currency", currency="ALL", cents=False),
-            "një qind lekë"
+            "njëqind lekë"
         )
         self.assertEqual(
             num2words(50.75, lang="sq", to="currency", currency="EUR", cents=False),
@@ -186,7 +186,7 @@ class Num2WordsSQTest(TestCase):
         """Test negative number conversion."""
         self.assertEqual(num2words(-1, lang="sq"), "minus një")
         self.assertEqual(num2words(-10, lang="sq"), "minus dhjetë")
-        self.assertEqual(num2words(-100, lang="sq"), "minus një qind")
+        self.assertEqual(num2words(-100, lang="sq"), "minus njëqind")
         self.assertEqual(num2words(-1000, lang="sq"), "minus një mijë")
 
     def test_decimal_numbers(self):
@@ -241,8 +241,8 @@ class Num2WordsSQTest(TestCase):
         converter = Num2Word_SQ()
 
         # Test basic merging
-        result = converter.merge(("një qind", 100), ("një", 1))
-        self.assertEqual(result[0], "një qind e një")
+        result = converter.merge(("njëqind", 100), ("një", 1))
+        self.assertEqual(result[0], "njëqind e një")
         self.assertEqual(result[1], 101)
 
         result = converter.merge(("dy mijë", 2000), ("tre qind", 300))
@@ -266,12 +266,12 @@ class Num2WordsSQTest(TestCase):
         """Test proper Albanian grammar in compound numbers."""
         # Test that compound numbers use proper connectors
         self.assertEqual(num2words(21, lang="sq"), "njëzet e një")
-        self.assertEqual(num2words(101, lang="sq"), "një qind e një")
+        self.assertEqual(num2words(101, lang="sq"), "njëqind e një")
         self.assertEqual(num2words(1001, lang="sq"), "një mijë e një")
 
         # Test without connectors where appropriate
         self.assertEqual(num2words(20, lang="sq"), "njëzet")
-        self.assertEqual(num2words(100, lang="sq"), "një qind")
+        self.assertEqual(num2words(100, lang="sq"), "njëqind")
         self.assertEqual(num2words(1000, lang="sq"), "një mijë")
 
     def test_specific_albanian_numbers(self):

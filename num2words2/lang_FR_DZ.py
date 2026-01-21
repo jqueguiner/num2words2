@@ -22,10 +22,12 @@ from .lang_FR import Num2Word_FR
 
 class Num2Word_FR_DZ(Num2Word_FR):
     CURRENCY_FORMS = {
-        'DIN': (('dinard', 'dinards'), ('centime', 'centimes')),
+        'DZD': (('dinar', 'dinars'), ('centime', 'centimes')),
+        'EUR': (('euro', 'euros'), ('centime', 'centimes')),
+        'USD': (('dollar', 'dollars'), ('cent', 'cents')),
     }
 
-    def to_currency(self, val, currency='DIN', cents=True, separator=' et',
+    def to_currency(self, val, currency='DZD', cents=True, separator=' et',
                     adjective=False):
         result = super(Num2Word_FR, self).to_currency(
             val, currency=currency, cents=cents, separator=separator,

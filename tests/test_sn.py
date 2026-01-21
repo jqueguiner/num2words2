@@ -35,12 +35,12 @@ class Num2WordsSNTest(TestCase):
         self.assertEqual(num2words(8, lang='sn'), 'sere')
         self.assertEqual(num2words(9, lang='sn'), 'pfumbamwe')
         self.assertEqual(num2words(10, lang='sn'), 'gumi')
-        self.assertEqual(num2words(11, lang='sn'), 'gumi nemotsi')
+        self.assertEqual(num2words(11, lang='sn'), 'gumi neimwe')
         self.assertEqual(num2words(12, lang='sn'), 'gumi nepiri')
         self.assertEqual(num2words(13, lang='sn'), 'gumi netatu')
         self.assertEqual(num2words(14, lang='sn'), 'gumi nechina')
         self.assertEqual(num2words(15, lang='sn'), 'gumi neshanu')
-        self.assertEqual(num2words(16, lang='sn'), 'gumi netanhatu')
+        self.assertEqual(num2words(16, lang='sn'), 'gumi nenhatu')
         self.assertEqual(num2words(17, lang='sn'), 'gumi nenomwe')
         self.assertEqual(num2words(18, lang='sn'), 'gumi nesere')
         self.assertEqual(num2words(19, lang='sn'), 'gumi nepfumbamwe')
@@ -59,7 +59,7 @@ class Num2WordsSNTest(TestCase):
 
     def test_compound_numbers(self):
         """Test compound numbers (21-99) in Shona"""
-        self.assertEqual(num2words(21, lang='sn'), 'makumi maviri nemotsi')
+        self.assertEqual(num2words(21, lang='sn'), 'makumi maviri neimwe')
         self.assertEqual(num2words(25, lang='sn'), 'makumi maviri neshanu')
         self.assertEqual(num2words(35, lang='sn'), 'makumi matatu neshanu')
         self.assertEqual(num2words(47, lang='sn'), 'makumi mana nenomwe')
@@ -83,12 +83,12 @@ class Num2WordsSNTest(TestCase):
 
     def test_hundreds_with_tens_and_units(self):
         """Test hundreds with tens and units in Shona"""
-        self.assertEqual(num2words(101, lang='sn'), 'zana nemotsi')
-        self.assertEqual(num2words(111, lang='sn'), 'zana negumi nemotsi')
+        self.assertEqual(num2words(101, lang='sn'), 'zana neimwe')
+        self.assertEqual(num2words(111, lang='sn'), 'zana negumi neimwe')
         self.assertEqual(num2words(125, lang='sn'), 'zana nemakumi maviri neshanu')
         self.assertEqual(num2words(235, lang='sn'), 'mazana maviri nemakumi matatu neshanu')
         self.assertEqual(num2words(345, lang='sn'), 'mazana matatu nemakumi mana neshanu')
-        self.assertEqual(num2words(456, lang='sn'), 'mazana mana nemakumi mashanu netanhatu')
+        self.assertEqual(num2words(456, lang='sn'), 'mazana mana nemakumi mashanu nenhatu')
         self.assertEqual(num2words(567, lang='sn'), 'mazana mashanu nemakumi matanhatu nenomwe')
         self.assertEqual(num2words(678, lang='sn'), 'mazana matanhatu nemakumi manomwe nesere')
         self.assertEqual(num2words(789, lang='sn'), 'mazana manomwe nemakumi masere nepfumbamwe')
@@ -109,14 +109,14 @@ class Num2WordsSNTest(TestCase):
 
     def test_thousands_complex(self):
         """Test complex thousand numbers in Shona"""
-        self.assertEqual(num2words(1001, lang='sn'), 'churu nemotsi')
+        self.assertEqual(num2words(1001, lang='sn'), 'churu neimwe')
         self.assertEqual(num2words(1010, lang='sn'), 'churu negumi')
         self.assertEqual(num2words(1100, lang='sn'), 'churu nezana')
         self.assertEqual(num2words(1234, lang='sn'), 'churu nemazana maviri nemakumi matatu nechina')
         self.assertEqual(num2words(2345, lang='sn'), 'zvuru zviviri nemazana matatu nemakumi mana neshanu')
         self.assertEqual(num2words(5678, lang='sn'), 'zvuru zvishanu nemazana matanhatu nemakumi manomwe nesere')
         self.assertEqual(num2words(9999, lang='sn'), 'zvuru zvipfumbamwe nemazana mapfumbamwe nemakumi mapfumbamwe nepfumbamwe')
-        self.assertEqual(num2words(10001, lang='sn'), 'zvuru gumi nemotsi')
+        self.assertEqual(num2words(10001, lang='sn'), 'zvuru gumi neimwe')
         self.assertEqual(num2words(15000, lang='sn'), 'zvuru gumi neshanu')
         self.assertEqual(num2words(20000, lang='sn'), 'zvuru makumi maviri')
         self.assertEqual(num2words(25000, lang='sn'), 'zvuru makumi maviri neshanu')
@@ -134,7 +134,7 @@ class Num2WordsSNTest(TestCase):
         self.assertEqual(num2words(1000000, lang='sn'), 'miriyoni')
         self.assertEqual(num2words(2000000, lang='sn'), 'miriyoni mbiri')
         self.assertEqual(num2words(5000000, lang='sn'), 'miriyoni shanu')
-        self.assertEqual(num2words(1000001, lang='sn'), 'miriyoni nemotsi')
+        self.assertEqual(num2words(1000001, lang='sn'), 'miriyoni neimwe')
         self.assertEqual(num2words(1234567, lang='sn'), 'miriyoni nezvuru mazana maviri nemakumi matatu nechina nemazana mashanu nemakumi matanhatu nenomwe')
         self.assertEqual(num2words(9999999, lang='sn'), 'miriyoni pfumbamwe nezvuru mazana mapfumbamwe nemakumi mapfumbamwe nepfumbamwe nemazana mapfumbamwe nemakumi mapfumbamwe nepfumbamwe')
 
@@ -182,9 +182,9 @@ class Num2WordsSNTest(TestCase):
         self.assertEqual(num2words(8, lang='sn', to='ordinal'), 'wechisere')
         self.assertEqual(num2words(9, lang='sn', to='ordinal'), 'wechipfumbamwe')
         self.assertEqual(num2words(10, lang='sn', to='ordinal'), 'wegumi')
-        self.assertEqual(num2words(11, lang='sn', to='ordinal'), 'wegumi nemotsi')
+        self.assertEqual(num2words(11, lang='sn', to='ordinal'), 'wegumi neimwe')
         self.assertEqual(num2words(20, lang='sn', to='ordinal'), 'wemakumi maviri')
-        self.assertEqual(num2words(21, lang='sn', to='ordinal'), 'wemakumi maviri nemotsi')
+        self.assertEqual(num2words(21, lang='sn', to='ordinal'), 'wemakumi maviri neimwe')
         self.assertEqual(num2words(100, lang='sn', to='ordinal'), 'wezana')
         self.assertEqual(num2words(1000, lang='sn', to='ordinal'), 'wechuru')
 
@@ -208,7 +208,7 @@ class Num2WordsSNTest(TestCase):
         )
         self.assertEqual(
             num2words(1234.56, lang='sn', to='currency', currency='USD'),
-            'madhora churu nemazana maviri nemakumi matatu nechina nesendi makumi mashanu netanhatu'
+            'madhora churu nemazana maviri nemakumi matatu nechina nesendi makumi mashanu nenhatu'
         )
 
     def test_year(self):
@@ -216,7 +216,7 @@ class Num2WordsSNTest(TestCase):
         self.assertEqual(num2words(1990, lang='sn', to='year'), 'churu nemazana mapfumbamwe nemakumi mapfumbamwe')
         self.assertEqual(num2words(2000, lang='sn', to='year'), 'zvuru zviviri')
         self.assertEqual(num2words(2024, lang='sn', to='year'), 'zvuru zviviri nemakumi maviri nechina')
-        self.assertEqual(num2words(1066, lang='sn', to='year'), 'churu nemakumi matanhatu netanhatu')
+        self.assertEqual(num2words(1066, lang='sn', to='year'), 'churu nemakumi matanhatu nenhatu')
         self.assertEqual(num2words(1865, lang='sn', to='year'), 'churu nemazana masere nemakumi matanhatu neshanu')
 
     def test_large_numbers(self):

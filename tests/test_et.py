@@ -99,7 +99,7 @@ class Num2WordsETTest(TestCase):
         self.assertEqual(num2words(10000, lang='et'), 'kümme tuhat')
         self.assertEqual(num2words(15000, lang='et'), 'viisteist tuhat')
         self.assertEqual(num2words(25000, lang='et'), 'kakskümmend viis tuhat')
-        self.assertEqual(num2words(100000, lang='et'), 'ükssada tuhat')
+        self.assertEqual(num2words(100000, lang='et'), 'sada tuhat')
         self.assertEqual(num2words(999999, lang='et'),
                          'üheksasada üheksakümmend üheksa tuhat '
                          'üheksasada üheksakümmend üheksa')
@@ -166,11 +166,11 @@ class Num2WordsETTest(TestCase):
     def test_currency(self):
         """Test currency in Estonian."""
         self.assertEqual(
-            num2words(1.00, lang='et', to='currency', currency='EUR'),
+            num2words(1, lang='et', to='currency', currency='EUR'),
             'üks euro'
         )
         self.assertEqual(
-            num2words(2.00, lang='et', to='currency', currency='EUR'),
+            num2words(2, lang='et', to='currency', currency='EUR'),
             'kaks eurot'
         )
         self.assertEqual(
@@ -186,7 +186,7 @@ class Num2WordsETTest(TestCase):
             'ükssada eurot ja kakskümmend viis senti'
         )
         self.assertEqual(
-            num2words(1.00, lang='et', to='currency', currency='USD'),
+            num2words(1, lang='et', to='currency', currency='USD'),
             'üks dollar'
         )
         self.assertEqual(

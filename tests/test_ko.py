@@ -60,15 +60,15 @@ class Num2WordsKOTest(TestCase):
             self.assertEqual(n2k(num), out)
 
     def test_year(self):
-        cases = [(2000, "이천년"), (2002, "이천이년"), (2018, "이천십팔년"),
-                 (1954, "천구백오십사년"), (1910, "천구백십년"), (-1000, "기원전 천년")]
+        cases = [(2000, "이천"), (2002, "이천이"), (2018, "이천십팔"),
+                 (1954, "천구백오십사"), (1910, "천구백십"), (-1000, "기원전 천")]
         for num, out in cases:
             self.assertEqual(n2k(num, to="year"), out)
 
     def test_currency(self):
-        cases_krw = [(8350, "팔천삼백오십원"), (14980, "만사천구백팔십원"),
-                     (250004000, "이억오천만사천원")]
-        cases_usd = [(4, "사달러 영센트"), (19.55, "십구달러 오십오센트")]
+        cases_krw = [(8350, "팔천삼백오십원"), (14980, "만 사천구백팔십원"),
+                     (250004000, "이억 오천만 사천원")]
+        cases_usd = [(4, "사달러"), (19.55, "십구달러 오십오센트")]
         cases_jpy = [(15, "십오엔"), (50, "오십엔")]
         for num, out in cases_krw:
             self.assertEqual(n2k(num, to="currency"), out)
