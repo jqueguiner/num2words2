@@ -56,11 +56,11 @@ def run_single_test(test_case: dict) -> Tuple[str, str, str]:
     Returns: (status, actual_output, error_message)
     """
     try:
-        lang = test_case['language']
+        lang = test_case.get('lang', test_case.get('language', '')).strip()
         number = parse_number(test_case['number'])
-        conversion_type = test_case['conversion_type']
+        conversion_type = test_case.get('to', test_case.get('conversion_type', 'cardinal')).strip()
         currency = test_case.get('currency', '').strip()
-        expected = test_case['expected_output'].strip()
+        expected = test_case.get('expected', test_case.get('expected_output', '')).strip()
 
         # Build kwargs
         kwargs = {'lang': lang}
@@ -148,7 +148,7 @@ def run_tests(csv_file: str, limit: int = None, verbose: bool = False) -> TestRe
                 break
 
             # Skip empty rows
-            if not test_case.get('language'):
+            if not test_case.get('lang', test_case.get('language')):
                 results.skipped += 1
                 continue
 
@@ -156,8 +156,8 @@ def run_tests(csv_file: str, limit: int = None, verbose: bool = False) -> TestRe
             status, actual, error = run_single_test(test_case)
 
             # Update statistics
-            lang = test_case['language']
-            conv_type = test_case['conversion_type']
+            lang = test_case.get('lang', test_case.get('language', ''))
+            conv_type = test_case.get('to', test_case.get('conversion_type', 'cardinal'))
             currency = test_case.get('currency', 'none')
 
             if status == 'PASS':
@@ -195,7 +195,7 @@ def run_tests(csv_file: str, limit: int = None, verbose: bool = False) -> TestRe
             # Verbose output for failures
             if verbose and status != 'PASS':
                 print(f"\n\n{status}: {lang} | {test_case['number']} | {conv_type}")
-                print(f"  Expected: {test_case['expected_output']}")
+                print(f"  Expected: {test_case.get('expected', test_case.get('expected_output', ''))}")
                 if actual:
                     print(f"  Actual:   {actual}")
                 if error:
@@ -258,8 +258,8 @@ def print_summary(results: TestResult, detailed: bool = False):
             print(f"{'='*80}")
             for failure in results.failures[:10]:
                 test = failure['test']
-                print(f"\n{test['language']} | {test['number']} | {test['conversion_type']}")
-                print(f"  Expected: {test['expected_output']}")
+                print(f"\n{test.get('lang', test.get('language', ''))} | {test['number']} | {test.get('to', test.get('conversion_type', 'cardinal'))}")
+                print(f"  Expected: {test.get('expected', test.get('expected_output', ''))}")
                 print(f"  Actual:   {failure['actual']}")
 
         # Show some errors
@@ -269,7 +269,7 @@ def print_summary(results: TestResult, detailed: bool = False):
             print(f"{'='*80}")
             for error_item in results.errors_list[:10]:
                 test = error_item['test']
-                print(f"\n{test['language']} | {test['number']} | {test['conversion_type']}")
+                print(f"\n{test.get('lang', test.get('language', ''))} | {test['number']} | {test.get('to', test.get('conversion_type', 'cardinal'))}")
                 print(f"  Error: {error_item['error']}")
 
     # Exit code
@@ -323,7 +323,9 @@ def main():
     # Print timing
     elapsed = time.time() - start_time
     print(f"\nTest completed in {elapsed:.2f} seconds")
-    print(f"Average: {elapsed/(results.passed + results.failed + results.errors):.4f} seconds per test")
+    total_tests_run = results.passed + results.failed + results.errors
+    if total_tests_run > 0:
+        print(f"Average: {elapsed/total_tests_run:.4f} seconds per test")
 
     sys.exit(exit_code)
 
