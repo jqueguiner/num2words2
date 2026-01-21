@@ -125,6 +125,16 @@ def run_tests(csv_file: str, limit: int = None, verbose: bool = False) -> TestRe
     results = TestResult()
     csv_path = Path(csv_file)
 
+    # If file doesn't exist, try looking in tests directory
+    if not csv_path.exists():
+        # Check if we're in the project root
+        tests_csv = Path('tests') / csv_file
+        if tests_csv.exists():
+            csv_path = tests_csv
+        # Check if the file exists in current directory
+        elif Path(csv_file).name == csv_file and (Path(__file__).parent / csv_file).exists():
+            csv_path = Path(__file__).parent / csv_file
+
     if not csv_path.exists():
         print(f"Error: Test file not found: {csv_file}")
         sys.exit(1)
