@@ -6,16 +6,16 @@ on:
     paths:
       - 'num2words2/**'
       - 'tests/**'
-      - 'run_e2e_tests.py'
-      - 'massive_llm_e2e_tests.csv'
+      - 'tests/run_e2e_tests.py'
+      - 'tests/e2e_test_suite.csv'
       - '.github/workflows/e2e-tests.yml'
   pull_request:
     branches: [ master, main ]
     paths:
       - 'num2words2/**'
       - 'tests/**'
-      - 'run_e2e_tests.py'
-      - 'massive_llm_e2e_tests.csv'
+      - 'tests/run_e2e_tests.py'
+      - 'tests/e2e_test_suite.csv'
   schedule:
     # Run daily at 2 AM UTC
     - cron: '0 2 * * *'
@@ -33,18 +33,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
-        exclude:
-          # Python 3.7 doesn't work well on newer macOS
-          - os: macos-latest
-            python-version: '3.7'
-          # Add Python 3.7 on macOS 12
-          - os: macos-12
-            python-version: '3.7'
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
         include:
-          # Add Python 3.7 on macOS 12 instead
-          - os: macos-12
-            python-version: '3.7'
           # Test on PyPy as well
           - os: ubuntu-latest
             python-version: 'pypy-3.9'
@@ -69,22 +59,22 @@ jobs:
     - name: Quick E2E Test (PR/Push)
       if: github.event_name != 'schedule' && github.event_name != 'workflow_dispatch'
       run: |
-        python run_e2e_tests.py --quick --detailed
+        python tests/run_e2e_tests.py --quick --detailed
       continue-on-error: ${{ matrix.python-version == 'pypy-3.9' || matrix.python-version == 'pypy-3.10' }}
 
     - name: Full E2E Test (Scheduled)
       if: github.event_name == 'schedule'
       run: |
-        python run_e2e_tests.py --detailed --limit 10000
+        python tests/run_e2e_tests.py --detailed --limit 10000
       continue-on-error: ${{ matrix.python-version == 'pypy-3.9' || matrix.python-version == 'pypy-3.10' }}
 
     - name: Custom E2E Test (Manual)
       if: github.event_name == 'workflow_dispatch'
       run: |
         if [ -z "${{ github.event.inputs.test_limit }}" ]; then
-          python run_e2e_tests.py --detailed
+          python tests/run_e2e_tests.py --detailed
         else
-          python run_e2e_tests.py --detailed --limit ${{ github.event.inputs.test_limit }}
+          python tests/run_e2e_tests.py --detailed --limit ${{ github.event.inputs.test_limit }}
         fi
       shell: bash
       continue-on-error: ${{ matrix.python-version == 'pypy-3.9' || matrix.python-version == 'pypy-3.10' }}
