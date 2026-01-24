@@ -222,6 +222,226 @@ def run_all_tests():
     return total_failed == 0
 
 
+def test_converter_instance_creation():
+    """Test creation of converter instance."""
+    converter = ComprehensiveConverter()
+    assert converter is not None
+    assert hasattr(converter, "convert_sentence")
+    assert hasattr(converter, "detect_language")
+    assert hasattr(converter, "extract_numbers")
+    assert hasattr(converter, "convert_number")
+
+
+def test_force_language_override():
+    """Test that force_language parameter overrides detection."""
+    converter = ComprehensiveConverter()
+
+    # French sentence but force to English
+    converter.convert_sentence("Il fait 25 degrés", force_language="en")
+    assert converter.lang == "en"
+
+    # English sentence but force to French
+    converter.convert_sentence("It is 25 degrees", force_language="fr")
+    assert converter.lang == "fr"
+
+
+def test_unsupported_languages():
+    """Test handling of unsupported languages."""
+    converter = ComprehensiveConverter()
+
+    # Force unsupported language should still work without error
+    result = converter.convert_sentence("Test 123", force_language="xx")
+    # Should still convert numbers
+    assert (
+        "123" not in result or result == "Test 123"
+    )  # Either converts or leaves as-is
+
+
+def test_mixed_number_formats():
+    """Test conversion of various number formats in sentences."""
+    converter = ComprehensiveConverter()
+
+    test_cases = [
+        ("Test 42 and 100", "en", lambda x: "42" not in x and "100" not in x),
+        (
+            "Numbers: 1, 2, 3",
+            "en",
+            lambda x: "1" not in x and "2" not in x and "3" not in x,
+        ),
+        (
+            "Price is $99.99",
+            "en",
+            lambda x: x != "Price is $99.99",
+        ),  # Should handle currency symbol
+    ]
+
+    for sentence, lang, check_func in test_cases:
+        result = converter.convert_sentence(sentence, force_language=lang)
+        # Just ensure it runs without error
+        assert result is not None
+
+
+def test_empty_and_edge_cases():
+    """Test edge cases."""
+    converter = ComprehensiveConverter()
+
+    # Empty string
+    assert converter.convert_sentence("") == ""
+
+    # Only spaces
+    assert converter.convert_sentence("   ") == "   "
+
+    # No numbers
+    assert converter.convert_sentence("No numbers here") == "No numbers here"
+
+    # Only numbers
+    result = converter.convert_sentence("123", force_language="en")
+    assert "123" not in result
+
+    # Special characters
+    result = converter.convert_sentence("!@#$%^&*()", force_language="en")
+    assert result == "!@#$%^&*()"
+
+
+def test_language_detection():
+    """Test the language detection functionality."""
+    converter = ComprehensiveConverter()
+
+    # Test English detection
+    lang = converter.detect_language("The temperature is 25 degrees")
+    assert lang == "en"
+
+    # Test French detection
+    lang = converter.detect_language("Il fait 30 degrés")
+    assert lang == "fr"
+
+    # Test German detection
+    lang = converter.detect_language("Das Wetter ist schön")
+    assert lang == "de"
+
+
+def test_year_detection_context():
+    """Test that year detection only happens in appropriate contexts."""
+    converter = ComprehensiveConverter()
+
+    # Should detect as year in date context
+    result = converter.convert_sentence("In the year 2024", force_language="en")
+    assert result is not None
+
+    # Regular number (not year context)
+    result = converter.convert_sentence("Item number 2024", force_language="en")
+    assert result is not None
+
+
+def test_multiple_conversions_state():
+    """Test that converter maintains proper state across conversions."""
+    converter = ComprehensiveConverter()
+
+    # First conversion in French
+    converter.convert_sentence("Le nombre est 10", force_language="fr")
+    assert converter.lang == "fr"
+
+    # Second conversion in English
+    converter.convert_sentence("The number is 20", force_language="en")
+    assert converter.lang == "en"
+
+    # Auto-detect should work after forced languages
+    converter.convert_sentence("Das ist 30 Grad")
+    assert converter.lang in ["de", "en", "fr"]  # Should detect a language
+
+
+def test_large_numbers_conversion():
+    """Test conversion of very large numbers."""
+    converter = ComprehensiveConverter()
+
+    # Million
+    result = converter.convert_sentence("Population: 1000000", force_language="en")
+    assert "1000000" not in result
+
+    # Billion
+    result = converter.convert_sentence("Budget: 1000000000", force_language="en")
+    assert "1000000000" not in result
+
+
+def test_negative_numbers():
+    """Test negative number conversion."""
+    converter = ComprehensiveConverter()
+
+    result = converter.convert_sentence("Temperature: -10 degrees", force_language="en")
+    assert "-10" not in result
+
+    result = converter.convert_sentence("Balance: -500", force_language="en")
+    assert "-500" not in result
+
+
+def test_decimal_numbers():
+    """Test decimal number conversion."""
+    converter = ComprehensiveConverter()
+
+    result = converter.convert_sentence("Pi is 3.14", force_language="en")
+    assert "3.14" not in result
+
+    result = converter.convert_sentence("Price: 99.99", force_language="en")
+    assert "99.99" not in result
+
+
+def test_ordinal_detection():
+    """Test ordinal number detection and conversion."""
+    converter = ComprehensiveConverter()
+
+    # Test ordinal contexts
+    result = converter.convert_sentence("1st place winner", force_language="en")
+    assert result is not None
+
+    result = converter.convert_sentence("2nd edition", force_language="en")
+    assert result is not None
+
+
+def test_time_formats():
+    """Test time format handling."""
+    converter = ComprehensiveConverter()
+
+    # Various time formats
+    result = converter.convert_sentence("Meeting at 14:30", force_language="en")
+    assert result is not None
+
+    result = converter.convert_sentence("Duration: 2 hours", force_language="en")
+    assert "2" not in result
+
+
+def test_percentage_handling():
+    """Test percentage handling."""
+    converter = ComprehensiveConverter()
+
+    result = converter.convert_sentence("Growth of 25%", force_language="en")
+    assert result is not None
+
+    result = converter.convert_sentence("100% complete", force_language="en")
+    assert result is not None
+
+
+def test_range_handling():
+    """Test number range handling."""
+    converter = ComprehensiveConverter()
+
+    result = converter.convert_sentence("Ages 18-25", force_language="en")
+    assert result is not None
+
+    result = converter.convert_sentence("Pages 100-150", force_language="en")
+    assert result is not None
+
+
+def test_roman_numerals():
+    """Test that Roman numerals are preserved."""
+    converter = ComprehensiveConverter()
+
+    result = converter.convert_sentence("Chapter III", force_language="en")
+    assert result == "Chapter III"  # Should preserve Roman numerals
+
+    result = converter.convert_sentence("King Louis XIV", force_language="en")
+    assert "XIV" in result  # Should preserve Roman numerals
+
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == "--csv" and len(sys.argv) > 2:

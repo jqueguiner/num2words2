@@ -419,6 +419,10 @@ class Num2WordsELTest(TestCase):
         self.assertEqual(num2words(100, lang="el"), num2words("100", lang="el"))
         self.assertEqual(num2words(1000, lang="el"), num2words("1000", lang="el"))
 
+        # Test ordinal with floats (should raise error)
+        with self.assertRaises(TypeError):
+            num2words(3.14, lang="el", ordinal=True)
+
     def test_converter_methods(self):
         """Test direct converter methods for better coverage."""
         from num2words2.lang_EL import Num2Word_EL
@@ -435,7 +439,114 @@ class Num2WordsELTest(TestCase):
         # Test negative word if exists
         if hasattr(converter, "negword"):
             self.assertIsNotNone(converter.negword)
+            self.assertEqual(converter.negword, "μείον ")
 
         # Test point word if exists
         if hasattr(converter, "pointword"):
             self.assertIsNotNone(converter.pointword)
+            self.assertEqual(converter.pointword, "κόμμα")
+
+        # Test error messages
+        self.assertEqual(
+            converter.errmsg_nonnum, "Μόνο αριθμοί μπορούν να μετατραπούν σε λέξεις."
+        )
+        self.assertIn("μεγάλος", converter.errmsg_toobig)
+
+        # Test exclude_title
+        self.assertEqual(converter.exclude_title, ["και", "κόμμα", "μείον"])
+
+        # Test GIGA and MEGA suffixes
+        self.assertEqual(converter.GIGA_SUFFIX, "")
+        self.assertEqual(converter.MEGA_SUFFIX, "")
+
+    def test_merge_method(self):
+        """Test merge method for Greek."""
+        from num2words2.lang_EL import Num2Word_EL
+
+        converter = Num2Word_EL()
+        converter.setup()
+
+        # Test basic merge
+        result = converter.merge(("δέκα", 10), ("πέντε", 5))
+        self.assertIsNotNone(result)
+
+        # Test merge with hundreds
+        result = converter.merge(("εκατό", 100), ("είκοσι", 20))
+        self.assertIsNotNone(result)
+
+        # Test merge with thousands
+        result = converter.merge(("χίλια", 1000), ("εκατό", 100))
+        self.assertIsNotNone(result)
+
+    def test_to_ordinal_num(self):
+        """Test ordinal number formatting."""
+        from num2words2.lang_EL import Num2Word_EL
+
+        converter = Num2Word_EL()
+
+        # Test ordinal number formatting
+        self.assertEqual(converter.to_ordinal_num(1), "1ος")
+        self.assertEqual(converter.to_ordinal_num(2), "2ος")
+        self.assertEqual(converter.to_ordinal_num(3), "3ος")
+        self.assertEqual(converter.to_ordinal_num(10), "10ος")
+        self.assertEqual(converter.to_ordinal_num(100), "100ος")
+        self.assertEqual(converter.to_ordinal_num(1000), "1000ος")
+
+    def test_pluralize(self):
+        """Test pluralize method."""
+        from num2words2.lang_EL import Num2Word_EL
+
+        converter = Num2Word_EL()
+
+        # Test pluralization
+        forms = ["ευρώ", "ευρώ"]
+        self.assertEqual(converter.pluralize(1, forms), "ευρώ")
+        self.assertEqual(converter.pluralize(2, forms), "ευρώ")
+        self.assertEqual(converter.pluralize(100, forms), "ευρώ")
+
+    def test_low_numwords_access(self):
+        """Test access to low numwords and internal structures."""
+        from num2words2.lang_EL import Num2Word_EL
+
+        converter = Num2Word_EL()
+        converter.setup()
+
+        # Test low_numwords list
+        self.assertEqual(converter.low_numwords[20], "μηδέν")  # index 20 is 0
+        self.assertEqual(converter.low_numwords[15], "πέντε")  # index 15 is 5
+        self.assertEqual(converter.low_numwords[10], "δέκα")  # index 10 is 10
+        self.assertEqual(converter.low_numwords[0], "είκοσι")  # index 0 is 20
+
+        # Test mid_numwords
+        self.assertIsNotNone(converter.mid_numwords)
+        self.assertIn((1000, "χίλια"), converter.mid_numwords)
+        self.assertIn((100, "εκατό"), converter.mid_numwords)
+
+    def test_to_currency_errors(self):
+        """Test currency conversion error handling."""
+        from num2words2.lang_EL import Num2Word_EL
+
+        converter = Num2Word_EL()
+
+        # Test unsupported currency
+        with self.assertRaises(NotImplementedError):
+            converter.to_currency(100, currency="XYZ")
+
+    def test_more_ordinals(self):
+        """Test additional ordinal numbers."""
+        # Test special ordinals that follow the converter's logic
+        self.assertEqual(num2words(1000000, lang="el", ordinal=True), "εκατομμυριοστός")
+
+    def test_special_hundreds(self):
+        """Test special hundreds handling in Greek."""
+        # Test numbers with special hundreds rules
+        self.assertEqual(num2words(111, lang="el"), "εκατό έντεκα")
+        self.assertEqual(num2words(112, lang="el"), "εκατό δώδεκα")
+        self.assertEqual(num2words(200, lang="el"), "διακόσια")
+        self.assertEqual(num2words(300, lang="el"), "τριακόσια")
+        self.assertEqual(num2words(400, lang="el"), "τετρακόσια")
+        self.assertEqual(num2words(500, lang="el"), "πεντακόσια")
+        self.assertEqual(num2words(600, lang="el"), "εξακόσια")
+        self.assertEqual(num2words(700, lang="el"), "επτακόσια")
+        self.assertEqual(num2words(800, lang="el"), "οκτακόσια")
+        self.assertEqual(num2words(900, lang="el"), "εννιακόσια")
