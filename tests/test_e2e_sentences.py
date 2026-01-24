@@ -10,10 +10,10 @@ import sys
 import unittest
 from pathlib import Path
 
+from num2words2 import num2words_sentence  # noqa: E402
+
 # Add parent directory to path to import num2words2
 sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from num2words2 import num2words_sentence  # noqa: E402
 
 
 class TestNum2WordsSentencesE2E(unittest.TestCase):
