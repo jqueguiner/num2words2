@@ -188,7 +188,7 @@ def run_csv_file(csv_path):
 
 
 def main():
-    csv_path = "tests/e2e_test_sentences.csv"
+    csv_path = "tests/data/e2e_test_sentences.csv"
 
     print(f"Testing with: {csv_path}\n")
 
