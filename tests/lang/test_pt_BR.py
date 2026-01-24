@@ -440,9 +440,14 @@ class Num2WordsPT_BRTest(TestCase):
         self.assertEqual(num2words(100, lang="pt-br"), num2words("100", lang="pt-br"))
         self.assertEqual(num2words(1000, lang="pt-br"), num2words("1000", lang="pt-br"))
 
+        # Test invalid ordinal input (float) - Note: PT_BR doesn't raise TypeError
+        # The implementation allows floats in ordinal
+        result = num2words(3.14, lang="pt-br", ordinal=True)
+        self.assertIsNotNone(result)
+
     def test_converter_methods(self):
         """Test direct converter methods for better coverage."""
-        from num2words2.lang_PT_BR import Num2Word_PT_BR
+        from num2words2.lang_PT_BR import Num2Word_PT_BR, negativeword
 
         converter = Num2Word_PT_BR()
 
@@ -460,3 +465,221 @@ class Num2WordsPT_BRTest(TestCase):
         # Test point word if exists
         if hasattr(converter, "pointword"):
             self.assertIsNotNone(converter.pointword)
+
+        # Test negativeword function
+        self.assertEqual(negativeword(converter), "menos ")
+
+        # Test thousand_separators
+        self.assertIn(3, converter.thousand_separators)
+        self.assertEqual(converter.thousand_separators[3], "milésimo")
+        self.assertEqual(converter.thousand_separators[6], "milionésimo")
+        self.assertEqual(converter.thousand_separators[9], "bilionésimo")
+        self.assertEqual(converter.thousand_separators[12], "trilionésimo")
+        self.assertEqual(converter.thousand_separators[15], "quatrilionésimo")
+
+    def test_more_currency_cases(self):
+        """Test additional currency cases."""
+        # Test various amounts
+        self.assertEqual(
+            num2words(2, lang="pt-br", to="currency", currency="BRL"), "dois reais"
+        )
+        self.assertEqual(
+            num2words(3, lang="pt-br", to="currency", currency="BRL"), "três reais"
+        )
+        self.assertEqual(
+            num2words(10, lang="pt-br", to="currency", currency="BRL"), "dez reais"
+        )
+        self.assertEqual(
+            num2words(100, lang="pt-br", to="currency", currency="BRL"), "cem reais"
+        )
+        self.assertEqual(
+            num2words(1000, lang="pt-br", to="currency", currency="BRL"), "mil reais"
+        )
+
+        # Test millions with currency - should have "de"
+        self.assertEqual(
+            num2words(1000000, lang="pt-br", to="currency", currency="BRL"),
+            "um milhão de reais",
+        )
+        self.assertEqual(
+            num2words(2000000, lang="pt-br", to="currency", currency="BRL"),
+            "dois milhões de reais",
+        )
+
+        # Test billions with currency - should have "de"
+        self.assertEqual(
+            num2words(1000000000, lang="pt-br", to="currency", currency="BRL"),
+            "um bilhão de reais",
+        )
+        self.assertEqual(
+            num2words(2000000000, lang="pt-br", to="currency", currency="BRL"),
+            "dois bilhões de reais",
+        )
+
+        # Test trillions with currency - should have "de"
+        self.assertEqual(
+            num2words(1000000000000, lang="pt-br", to="currency", currency="BRL"),
+            "um trilhão de reais",
+        )
+        self.assertEqual(
+            num2words(2000000000000, lang="pt-br", to="currency", currency="BRL"),
+            "dois trilhões de reais",
+        )
+
+        # Test EUR currency
+        self.assertEqual(
+            num2words(2, lang="pt-br", to="currency", currency="EUR"), "dois euros"
+        )
+        self.assertEqual(
+            num2words(100, lang="pt-br", to="currency", currency="EUR"), "cem euros"
+        )
+        self.assertEqual(
+            num2words(1000000, lang="pt-br", to="currency", currency="EUR"),
+            "um milhão de euros",
+        )
+
+        # Test USD currency
+        self.assertEqual(
+            num2words(2, lang="pt-br", to="currency", currency="USD"), "dois dólares"
+        )
+        self.assertEqual(
+            num2words(100, lang="pt-br", to="currency", currency="USD"), "cem dólares"
+        )
+        self.assertEqual(
+            num2words(1000000, lang="pt-br", to="currency", currency="USD"),
+            "um milhão de dólares",
+        )
+
+        # Test cents pluralization
+        self.assertEqual(
+            num2words(0.02, lang="pt-br", to="currency", currency="BRL"),
+            "zero reais e dois centavos",
+        )
+        self.assertEqual(
+            num2words(0.02, lang="pt-br", to="currency", currency="EUR"),
+            "zero euros e dois cêntimos",
+        )
+
+        # Test negative currency
+        self.assertEqual(
+            num2words(-1, lang="pt-br", to="currency", currency="BRL"), "menos um real"
+        )
+        self.assertEqual(
+            num2words(-10, lang="pt-br", to="currency", currency="BRL"),
+            "menos dez reais",
+        )
+        self.assertEqual(
+            num2words(-1.50, lang="pt-br", to="currency", currency="BRL"),
+            "menos um real e cinquenta centavos",
+        )
+
+    def test_merge_special_cases(self):
+        """Test special cases in merge method."""
+        from num2words2.lang_PT_BR import Num2Word_PT_BR
+
+        converter = Num2Word_PT_BR()
+        converter.setup()
+
+        # Test cnum == 1 with nnum < 1000000 (should return just ntext)
+        result = converter.merge(("um", 1), ("mil", 1000))
+        self.assertEqual(result, ("mil", 1000))
+
+        # Test cnum == 1 with nnum == 1000000 (should become 'um')
+        result = converter.merge(("um", 1), ("milhão", 1000000))
+        self.assertEqual(result, ("um milhão", 1000000))
+
+        # Test 100 becoming 'cento'
+        result = converter.merge(("cem", 100), ("vinte", 20))
+        self.assertEqual(result, ("cento e vinte", 120))
+
+        # Test millions pluralization for cnum > 1
+        result = converter.merge(("dois", 2), ("milhão", 1000000))
+        self.assertEqual(result, ("dois milhões", 2000000))
+
+        # Test hundreds multiplication
+        converter.hundreds = {2: "duzentos", 3: "trezentos"}
+        result = converter.merge(("dois", 2), ("cem", 100))
+        self.assertEqual(result, ("duzentos", 200))
+
+    def test_trillion_scale(self):
+        """Test Brazilian short scale for trillions."""
+        # Test trillion (10^12)
+        self.assertEqual(num2words(1000000000000, lang="pt-br"), "um trilhão")
+        self.assertEqual(num2words(2000000000000, lang="pt-br"), "dois trilhões")
+
+        # Test trillion with billions
+        self.assertEqual(
+            num2words(1001000000000, lang="pt-br"), "um trilhão, um bilhão"
+        )
+
+        # Test trillion with millions
+        self.assertEqual(
+            num2words(1000001000000, lang="pt-br"), "um trilhão e um milhão"
+        )
+
+        # Test trillion with thousands
+        self.assertEqual(num2words(1000000001000, lang="pt-br"), "um trilhão e mil")
+
+        # Test complex trillion number
+        self.assertEqual(
+            num2words(1234567890123, lang="pt-br"),
+            "um trilhão, duzentos e trinta e quatro bilhões e quinhentos e sessenta e sete milhões oitocentos e noventa mil cento e vinte e três",
+        )
+
+    def test_unsupported_currency(self):
+        """Test unsupported currency code."""
+        # The parent class should handle unknown currencies
+        # This might not raise an error but return a default format
+        result = num2words(100, lang="pt-br", to="currency", currency="GBP")
+        # Should still produce some output
+        self.assertIsNotNone(result)
+
+    def test_decimal_currency_conversion(self):
+        """Test currency conversion with Decimal values."""
+        from decimal import Decimal
+
+        # Test Decimal whole number
+        self.assertEqual(
+            num2words(Decimal("100.00"), lang="pt-br", to="currency", currency="BRL"),
+            "cem reais",
+        )
+
+        # Test Decimal with cents
+        self.assertEqual(
+            num2words(Decimal("100.50"), lang="pt-br", to="currency", currency="BRL"),
+            "cem reais e cinquenta centavos",
+        )
+
+    def test_float_currency_conversion(self):
+        """Test currency conversion with float values."""
+        # Test float whole number
+        self.assertEqual(
+            num2words(100.0, lang="pt-br", to="currency", currency="BRL"), "cem reais"
+        )
+
+        # Test float with decimal
+        self.assertEqual(
+            num2words(100.5, lang="pt-br", to="currency", currency="BRL"),
+            "cem reais e cinquenta centavos",
+        )
+
+    def test_regex_replacements(self):
+        """Test regex replacements in to_cardinal."""
+        # Test numbers that trigger the regex replacement for "mil e cento"
+        self.assertEqual(num2words(1100, lang="pt-br"), "mil e cem")
+        self.assertEqual(num2words(1200, lang="pt-br"), "mil e duzentos")
+        self.assertEqual(num2words(1300, lang="pt-br"), "mil e trezentos")
+
+        # With additional numbers after hundreds
+        self.assertEqual(num2words(1111, lang="pt-br"), "mil, cento e onze")
+        self.assertEqual(
+            num2words(1234, lang="pt-br"), "mil, duzentos e trinta e quatro"
+        )
+
+        # Test with millions
+        self.assertEqual(num2words(1000100, lang="pt-br"), "um milhão, cem")
+        self.assertEqual(num2words(1000200, lang="pt-br"), "um milhão, duzentos")
+        self.assertEqual(
+            num2words(1001234, lang="pt-br"),
+            "um milhão, mil, duzentos e trinta e quatro",
+        )

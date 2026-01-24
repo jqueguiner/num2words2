@@ -396,6 +396,13 @@ class Num2WordsSLTest(TestCase):
         self.assertEqual(num2words(100, lang="sl"), num2words("100", lang="sl"))
         self.assertEqual(num2words(1000, lang="sl"), num2words("1000", lang="sl"))
 
+        # Test invalid ordinal input (float)
+        with self.assertRaises(TypeError):
+            num2words(3.14, lang="sl", ordinal=True)
+
+        # Test large numbers with ordinal flag
+        self.assertEqual(num2words(10001, lang="sl", ordinal=True), "desettisočprvi")
+
     def test_converter_methods(self):
         """Test direct converter methods for better coverage."""
         from num2words2.lang_SL import Num2Word_SL
@@ -416,3 +423,249 @@ class Num2WordsSLTest(TestCase):
         # Test point word if exists
         if hasattr(converter, "pointword"):
             self.assertIsNotNone(converter.pointword)
+
+    def test_pluralize(self):
+        """Test pluralize method."""
+        from num2words2.lang_SL import Num2Word_SL
+
+        converter = Num2Word_SL()
+
+        # Test pluralization rules
+        forms = ["evro", "evra", "evre", "evrov"]
+
+        # n % 100 == 1 -> forms[0]
+        self.assertEqual(converter.pluralize(1, forms), "evro")
+        self.assertEqual(converter.pluralize(101, forms), "evro")
+        self.assertEqual(converter.pluralize(201, forms), "evro")
+        self.assertEqual(converter.pluralize(301, forms), "evro")
+
+        # n % 100 == 2 -> forms[1]
+        self.assertEqual(converter.pluralize(2, forms), "evra")
+        self.assertEqual(converter.pluralize(102, forms), "evra")
+        self.assertEqual(converter.pluralize(202, forms), "evra")
+
+        # n % 100 in [3, 4] -> forms[2]
+        self.assertEqual(converter.pluralize(3, forms), "evre")
+        self.assertEqual(converter.pluralize(4, forms), "evre")
+        self.assertEqual(converter.pluralize(103, forms), "evre")
+        self.assertEqual(converter.pluralize(104, forms), "evre")
+        self.assertEqual(converter.pluralize(203, forms), "evre")
+        self.assertEqual(converter.pluralize(204, forms), "evre")
+
+        # else -> forms[3]
+        self.assertEqual(converter.pluralize(0, forms), "evrov")
+        self.assertEqual(converter.pluralize(5, forms), "evrov")
+        self.assertEqual(converter.pluralize(10, forms), "evrov")
+        self.assertEqual(converter.pluralize(11, forms), "evrov")
+        self.assertEqual(converter.pluralize(12, forms), "evrov")
+        self.assertEqual(converter.pluralize(15, forms), "evrov")
+        self.assertEqual(converter.pluralize(20, forms), "evrov")
+        self.assertEqual(converter.pluralize(100, forms), "evrov")
+        self.assertEqual(converter.pluralize(105, forms), "evrov")
+        self.assertEqual(converter.pluralize(111, forms), "evrov")
+        self.assertEqual(converter.pluralize(112, forms), "evrov")
+
+    def test_merge_special_cases(self):
+        """Test special cases in merge method."""
+        from num2words2.lang_SL import Num2Word_SL
+
+        converter = Num2Word_SL()
+        converter.setup()
+
+        # Test various merge scenarios
+        # Test when ctext ends with 'dve' and ordflag is True
+        converter.ordflag = True
+        result = converter.merge(("dve", 2), ("tisoč", 1000))
+        self.assertIn("dva", result[0])
+        converter.ordflag = False
+
+        # Test ctext == 'dve' without ordflag
+        result = converter.merge(("dve", 2), ("milijon", 1000000))
+        self.assertEqual(result[0][0:3], "dva")
+
+        # Test 'tri' ending with milijon
+        result = converter.merge(("tri", 3), ("milijon", 1000000))
+        self.assertIn("trije", result[0])
+
+        # Test 'štiri' ending with milijon
+        result = converter.merge(("štiri", 4), ("milijon", 1000000))
+        self.assertIn("štirje", result[0])
+
+        # Test cnum >= 20 and < 100 with nnum == 2
+        result = converter.merge(("dvajset", 20), ("dve", 2))
+        self.assertIn("dva", result[0])
+
+        # Test when ctext ends with 'ena' and nnum >= 1000
+        result = converter.merge(("ena", 1), ("tisoč", 1000))
+        self.assertEqual(result, ("tisoč", 1000))
+
+    def test_to_ordinal_num(self):
+        """Test ordinal number formatting."""
+        from num2words2.lang_SL import Num2Word_SL
+
+        converter = Num2Word_SL()
+
+        # Test ordinal number formatting
+        self.assertEqual(converter.to_ordinal_num(1), "1.")
+        self.assertEqual(converter.to_ordinal_num(2), "2.")
+        self.assertEqual(converter.to_ordinal_num(10), "10.")
+        self.assertEqual(converter.to_ordinal_num(100), "100.")
+        self.assertEqual(converter.to_ordinal_num(1000), "1000.")
+
+    def test_more_ordinals(self):
+        """Test additional ordinal numbers."""
+        # Test compound ordinals
+        self.assertEqual(num2words(21, lang="sl", ordinal=True), "enaindvajseti")
+        self.assertEqual(num2words(22, lang="sl", ordinal=True), "dvaindvajseti")
+        self.assertEqual(num2words(23, lang="sl", ordinal=True), "triindvajseti")
+        self.assertEqual(num2words(24, lang="sl", ordinal=True), "štiriindvajseti")
+        self.assertEqual(num2words(25, lang="sl", ordinal=True), "petindvajseti")
+        self.assertEqual(num2words(31, lang="sl", ordinal=True), "enaintrideseti")
+        self.assertEqual(num2words(99, lang="sl", ordinal=True), "devetindevetdeseti")
+        self.assertEqual(num2words(101, lang="sl", ordinal=True), "stoprvi")
+        self.assertEqual(num2words(110, lang="sl", ordinal=True), "stodeseti")
+        self.assertEqual(num2words(111, lang="sl", ordinal=True), "stoenajsti")
+        self.assertEqual(num2words(200, lang="sl", ordinal=True), "dvestoti")
+        self.assertEqual(num2words(300, lang="sl", ordinal=True), "tristoti")
+        self.assertEqual(num2words(400, lang="sl", ordinal=True), "štiristoti")
+        self.assertEqual(num2words(500, lang="sl", ordinal=True), "petstoti")
+        self.assertEqual(num2words(1000, lang="sl", ordinal=True), "tisoči")
+        self.assertEqual(num2words(1001, lang="sl", ordinal=True), "tisočprvi")
+        self.assertEqual(num2words(2000, lang="sl", ordinal=True), "dvatisoči")
+        self.assertEqual(num2words(10000, lang="sl", ordinal=True), "desettisoči")
+        self.assertEqual(num2words(100000, lang="sl", ordinal=True), "stotisoči")
+        self.assertEqual(num2words(1000000, lang="sl", ordinal=True), "milijonti")
+
+    def test_currency_with_fractional_cents(self):
+        """Test currency with fractional cents."""
+        # Test currency with fractional cents
+        self.assertEqual(
+            num2words(1.235, lang="sl", to="currency", currency="EUR"),
+            "ena evro triindvajset vejica pet centov",
+        )
+        self.assertEqual(
+            num2words(10.999, lang="sl", to="currency", currency="EUR"),
+            "deset evrov devetindevetdeset vejica devet centov",
+        )
+
+    def test_more_currency_cases(self):
+        """Test additional currency cases."""
+        # Test various amounts
+        self.assertEqual(
+            num2words(2, lang="sl", to="currency", currency="EUR"), "dve evra"
+        )
+        self.assertEqual(
+            num2words(3, lang="sl", to="currency", currency="EUR"), "tri evre"
+        )
+        self.assertEqual(
+            num2words(4, lang="sl", to="currency", currency="EUR"), "štiri evre"
+        )
+        self.assertEqual(
+            num2words(5, lang="sl", to="currency", currency="EUR"), "pet evrov"
+        )
+        self.assertEqual(
+            num2words(10, lang="sl", to="currency", currency="EUR"), "deset evrov"
+        )
+        self.assertEqual(
+            num2words(100, lang="sl", to="currency", currency="EUR"), "sto evrov"
+        )
+        self.assertEqual(
+            num2words(101, lang="sl", to="currency", currency="EUR"), "sto ena evro"
+        )
+        self.assertEqual(
+            num2words(102, lang="sl", to="currency", currency="EUR"), "sto dve evra"
+        )
+        self.assertEqual(
+            num2words(103, lang="sl", to="currency", currency="EUR"), "sto tri evre"
+        )
+        self.assertEqual(
+            num2words(104, lang="sl", to="currency", currency="EUR"), "sto štiri evre"
+        )
+        self.assertEqual(
+            num2words(105, lang="sl", to="currency", currency="EUR"), "sto pet evrov"
+        )
+
+        # Test USD
+        self.assertEqual(
+            num2words(2, lang="sl", to="currency", currency="USD"), "dve dolarja"
+        )
+        self.assertEqual(
+            num2words(3, lang="sl", to="currency", currency="USD"), "tri dolarje"
+        )
+        self.assertEqual(
+            num2words(4, lang="sl", to="currency", currency="USD"), "štiri dolarje"
+        )
+        self.assertEqual(
+            num2words(5, lang="sl", to="currency", currency="USD"), "pet dolarjev"
+        )
+
+        # Test cents
+        self.assertEqual(
+            num2words(0.02, lang="sl", to="currency", currency="EUR"),
+            "nič evrov dve centa",
+        )
+        self.assertEqual(
+            num2words(0.03, lang="sl", to="currency", currency="EUR"),
+            "nič evrov tri cente",
+        )
+        self.assertEqual(
+            num2words(0.04, lang="sl", to="currency", currency="EUR"),
+            "nič evrov štiri cente",
+        )
+        self.assertEqual(
+            num2words(0.05, lang="sl", to="currency", currency="EUR"),
+            "nič evrov pet centov",
+        )
+
+        # Test negative amounts
+        self.assertEqual(
+            num2words(-1, lang="sl", to="currency", currency="EUR"), "minus ena evro"
+        )
+        self.assertEqual(
+            num2words(-10, lang="sl", to="currency", currency="EUR"),
+            "minus deset evrov",
+        )
+        self.assertEqual(
+            num2words(-1.5, lang="sl", to="currency", currency="EUR"),
+            "minus ena evro petdeset centov",
+        )
+
+    def test_unsupported_currency(self):
+        """Test unsupported currency code."""
+        from num2words2.lang_SL import Num2Word_SL
+
+        converter = Num2Word_SL()
+        with self.assertRaises(NotImplementedError):
+            converter.to_currency(100, currency="GBP")
+
+    def test_to_cardinal_float_negative_zero(self):
+        """Test negative zero handling in float conversion."""
+        # Test negative zero scenario
+        self.assertEqual(num2words(-0.5, lang="sl"), "minus nič vejica pet")
+        self.assertEqual(num2words(-0.1, lang="sl"), "minus nič vejica ena")
+        self.assertEqual(
+            num2words(-0.99, lang="sl"), "minus nič vejica devetindevetdeset"
+        )
+
+    def test_error_messages(self):
+        """Test error message setup."""
+        from num2words2.lang_SL import Num2Word_SL
+
+        converter = Num2Word_SL()
+        converter.setup()
+
+        # Test error messages are set
+        self.assertEqual(
+            converter.errmsg_nonnum, "Only numbers may be converted to words."
+        )
+        self.assertIn("too large", converter.errmsg_toobig.lower())
+
+    def test_giga_mega_suffixes(self):
+        """Test GIGA and MEGA suffixes."""
+        from num2words2.lang_SL import Num2Word_SL
+
+        converter = Num2Word_SL()
+
+        # Test that suffixes are defined
+        self.assertEqual(converter.GIGA_SUFFIX, "ilijard")
+        self.assertEqual(converter.MEGA_SUFFIX, "ilijon")
