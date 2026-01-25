@@ -71,13 +71,13 @@ class Num2WordsSentenceTest(TestCase):
         """Test conversion with Spanish language."""
         sentence = "Tengo 10 manzanas"
         expected = "Tengo diez manzanas"
-        self.assertEqual(num2words_sentence(sentence, lang='es'), expected)
+        self.assertEqual(num2words_sentence(sentence, lang="es"), expected)
 
     def test_french_language(self):
         """Test conversion with French language."""
         sentence = "J'ai 20 euros"
         expected = "J'ai vingt euros"
-        self.assertEqual(num2words_sentence(sentence, lang='fr'), expected)
+        self.assertEqual(num2words_sentence(sentence, lang="fr"), expected)
 
     def test_zero(self):
         """Test conversion of zero."""
@@ -101,7 +101,7 @@ class Num2WordsSentenceTest(TestCase):
         """Test ordinal conversion parameter."""
         sentence = "He finished in 1 place"
         expected = "He finished in first place"
-        self.assertEqual(num2words_sentence(sentence, to='ordinal'), expected)
+        self.assertEqual(num2words_sentence(sentence, to="ordinal"), expected)
 
     def test_year_format(self):
         """Test year format with multiple numbers."""
