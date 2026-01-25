@@ -23,24 +23,31 @@ from num2words2.utils import splitbyx
 
 
 class Num2Word_TH(Num2Word_Base):
-
     def setup(self):
-        self.negword = 'ติดลบ'
-        self.pointword = 'จุด'
+        self.negword = "ติดลบ"
+        self.pointword = "จุด"
 
         self.CURRENCY_FORMS = {
-            'THB': (('บาท', 'บาท'), ('สตางค์', 'สตางค์')),
-            'USD': (('ดอลลาร์', 'ดอลลาร์'), ('เซนต์', 'เซนต์')),
-            'EUR': (('ยูโร', 'ยูโร'), ('เซนต์', 'เซนต์')),
+            "THB": (("บาท", "บาท"), ("สตางค์", "สตางค์")),
+            "USD": (("ดอลลาร์", "ดอลลาร์"), ("เซนต์", "เซนต์")),
+            "EUR": (("ยูโร", "ยูโร"), ("เซนต์", "เซนต์")),
         }
 
         self.high_numwords = []
 
-        self.mid_numwords = ['', 'สิบ', 'ร้อย', 'พัน', 'หมื่น', 'แสน', 'ล้าน']
+        self.mid_numwords = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"]
 
         self.low_numwords = [
-            'ศูนย์', 'หนึ่ง', 'สอง', 'สาม', 'สี่',
-            'ห้า', 'หก', 'เจ็ด', 'แปด', 'เก้า'
+            "ศูนย์",
+            "หนึ่ง",
+            "สอง",
+            "สาม",
+            "สี่",
+            "ห้า",
+            "หก",
+            "เจ็ด",
+            "แปด",
+            "เก้า",
         ]
 
     def set_high_numwords(self, high_numwords):
@@ -51,7 +58,7 @@ class Num2Word_TH(Num2Word_Base):
 
     def splitnum(self, six_num):
         length = len(six_num) > 1
-        word_num = ''
+        word_num = ""
 
         for index, num in enumerate(map(int, six_num)):
             if num:
@@ -59,9 +66,9 @@ class Num2Word_TH(Num2Word_Base):
                     word_num = self.mid_numwords[index] + word_num
 
                 if length and num == 1 and index == 0:
-                    word_num += 'เอ็ด'
+                    word_num += "เอ็ด"
                 elif index == 1 and num == 2:
-                    word_num = 'ยี่' + word_num
+                    word_num = "ยี่" + word_num
                 elif index != 1 or num != 1:
                     word_num = self.low_numwords[num] + word_num
 
@@ -79,41 +86,39 @@ class Num2Word_TH(Num2Word_Base):
         return number_list
 
     def add_text_million(self, word_num):
-        result = ''
+        result = ""
 
         for index, t in enumerate(reversed(word_num)):
             if index == 0:
                 result = t
             else:
-                result = result + 'ล้าน' + t
+                result = result + "ล้าน" + t
 
         return result
 
     def round_2_decimal(self, number):
-        integer, cents, negative = parse_currency_parts(
-            number, is_int_with_cents=False
-        )
-        integer = '{}'.format(integer)
-        cents = '{}'.format(cents)
+        integer, cents, negative = parse_currency_parts(number, is_int_with_cents=False)
+        integer = "{}".format(integer)
+        cents = "{}".format(cents)
 
         if len(cents) < 2:
             add_zero = 2 - len(cents)
-            cents = ('0' * add_zero) + cents
+            cents = ("0" * add_zero) + cents
 
-        text_num = integer + '.' + cents
+        text_num = integer + "." + cents
 
         return text_num, negative
 
     def left_num_to_text(self, number):
         # Special case for exactly 100
-        if number == '100':
-            return 'ร้อย'
+        if number == "100":
+            return "ร้อย"
 
         # Special cases for 100 million and 1 billion
-        if number == '100000000':
-            return 'ร้อยล้าน'
-        if number == '1000000000':
-            return 'พันล้าน'
+        if number == "100000000":
+            return "ร้อยล้าน"
+        if number == "1000000000":
+            return "พันล้าน"
 
         left_num_list = self.split_six(number)
 
@@ -129,26 +134,26 @@ class Num2Word_TH(Num2Word_Base):
 
         pre, post = self.float2tuple(number)
         precision = self.precision
-        pre = '{}'.format(pre)
-        post = '{}'.format(post)
+        pre = "{}".format(pre)
+        post = "{}".format(post)
 
         if negative:
-            pre = pre.lstrip('-')
+            pre = pre.lstrip("-")
 
         if len(post) < precision:
             add_zero = precision - len(post)
-            post = ('0' * add_zero) + post
+            post = ("0" * add_zero) + post
 
         result = self.left_num_to_text(pre)
 
-        right_text = ''
-        if not post == '0':
+        right_text = ""
+        if not post == "0":
             for i in map(int, post):
                 right_text = right_text + self.low_numwords[i]
-            result = result + 'จุด' + right_text
+            result = result + "จุด" + right_text
 
         if negative:
-            result = 'ติดลบ' + result
+            result = "ติดลบ" + result
 
         return result
 
@@ -161,30 +166,34 @@ class Num2Word_TH(Num2Word_Base):
 
         # Thai ordinal is formed by adding 'ที่' before the cardinal number
         cardinal = self.to_cardinal(num)
-        return 'ที่' + cardinal
+        return "ที่" + cardinal
 
-    def to_currency(self, val, currency='THB', cents=True, separator=' ',
-                    adjective=False):
+    def to_currency(
+        self, val, currency="THB", cents=True, separator=" ", adjective=False
+    ):
         """Convert a number to currency words."""
-        # Track if input was originally an integer
+        # Track if input was originally an integer (not float with whole value)
         is_integer_input = isinstance(val, int)
 
         # Check if value has fractional cents
         from decimal import Decimal
+
         decimal_val = Decimal(str(val))
         has_fractional_cents = (decimal_val * 100) % 1 != 0
 
-        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
-                                                        keep_precision=has_fractional_cents)
+        left, right, is_negative = parse_currency_parts(
+            val, is_int_with_cents=False, keep_precision=has_fractional_cents
+        )
 
         try:
             cr1, cr2 = self.CURRENCY_FORMS[currency]
         except KeyError:
             raise NotImplementedError(
-                'Currency "%s" not implemented for "%s"' % (
-                    currency, self.__class__.__name__))
+                'Currency "%s" not implemented for "%s"'
+                % (currency, self.__class__.__name__)
+            )
 
-        minus_str = self.negword + ' ' if is_negative else ""
+        minus_str = self.negword + " " if is_negative else ""
         money_str = self.to_cardinal(left)
 
         # Currency name (Thai doesn't change for plural)
@@ -199,7 +208,9 @@ class Num2Word_TH(Num2Word_Base):
             # Convert fractional cents (e.g., 65.3 cents)
             cents_str = self.to_cardinal(float(right))
         elif cents:
-            cents_str = self.to_cardinal(int(right)) if right > 0 else self.low_numwords[0]
+            cents_str = (
+                self.to_cardinal(int(right)) if right > 0 else self.low_numwords[0]
+            )
         else:
             cents_str = str(int(right))
 
@@ -210,5 +221,10 @@ class Num2Word_TH(Num2Word_Base):
             return "%s%s%s" % (minus_str, cents_str, cents_currency)
 
         return "%s%s%s%s%s%s" % (
-            minus_str, money_str, currency_str,
-            separator, cents_str, cents_currency)
+            minus_str,
+            money_str,
+            currency_str,
+            separator,
+            cents_str,
+            cents_currency,
+        )

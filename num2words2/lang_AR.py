@@ -25,21 +25,41 @@ from math import floor
 
 from .base import Num2Word_Base
 
-CURRENCY_SR = [("ريال", "ريالان", "ريالات", "ريالاً"),
-               ("هللة", "هللتان", "هللات", "هللة")]
-CURRENCY_EGP = [("جنيه", "جنيهان", "جنيهات", "جنيهاً"),
-                ("قرش", "قرشان", "قروش", "قرش")]
-CURRENCY_KWD = [("دينار", "ديناران", "دينارات", "ديناراً"),
-                ("فلس", "فلسان", "فلس", "فلس")]
-CURRENCY_TND = [("دينار", "ديناران", "دينارات", "ديناراً"),
-                ("مليماً", "ميلمان", "مليمات", "مليم")]
+CURRENCY_SR = [
+    ("ريال", "ريالان", "ريالات", "ريالاً"),
+    ("هللة", "هللتان", "هللات", "هللة"),
+]
+CURRENCY_EGP = [("جنيه", "جنيهان", "جنيهات", "جنيهاً"), ("قرش", "قرشان", "قروش", "قرش")]
+CURRENCY_KWD = [
+    ("دينار", "ديناران", "دينارات", "ديناراً"),
+    ("فلس", "فلسان", "فلس", "فلس"),
+]
+CURRENCY_TND = [
+    ("دينار", "ديناران", "دينارات", "ديناراً"),
+    ("مليماً", "ميلمان", "مليمات", "مليم"),
+]
 
 ARABIC_ONES = [
-    "", "واحد", "اثنان", "ثلاثة", "أربعة", "خمسة", "ستة", "سبعة", "ثمانية",
+    "",
+    "واحد",
+    "اثنان",
+    "ثلاثة",
+    "أربعة",
+    "خمسة",
+    "ستة",
+    "سبعة",
+    "ثمانية",
     "تسعة",
-    "عشرة", "أحد عشر", "اثنا عشر", "ثلاثة عشر", "أربعة عشر", "خمسة عشر",
-    "ستة عشر", "سبعة عشر", "ثمانية عشر",
-    "تسعة عشر"
+    "عشرة",
+    "أحد عشر",
+    "اثنا عشر",
+    "ثلاثة عشر",
+    "أربعة عشر",
+    "خمسة عشر",
+    "ستة عشر",
+    "سبعة عشر",
+    "ثمانية عشر",
+    "تسعة عشر",
 ]
 
 
@@ -60,59 +80,170 @@ class Num2Word_AR(Num2Word_Base):
         self.currency_subunit = CURRENCY_SR[1]
         self.isCurrencyPartNameFeminine = True
         self.isCurrencyNameFeminine = False
-        self.separator = 'و'
+        self.separator = "و"
 
         self.arabicOnes = ARABIC_ONES
         self.arabicFeminineOnes = [
-            "", "إحدى", "اثنتان", "ثلاث", "أربع", "خمس", "ست", "سبع", "ثمان",
+            "",
+            "إحدى",
+            "اثنتان",
+            "ثلاث",
+            "أربع",
+            "خمس",
+            "ست",
+            "سبع",
+            "ثمان",
             "تسع",
-            "عشر", "إحدى عشرة", "اثنتا عشرة", "ثلاث عشرة", "أربع عشرة",
-            "خمس عشرة", "ست عشرة", "سبع عشرة", "ثماني عشرة",
-            "تسع عشرة"
+            "عشر",
+            "إحدى عشرة",
+            "اثنتا عشرة",
+            "ثلاث عشرة",
+            "أربع عشرة",
+            "خمس عشرة",
+            "ست عشرة",
+            "سبع عشرة",
+            "ثماني عشرة",
+            "تسع عشرة",
         ]
         self.arabicOrdinal = [
-            "", "اول", "ثاني", "ثالث", "رابع", "خامس", "سادس", "سابع", "ثامن",
-            "تاسع", "عاشر", "حادي عشر", "ثاني عشر", "ثالث عشر", "رابع عشر",
-            "خامس عشر", "سادس عشر", "سابع عشر", "ثامن عشر", "تاسع عشر"
+            "",
+            "اول",
+            "ثاني",
+            "ثالث",
+            "رابع",
+            "خامس",
+            "سادس",
+            "سابع",
+            "ثامن",
+            "تاسع",
+            "عاشر",
+            "حادي عشر",
+            "ثاني عشر",
+            "ثالث عشر",
+            "رابع عشر",
+            "خامس عشر",
+            "سادس عشر",
+            "سابع عشر",
+            "ثامن عشر",
+            "تاسع عشر",
         ]
         self.arabicTens = [
-            "عشرون", "ثلاثون", "أربعون", "خمسون", "ستون", "سبعون", "ثمانون",
-            "تسعون"
+            "عشرون",
+            "ثلاثون",
+            "أربعون",
+            "خمسون",
+            "ستون",
+            "سبعون",
+            "ثمانون",
+            "تسعون",
         ]
         self.arabicHundreds = [
-            "", "مائة", "مئتان", "ثلاثمائة", "أربعمائة", "خمسمائة", "ستمائة",
-            "سبعمائة", "ثمانمائة", "تسعمائة"
+            "",
+            "مائة",
+            "مئتان",
+            "ثلاثمائة",
+            "أربعمائة",
+            "خمسمائة",
+            "ستمائة",
+            "سبعمائة",
+            "ثمانمائة",
+            "تسعمائة",
         ]
 
         self.arabicAppendedTwos = [
-            "مئتا", "ألفا", "مليونا", "مليارا", "تريليونا", "كوادريليونا",
-            "كوينتليونا", "سكستيليونا", "سبتيليونا", "أوكتيليونا ",
-            "نونيليونا", "ديسيليونا", "أندسيليونا", "دوديسيليونا",
-            "تريديسيليونا", "كوادريسيليونا", "كوينتينيليونا"
+            "مئتا",
+            "ألفا",
+            "مليونا",
+            "مليارا",
+            "تريليونا",
+            "كوادريليونا",
+            "كوينتليونا",
+            "سكستيليونا",
+            "سبتيليونا",
+            "أوكتيليونا ",
+            "نونيليونا",
+            "ديسيليونا",
+            "أندسيليونا",
+            "دوديسيليونا",
+            "تريديسيليونا",
+            "كوادريسيليونا",
+            "كوينتينيليونا",
         ]
         self.arabicTwos = [
-            "مئتان", "ألفان", "مليونان", "ملياران", "تريليونان",
-            "كوادريليونان", "كوينتليونان", "سكستيليونان", "سبتيليونان",
-            "أوكتيليونان ", "نونيليونان ", "ديسيليونان", "أندسيليونان",
-            "دوديسيليونان", "تريديسيليونان", "كوادريسيليونان", "كوينتينيليونان"
+            "مئتان",
+            "ألفان",
+            "مليونان",
+            "ملياران",
+            "تريليونان",
+            "كوادريليونان",
+            "كوينتليونان",
+            "سكستيليونان",
+            "سبتيليونان",
+            "أوكتيليونان ",
+            "نونيليونان ",
+            "ديسيليونان",
+            "أندسيليونان",
+            "دوديسيليونان",
+            "تريديسيليونان",
+            "كوادريسيليونان",
+            "كوينتينيليونان",
         ]
         self.arabicGroup = [
-            "مائة", "ألف", "مليون", "مليار", "تريليون", "كوادريليون",
-            "كوينتليون", "سكستيليون", "سبتيليون", "أوكتيليون", "نونيليون",
-            "ديسيليون", "أندسيليون", "دوديسيليون", "تريديسيليون",
-            "كوادريسيليون", "كوينتينيليون"
+            "مائة",
+            "ألف",
+            "مليون",
+            "مليار",
+            "تريليون",
+            "كوادريليون",
+            "كوينتليون",
+            "سكستيليون",
+            "سبتيليون",
+            "أوكتيليون",
+            "نونيليون",
+            "ديسيليون",
+            "أندسيليون",
+            "دوديسيليون",
+            "تريديسيليون",
+            "كوادريسيليون",
+            "كوينتينيليون",
         ]
         self.arabicAppendedGroup = [
-            "", "ألفاً", "مليوناً", "ملياراً", "تريليوناً", "كوادريليوناً",
-            "كوينتليوناً", "سكستيليوناً", "سبتيليوناً", "أوكتيليوناً",
-            "نونيليوناً", "ديسيليوناً", "أندسيليوناً", "دوديسيليوناً",
-            "تريديسيليوناً", "كوادريسيليوناً", "كوينتينيليوناً"
+            "",
+            "ألفاً",
+            "مليوناً",
+            "ملياراً",
+            "تريليوناً",
+            "كوادريليوناً",
+            "كوينتليوناً",
+            "سكستيليوناً",
+            "سبتيليوناً",
+            "أوكتيليوناً",
+            "نونيليوناً",
+            "ديسيليوناً",
+            "أندسيليوناً",
+            "دوديسيليوناً",
+            "تريديسيليوناً",
+            "كوادريسيليوناً",
+            "كوينتينيليوناً",
         ]
         self.arabicPluralGroups = [
-            "", "آلاف", "ملايين", "مليارات", "تريليونات", "كوادريليونات",
-            "كوينتليونات", "سكستيليونات", "سبتيليونات", "أوكتيليونات",
-            "نونيليونات", "ديسيليونات", "أندسيليونات", "دوديسيليونات",
-            "تريديسيليونات", "كوادريسيليونات", "كوينتينيليونات"
+            "",
+            "آلاف",
+            "ملايين",
+            "مليارات",
+            "تريليونات",
+            "كوادريليونات",
+            "كوينتليونات",
+            "سكستيليونات",
+            "سبتيليونات",
+            "أوكتيليونات",
+            "نونيليونات",
+            "ديسيليونات",
+            "أندسيليونات",
+            "دوديسيليونات",
+            "تريديسيليونات",
+            "كوادريسيليونات",
+            "كوينتينيليونات",
         ]
         assert len(self.arabicAppendedGroup) == len(self.arabicGroup)
         assert len(self.arabicPluralGroups) == len(self.arabicGroup)
@@ -124,7 +255,7 @@ class Num2Word_AR(Num2Word_Base):
         self.extract_integer_and_decimal_parts()
 
     def extract_integer_and_decimal_parts(self):
-        splits = re.split('\\.', str(self.number))
+        splits = re.split("\\.", str(self.number))
 
         self.integer_value = int(splits[0])
         if len(splits) > 1:
@@ -133,20 +264,19 @@ class Num2Word_AR(Num2Word_Base):
             self._decimalValue = 0
 
     def decimal_value(self, decimal_part):
-
         if self.partPrecision is not len(decimal_part):
             decimal_part_length = len(decimal_part)
 
             decimal_part_builder = decimal_part
             for i in range(0, self.partPrecision - decimal_part_length):
-                decimal_part_builder += '0'
+                decimal_part_builder += "0"
             decimal_part = decimal_part_builder
 
             if len(decimal_part) <= self.partPrecision:
                 dec = len(decimal_part)
             else:
                 dec = self.partPrecision
-            result = decimal_part[0: dec]
+            result = decimal_part[0:dec]
         else:
             result = decimal_part
 
@@ -170,8 +300,7 @@ class Num2Word_AR(Num2Word_Base):
         else:
             return self.arabicOnes[int(digit)]
 
-    def process_arabic_group(self, group_number, group_level,
-                             remaining_number):
+    def process_arabic_group(self, group_number, group_level, remaining_number):
         tens = Decimal(group_number) % Decimal(100)
         hundreds = Decimal(group_number) / Decimal(100)
         ret_val = ""
@@ -192,29 +321,31 @@ class Num2Word_AR(Num2Word_Base):
                 assert int(group_level) < len(self.arabicTwos)
                 if tens == 2 and int(hundreds) == 0 and group_level > 0:
                     pow = int(math.log10(self.integer_value))
-                    if self.integer_value > 10 and pow % 3 == 0 and \
-                            self.integer_value == 2 * (10 ** pow):
-                        ret_val = "{}".format(
-                            self.arabicAppendedTwos[int(group_level)])
+                    if (
+                        self.integer_value > 10
+                        and pow % 3 == 0
+                        and self.integer_value == 2 * (10**pow)
+                    ):
+                        ret_val = "{}".format(self.arabicAppendedTwos[int(group_level)])
                     else:
-                        ret_val = "{}".format(
-                            self.arabicTwos[int(group_level)])
+                        ret_val = "{}".format(self.arabicTwos[int(group_level)])
                 else:
-
                     if tens == 1 and group_level > 0 and hundreds == 0:
                         # Note: this never happens
                         # (hundreds == 0 only if group_number is 0)
                         ret_val += ""
-                    elif (tens == 1 or tens == 2) and (
-                            group_level == 0 or group_level == -1) and \
-                            hundreds == 0 and remaining_number == 0:
+                    elif (
+                        (tens == 1 or tens == 2)
+                        and (group_level == 0 or group_level == -1)
+                        and hundreds == 0
+                        and remaining_number == 0
+                    ):
                         # Note: this never happens (idem)
                         ret_val += ""
                     elif tens == 1 and group_level > 0:
                         ret_val += self.arabicGroup[int(group_level)]
                     else:
-                        ret_val += self.digit_feminine_status(int(tens),
-                                                              group_level)
+                        ret_val += self.digit_feminine_status(int(tens), group_level)
             else:
                 ones = tens % 10
                 tens = (tens / 10) - 2
@@ -253,30 +384,24 @@ class Num2Word_AR(Num2Word_Base):
         if temp_number == Decimal(0):
             return "صفر"
 
-        decimal_string = self.process_arabic_group(self._decimalValue,
-                                                   -1,
-                                                   Decimal(0))
+        decimal_string = self.process_arabic_group(self._decimalValue, -1, Decimal(0))
         ret_val = ""
         group = 0
 
         while temp_number > Decimal(0):
-
             temp_number_dec = Decimal(str(temp_number))
             try:
                 number_to_process = int(temp_number_dec % Decimal(str(1000)))
             except decimal.InvalidOperation:
-                decimal.getcontext().prec = len(
-                    temp_number_dec.as_tuple().digits
-                )
+                decimal.getcontext().prec = len(temp_number_dec.as_tuple().digits)
                 number_to_process = int(temp_number_dec % Decimal(str(1000)))
 
             temp_number = int(temp_number_dec / Decimal(1000))
 
-            group_description = \
-                self.process_arabic_group(number_to_process,
-                                          group,
-                                          Decimal(floor(temp_number)))
-            if group_description != '':
+            group_description = self.process_arabic_group(
+                number_to_process, group, Decimal(floor(temp_number))
+            )
+            if group_description != "":
                 if group > 0:
                     if ret_val != "":
                         ret_val = "و{}".format(ret_val)
@@ -289,19 +414,20 @@ class Num2Word_AR(Num2Word_Base):
                         if number_to_process % 100 != 1:
                             if 3 <= number_to_process <= 10:
                                 ret_val = "{} {}".format(
-                                    self.arabicPluralGroups[group], ret_val)
+                                    self.arabicPluralGroups[group], ret_val
+                                )
                             else:
                                 if ret_val != "":
                                     ret_val = "{} {}".format(
-                                        self.arabicAppendedGroup[group],
-                                        ret_val)
+                                        self.arabicAppendedGroup[group], ret_val
+                                    )
                                 else:
                                     ret_val = "{} {}".format(
-                                        self.arabicGroup[group], ret_val)
+                                        self.arabicGroup[group], ret_val
+                                    )
 
                         else:
-                            ret_val = "{} {}".format(self.arabicGroup[group],
-                                                     ret_val)
+                            ret_val = "{} {}".format(self.arabicGroup[group], ret_val)
                 ret_val = "{} {}".format(group_description, ret_val)
             group += 1
         formatted_number = ""
@@ -325,7 +451,7 @@ class Num2Word_AR(Num2Word_Base):
             elif 11 <= remaining100 <= 99:
                 formatted_number += self.currency_unit[3]
         if self._decimalValue != 0:
-            if self.separator == 'و':
+            if self.separator == "و":
                 formatted_number += " و"
             else:
                 formatted_number += " {} ".format(self.separator)
@@ -357,15 +483,15 @@ class Num2Word_AR(Num2Word_Base):
         return number
 
     def set_currency_prefer(self, currency):
-        if currency == 'TND':
+        if currency == "TND":
             self.currency_unit = CURRENCY_TND[0]
             self.currency_subunit = CURRENCY_TND[1]
             self.partPrecision = 3
-        elif currency == 'EGP':
+        elif currency == "EGP":
             self.currency_unit = CURRENCY_EGP[0]
             self.currency_subunit = CURRENCY_EGP[1]
             self.partPrecision = 2
-        elif currency == 'KWD':
+        elif currency == "KWD":
             self.currency_unit = CURRENCY_KWD[0]
             self.currency_subunit = CURRENCY_KWD[1]
             self.partPrecision = 2
@@ -374,15 +500,16 @@ class Num2Word_AR(Num2Word_Base):
             self.currency_subunit = CURRENCY_SR[1]
             self.partPrecision = 2
 
-    def to_ordinal(self, number, prefix=''):
+    def to_ordinal(self, number, prefix=""):
+        number = int(number)  # Convert float to int
         if number <= 19:
             return "{}".format(self.arabicOrdinal[number])
         if number < 100:
             self.isCurrencyNameFeminine = True
         else:
             self.isCurrencyNameFeminine = False
-        self.currency_subunit = ('', '', '', '')
-        self.currency_unit = ('', '', '', '')
+        self.currency_subunit = ("", "", "", "")
+        self.currency_unit = ("", "", "", "")
         self.arabicPrefixText = prefix
         self.arabicSuffixText = ""
         return "{}".format(self.convert(self.abs(number)).strip())
@@ -397,34 +524,34 @@ class Num2Word_AR(Num2Word_Base):
     def to_cardinal(self, number):
         self.isCurrencyNameFeminine = False
         number = self.validate_number(number)
-        minus = ''
+        minus = ""
         if number < 0:
-            minus = 'سالب '
-        self.separator = ','
-        self.currency_subunit = ('', '', '', '')
-        self.currency_unit = ('', '', '', '')
+            minus = "سالب "
+        self.separator = ","
+        self.currency_subunit = ("", "", "", "")
+        self.currency_unit = ("", "", "", "")
         self.arabicPrefixText = ""
         self.arabicSuffixText = ""
         self.arabicOnes = ARABIC_ONES
+        self.partPrecision = 2
         return minus + self.convert(value=self.abs(number)).strip()
 
-    def to_currency(self, n, currency='SR', cents=True, separator=',',
-                    adjective=False):
+    def to_currency(self, n, currency="SR", cents=True, separator=",", adjective=False):
         # Arabic has a special currency implementation
         # Set the currency preference based on the currency code
         self.set_currency_prefer(currency)
 
         # Reset settings for currency mode
         self.isCurrencyNameFeminine = False
-        self.arabicPrefixText = ''
-        self.arabicSuffixText = ''
-        self.separator = 'و'
+        self.arabicPrefixText = ""
+        self.arabicSuffixText = ""
+        self.separator = "و"
 
         # Validate and handle negative numbers
         n = self.validate_number(n)
-        minus = ''
+        minus = ""
         if n < 0:
-            minus = 'سالب '
+            minus = "سالب "
             n = -n
 
         # Convert and return

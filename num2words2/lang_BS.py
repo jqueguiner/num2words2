@@ -23,9 +23,9 @@ from .base import Num2Word_Base
 # Bosnian language support (Latin script)
 class Num2Word_BS(Num2Word_Base):
     CURRENCY_FORMS = {
-        'BAM': (('marka', 'marke', 'maraka'), ('feninga', 'feninga', 'feninga')),
-        'EUR': (('euro', 'eura', 'eura'), ('cent', 'centa', 'centi')),
-        'USD': (('dolar', 'dolara', 'dolara'), ('cent', 'centa', 'centi')),
+        "BAM": (("marka", "marke", "maraka"), ("feninga", "feninga", "feninga")),
+        "EUR": (("euro", "eura", "eura"), ("cent", "centa", "centi")),
+        "USD": (("dolar", "dolara", "dolara"), ("cent", "centa", "centi")),
     }
 
     def setup(self):
@@ -34,35 +34,51 @@ class Num2Word_BS(Num2Word_Base):
 
         # Bosnian numbers in Latin script
         self.ones = [
-            '', 'jedan', 'dva', 'tri', 'četiri',
-            'pet', 'šest', 'sedam', 'osam', 'devet'
+            "",
+            "jedan",
+            "dva",
+            "tri",
+            "četiri",
+            "pet",
+            "šest",
+            "sedam",
+            "osam",
+            "devet",
         ]
 
         self.tens = [
-            '', 'deset', 'dvadeset', 'trideset', 'četrdeset',
-            'pedeset', 'šezdeset', 'sedamdeset', 'osamdeset', 'devedeset'
+            "",
+            "deset",
+            "dvadeset",
+            "trideset",
+            "četrdeset",
+            "pedeset",
+            "šezdeset",
+            "sedamdeset",
+            "osamdeset",
+            "devedeset",
         ]
 
         self.scale = {
-            100: ('sto', 'stotine', 'stotina'),
-            1000: ('hiljada', 'hiljade', 'hiljada'),
-            1000000: ('milion', 'miliona', 'miliona'),
-            1000000000: ('milijarda', 'milijarde', 'milijardi'),
-            1000000000000: ('bilion', 'biliona', 'biliona'),
+            100: ("sto", "stotine", "stotina"),
+            1000: ("hiljada", "hiljade", "hiljada"),
+            1000000: ("milion", "miliona", "miliona"),
+            1000000000: ("milijarda", "milijarde", "milijardi"),
+            1000000000000: ("bilion", "biliona", "biliona"),
         }
 
     def to_cardinal(self, number):
         """Convert a number to its word representation in Bosnian."""
         n = str(number).strip()
 
-        if n.startswith('-'):
+        if n.startswith("-"):
             n = n[1:]
             ret = self.negword
         else:
             ret = ""
 
-        if '.' in n:
-            left, right = n.split('.', 1)
+        if "." in n:
+            left, right = n.split(".", 1)
             ret += self._int_to_word(int(left)) + " " + self.pointword + " "
             for digit in right:
                 ret += self._int_to_word(int(digit)) + " "
@@ -149,18 +165,20 @@ class Num2Word_BS(Num2Word_Base):
         """Convert to year in Bosnian."""
         return self.to_cardinal(val)
 
-    def to_currency(self, val, currency='BAM', cents=True, separator=' ', adjective=False):
+    def to_currency(
+        self, val, currency="BAM", cents=True, separator=" ", adjective=False
+    ):
         """Convert to currency in Bosnian."""
         is_negative = False
         if val < 0:
             is_negative = True
             val = abs(val)
 
-        parts = str(val).split('.')
+        parts = str(val).split(".")
         left = int(parts[0]) if parts[0] else 0
-        right = int(parts[1][:2].ljust(2, '0')) if len(parts) > 1 and parts[1] else 0
+        right = int(parts[1][:2].ljust(2, "0")) if len(parts) > 1 and parts[1] else 0
 
-        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS['BAM'])
+        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS["BAM"])
 
         left_str = self._int_to_word(left)
         # Select correct form based on number

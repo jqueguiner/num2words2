@@ -75,7 +75,7 @@ class Num2Word_ZH_TW(Num2Word_ZH):
         pre, post = self.float2tuple(float(value))
 
         post = str(post)
-        post = '0' * (self.precision - len(post)) + post
+        post = "0" * (self.precision - len(post)) + post
 
         out = [self.to_cardinal(pre, reading=reading, prefer=prefer)]
         if value < 0 and pre == 0:
@@ -86,12 +86,7 @@ class Num2Word_ZH_TW(Num2Word_ZH):
 
         for i in range(self.precision):
             curr = int(post[i])
-            out.append(
-                to_s(
-                    self.to_cardinal(
-                        curr,
-                        reading=reading,
-                        prefer=prefer)))
+            out.append(to_s(self.to_cardinal(curr, reading=reading, prefer=prefer)))
 
         out = self.zh_to_cap(" ".join(out), self.capital)
         return out.replace(" ", "")
@@ -100,21 +95,21 @@ class Num2Word_ZH_TW(Num2Word_ZH):
         self.set_str_selection(reading, prefer)
         if reading is True:
             if counter not in self.counters and counter:
-                raise NotImplementedError(
-                    f"Reading not implemented for {counter}")
+                raise NotImplementedError(f"Reading not implemented for {counter}")
             counter = self.counters.get(counter, "")
         return super().to_ordinal(
-            value, counter=counter, reading=reading, prefer=prefer)
+            value, counter=counter, reading=reading, prefer=prefer
+        )
 
     def to_ordinal_num(self, value, counter="", reading=False, prefer=None):
         self.set_str_selection(reading, prefer)
         if self.reading is True:
             if counter not in self.counters and counter:
-                raise NotImplementedError(
-                    f"Reading not implemented for {counter}")
+                raise NotImplementedError(f"Reading not implemented for {counter}")
             counter = self.counters.get(counter, "")
         return super().to_ordinal_num(
-            value, counter=counter, reading=reading, prefer=prefer)
+            value, counter=counter, reading=reading, prefer=prefer
+        )
 
     def to_year(self, value, era=False, reading=False, prefer=None):
         self.set_str_selection(reading, prefer)
@@ -126,9 +121,7 @@ class Num2Word_ZH_TW(Num2Word_ZH):
 
         min_year = 1912
         if value < min_year:
-            raise ValueError(
-                "Can't convert years less than %s to ROC era" %
-                min_year)
+            raise ValueError("Can't convert years less than %s to ROC era" % min_year)
         era_year = abs(int(value - min_year + 1))
 
         if reading == "arabic":
@@ -139,10 +132,14 @@ class Num2Word_ZH_TW(Num2Word_ZH):
             era_year_words = self.to_cardinal(era_year)
         else:
             era_year_words = "".join(
-                [self.select_text(self.cards[int(s)]) for s in str(era_year)])
+                [self.select_text(self.cards[int(s)]) for s in str(era_year)]
+            )
 
-        return "%s%s%s" % (self.select_text(self.ROC_era),
-                           era_year_words, self.select_text(self.year))
+        return "%s%s%s" % (
+            self.select_text(self.ROC_era),
+            era_year_words,
+            self.select_text(self.year),
+        )
 
     def setup(self):
         super().setup()
@@ -151,32 +148,28 @@ class Num2Word_ZH_TW(Num2Word_ZH):
         self.exclude_title = [self.negword, self.pointword]
 
         self.high_numwords = [
-            (("萬",), ("ㄨㄢˋ",)),                  # 10**4
-            (("億",), ("ㄧˋ",)),                    # 10**8
-            (("兆",), ("ㄓㄠˋ",)),                  # 10**12
-            (("京",), ("ㄐㄧㄥ",)),                 # 10**16
-            (("垓",), ("ㄍㄞ",)),                   # 10**20
-            (("秭",), ("ㄗˇ",)),                    # 10**24
-            (("穣",), ("ㄖㄤ",)),                   # 10**28
-            (("溝",), ("ㄍㄡ",)),                   # 10**32
-            (("澗",), ("ㄐㄧㄢˋ",)),                # 10**36
-            (("正",), ("ㄓㄥˋ",)),                  # 10**40
-            (("載",), ("ㄗㄞˇ",)),                  # 10**44
-            (("極",), ("ㄐㄧˊ",)),                  # 10**48
-            (("恆河沙",), ("ㄏㄥˊㄏㄜˊㄕㄚ",)),     # 10**52
-            (("阿僧祇",), ("ㄚㄙㄥㄑㄧˊ",)),        # 10**56
-            (("那由他",), ("ㄋㄚˋㄧㄡˊㄊㄚ",)),     # 10**60
+            (("萬",), ("ㄨㄢˋ",)),  # 10**4
+            (("億",), ("ㄧˋ",)),  # 10**8
+            (("兆",), ("ㄓㄠˋ",)),  # 10**12
+            (("京",), ("ㄐㄧㄥ",)),  # 10**16
+            (("垓",), ("ㄍㄞ",)),  # 10**20
+            (("秭",), ("ㄗˇ",)),  # 10**24
+            (("穣",), ("ㄖㄤ",)),  # 10**28
+            (("溝",), ("ㄍㄡ",)),  # 10**32
+            (("澗",), ("ㄐㄧㄢˋ",)),  # 10**36
+            (("正",), ("ㄓㄥˋ",)),  # 10**40
+            (("載",), ("ㄗㄞˇ",)),  # 10**44
+            (("極",), ("ㄐㄧˊ",)),  # 10**48
+            (("恆河沙",), ("ㄏㄥˊㄏㄜˊㄕㄚ",)),  # 10**52
+            (("阿僧祇",), ("ㄚㄙㄥㄑㄧˊ",)),  # 10**56
+            (("那由他",), ("ㄋㄚˋㄧㄡˊㄊㄚ",)),  # 10**60
             (("不可思議",), ("ㄅㄨˋㄎㄜˇㄙㄧˋ",)),  # 10**64
-            (("無量",), ("ㄨˊㄌㄧㄤˋ",)),           # 10**68
-            (("不可說",), ("ㄅㄨˋㄎㄜˇㄕㄨㄛ",))    # 10**72
+            (("無量",), ("ㄨˊㄌㄧㄤˋ",)),  # 10**68
+            (("不可說",), ("ㄅㄨˋㄎㄜˇㄕㄨㄛ",)),  # 10**72
         ]
         self.high_numwords.reverse()
 
-        self.counters = {
-            "個": "˙ㄍㄜ",
-            "名": "ㄇㄧㄥˊ",
-            "位": "ㄨㄟˋ"
-        }
+        self.counters = {"個": "˙ㄍㄜ", "名": "ㄇㄧㄥˊ", "位": "ㄨㄟˋ"}
 
         self.mid_numwords = [
             (1000, (("千",), ("ㄑㄧㄢ",))),
@@ -184,15 +177,15 @@ class Num2Word_ZH_TW(Num2Word_ZH):
         ]
 
         self.low_numwords = [
-            (("十", "拾"), ("ㄕˊ",)),      # 10
+            (("十", "拾"), ("ㄕˊ",)),  # 10
             (("九", "玖"), ("ㄐㄧㄡˇ",)),  # 9
-            (("八", "捌"), ("ㄅㄚ",)),     # 8
-            (("七", "柒"), ("ㄑㄧ",)),     # 7
+            (("八", "捌"), ("ㄅㄚ",)),  # 8
+            (("七", "柒"), ("ㄑㄧ",)),  # 7
             (("六", "陸"), ("ㄌㄧㄡˋ",)),  # 6
-            (("五", "伍"), ("ㄨˇ",)),      # 5
-            (("四", "肆"), ("ㄙˋ",)),      # 4
-            (("三", "參"), ("ㄙㄢ",)),     # 3
-            (("二", "貳"), ("ㄦˋ",)),      # 2
-            (("一", "壹"), ("ㄧ",)),       # 1
-            (("零", "〇"), ("ㄌㄧㄥˊ",)),     # 0
+            (("五", "伍"), ("ㄨˇ",)),  # 5
+            (("四", "肆"), ("ㄙˋ",)),  # 4
+            (("三", "參"), ("ㄙㄢ",)),  # 3
+            (("二", "貳"), ("ㄦˋ",)),  # 2
+            (("一", "壹"), ("ㄧ",)),  # 1
+            (("零", "〇"), ("ㄌㄧㄥˊ",)),  # 0
         ]

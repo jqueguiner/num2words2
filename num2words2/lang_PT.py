@@ -21,19 +21,18 @@ import re
 
 from .lang_EUR import Num2Word_EUR
 
-DOLLAR = ('dólar', 'dólares')
-CENTS = ('cêntimo', 'cêntimos')
+DOLLAR = ("dólar", "dólares")
+CENTS = ("cêntimo", "cêntimos")
 
 
 class Num2Word_PT(Num2Word_EUR):
-
     CURRENCY_FORMS = {
-        'AUD': (DOLLAR, CENTS),
-        'BRL': (('real', 'reais'), ('centavo', 'centavos')),
-        'CAD': (DOLLAR, CENTS),
-        'EUR': (('euro', 'euros'), CENTS),
-        'GBP': (('libra', 'libras'), ('péni', 'pence')),
-        'USD': (DOLLAR, CENTS),
+        "AUD": (DOLLAR, CENTS),
+        "BRL": (("real", "reais"), ("centavo", "centavos")),
+        "CAD": (DOLLAR, CENTS),
+        "EUR": (("euro", "euros"), CENTS),
+        "GBP": (("libra", "libras"), ("péni", "pence")),
+        "USD": (DOLLAR, CENTS),
     }
 
     GIGA_SUFFIX = None
@@ -48,15 +47,38 @@ class Num2Word_PT(Num2Word_EUR):
         self.exclude_title = ["e", "vírgula", "menos"]
 
         self.mid_numwords = [
-            (1000, "mil"), (100, "cem"), (90, "noventa"),
-            (80, "oitenta"), (70, "setenta"), (60, "sessenta"),
-            (50, "cinquenta"), (40, "quarenta"), (30, "trinta")
+            (1000, "mil"),
+            (100, "cem"),
+            (90, "noventa"),
+            (80, "oitenta"),
+            (70, "setenta"),
+            (60, "sessenta"),
+            (50, "cinquenta"),
+            (40, "quarenta"),
+            (30, "trinta"),
         ]
         self.low_numwords = [
-            "vinte", "dezanove", "dezoito", "dezassete", "dezasseis",
-            "quinze", "catorze", "treze", "doze", "onze", "dez",
-            "nove", "oito", "sete", "seis", "cinco", "quatro", "três", "dois",
-            "um", "zero"
+            "vinte",
+            "dezanove",
+            "dezoito",
+            "dezassete",
+            "dezasseis",
+            "quinze",
+            "catorze",
+            "treze",
+            "doze",
+            "onze",
+            "dez",
+            "nove",
+            "oito",
+            "sete",
+            "seis",
+            "cinco",
+            "quatro",
+            "três",
+            "dois",
+            "um",
+            "zero",
         ]
         self.ords = [
             {
@@ -101,7 +123,7 @@ class Num2Word_PT(Num2Word_EUR):
             6: "milionésimo",
             9: "milésimo milionésimo",
             12: "bilionésimo",
-            15: "milésimo bilionésimo"
+            15: "milésimo bilionésimo",
         }
         self.hundreds = {
             1: "cento",
@@ -135,8 +157,8 @@ class Num2Word_PT(Num2Word_EUR):
         elif (not nnum % 1000000) and cnum > 1:
             ntext = ntext[:-4] + "lhões"
         # correct "milião" to "milhão"
-        if ntext == 'milião':
-            ntext = 'milhão'
+        if ntext == "milião":
+            ntext = "milhão"
         if nnum == 100:
             ctext = self.hundreds[cnum]
             ntext = ""
@@ -155,12 +177,16 @@ class Num2Word_PT(Num2Word_EUR):
         # mil e duzentos" in "cem milhões duzentos mil e duzentos" and not in
         # "cem milhões duzentos mil duzentos"
         for ext in (
-                'mil', 'milhão', 'milhões', 'mil milhões',
-                'bilião', 'biliões', 'mil biliões'):
-            if re.match('.*{} e \\w*entos? (?=.*e)'.format(ext), result):
-                result = result.replace(
-                    '{} e'.format(ext), '{}'.format(ext)
-                )
+            "mil",
+            "milhão",
+            "milhões",
+            "mil milhões",
+            "bilião",
+            "biliões",
+            "mil biliões",
+        ):
+            if re.match(".*{} e \\w*entos? (?=.*e)".format(ext), result):
+                result = result.replace("{} e".format(ext), "{}".format(ext))
 
         return result
 
@@ -175,29 +201,30 @@ class Num2Word_PT(Num2Word_EUR):
     def to_ordinal(self, value):
         # Before changing this function remember this is used by pt-BR
         # so act accordingly
+        value = int(value)  # Convert float to int
         self.verify_ordinal(value)
 
         result = []
         value = str(value)
-        thousand_separator = ''
+        thousand_separator = ""
 
         for idx, char in enumerate(value[::-1]):
             if idx and idx % 3 == 0:
                 thousand_separator = self.thousand_separators[idx]
 
-            if char != '0' and thousand_separator:
+            if char != "0" and thousand_separator:
                 # avoiding "segundo milionésimo milésimo" for 6000000,
                 # for instance
                 result.append(thousand_separator)
-                thousand_separator = ''
+                thousand_separator = ""
 
             result.append(self.ords[idx % 3][int(char)])
 
-        result = ' '.join(result[::-1])
+        result = " ".join(result[::-1])
         result = result.strip()
-        result = re.sub('\\s+', ' ', result)
+        result = re.sub("\\s+", " ", result)
 
-        if result.startswith('primeiro') and value != '1':
+        if result.startswith("primeiro") and value != "1":
             # avoiding "primeiro milésimo", "primeiro milionésimo" and so on
             result = result[9:]
 
@@ -213,11 +240,12 @@ class Num2Word_PT(Num2Word_EUR):
         # Before changing this function remember this is used by pt-BR
         # so act accordingly
         if val < 0:
-            return self.to_cardinal(abs(val)) + ' antes de Cristo'
+            return self.to_cardinal(abs(val)) + " antes de Cristo"
         return self.to_cardinal(val)
 
-    def to_currency(self, val, currency='EUR', cents=True, separator=' e',
-                    adjective=False):
+    def to_currency(
+        self, val, currency="EUR", cents=True, separator=" e", adjective=False
+    ):
         # Track if input was originally an integer (not float)
         is_integer = isinstance(val, int)
 
@@ -248,11 +276,16 @@ class Num2Word_PT(Num2Word_EUR):
             result = "%s%s %s" % (minus_str, money_str, currency_str)
 
             # transforms "milhões euros" em "milhões de euros"
-            for ext in ('milhão', 'milhões', 'bilião', 'biliões', 'trilião', 'triliões'):
-                if re.match('.*{} (?={})'.format(ext, currency_str), result):
-                    result = result.replace(
-                        '{}'.format(ext), '{} de'.format(ext), 1
-                    )
+            for ext in (
+                "milhão",
+                "milhões",
+                "bilião",
+                "biliões",
+                "trilião",
+                "triliões",
+            ):
+                if re.match(".*{} (?={})".format(ext, currency_str), result):
+                    result = result.replace("{}".format(ext), "{} de".format(ext), 1)
 
             return result.strip()
 
@@ -260,21 +293,21 @@ class Num2Word_PT(Num2Word_EUR):
         backup_negword = self.negword
         self.negword = self.negword[:-1]
         result = super(Num2Word_PT, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator,
-            adjective=adjective)
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
+        )
         # undo the change on negword
         self.negword = backup_negword
 
         # transforms "milhões euros" em "milhões de euros"
         cr1, _ = self.CURRENCY_FORMS[currency]
 
-        for ext in (
-                'milhão', 'milhões', 'bilião',
-                'biliões', 'trilião', 'triliões'):
-            if re.match('.*{} (?={})'.format(ext, cr1[1]), result):
-                result = result.replace(
-                    '{}'.format(ext), '{} de'.format(ext), 1
-                )
+        for ext in ("milhão", "milhões", "bilião", "biliões", "trilião", "triliões"):
+            if re.match(".*{} (?={})".format(ext, cr1[1]), result):
+                result = result.replace("{}".format(ext), "{} de".format(ext), 1)
         # For floats, keep "e zero cêntimos" to show it's a precise amount
         # Only remove for integers (but we handle integers separately now)
         return result

@@ -22,56 +22,56 @@ from .base import Num2Word_Base
 
 class Num2Word_AZ(Num2Word_Base):
     DIGITS = {
-        0: u"sıfır",
-        1: u"bir",
-        2: u"iki",
-        3: u"üç",
-        4: u"dörd",
-        5: u"beş",
-        6: u"altı",
-        7: u"yeddi",
-        8: u"səkkiz",
-        9: u"doqquz",
+        0: "sıfır",
+        1: "bir",
+        2: "iki",
+        3: "üç",
+        4: "dörd",
+        5: "beş",
+        6: "altı",
+        7: "yeddi",
+        8: "səkkiz",
+        9: "doqquz",
     }
 
     DECIMALS = {
-        1: u"on",
-        2: u"iyirmi",
-        3: u"otuz",
-        4: u"qırx",
-        5: u"əlli",
-        6: u"altmış",
-        7: u"yetmiş",
-        8: u"səksən",
-        9: u"doxsan",
+        1: "on",
+        2: "iyirmi",
+        3: "otuz",
+        4: "qırx",
+        5: "əlli",
+        6: "altmış",
+        7: "yetmiş",
+        8: "səksən",
+        9: "doxsan",
     }
 
     POWERS_OF_TEN = {
-        2: u"yüz",
-        3: u"min",
-        6: u"milyon",
-        9: u"milyard",
-        12: u"trilyon",
-        15: u"katrilyon",
-        18: u"kentilyon",
-        21: u"sekstilyon",
-        24: u"septilyon",
-        27: u"oktilyon",
-        30: u"nonilyon",
-        33: u"desilyon",
-        36: u"undesilyon",
-        39: u"dodesilyon",
-        42: u"tredesilyon",
-        45: u"katordesilyon",
-        48: u"kendesilyon",
-        51: u"seksdesilyon",
-        54: u"septendesilyon",
-        57: u"oktodesilyon",
-        60: u"novemdesilyon",
-        63: u"vigintilyon",
+        2: "yüz",
+        3: "min",
+        6: "milyon",
+        9: "milyard",
+        12: "trilyon",
+        15: "katrilyon",
+        18: "kentilyon",
+        21: "sekstilyon",
+        24: "septilyon",
+        27: "oktilyon",
+        30: "nonilyon",
+        33: "desilyon",
+        36: "undesilyon",
+        39: "dodesilyon",
+        42: "tredesilyon",
+        45: "katordesilyon",
+        48: "kendesilyon",
+        51: "seksdesilyon",
+        54: "septendesilyon",
+        57: "oktodesilyon",
+        60: "novemdesilyon",
+        63: "vigintilyon",
     }
 
-    VOWELS = u"aıoueəiöü"
+    VOWELS = "aıoueəiöü"
     VOWEL_TO_CARDINAL_SUFFIX_MAP = {
         **dict.fromkeys(["a", "ı"], "ıncı"),
         **dict.fromkeys(["e", "ə", "i"], "inci"),
@@ -86,19 +86,19 @@ class Num2Word_AZ(Num2Word_Base):
         **dict.fromkeys(["ö", "ü"], "cü"),
     }
 
-    CURRENCY_INTEGRAL = ('manat', 'manat')
-    CURRENCY_FRACTION = ('qəpik', 'qəpik')
+    CURRENCY_INTEGRAL = ("manat", "manat")
+    CURRENCY_FRACTION = ("qəpik", "qəpik")
     CURRENCY_FORMS = {
-        'AZN': (CURRENCY_INTEGRAL, CURRENCY_FRACTION),
-        'EUR': (('avro', 'avro'), ('sent', 'sent')),
-        'USD': (('dollar', 'dollar'), ('sent', 'sent')),
+        "AZN": (CURRENCY_INTEGRAL, CURRENCY_FRACTION),
+        "EUR": (("avro", "avro"), ("sent", "sent")),
+        "USD": (("dollar", "dollar"), ("sent", "sent")),
     }
 
     def setup(self):
         super().setup()
 
-        self.negword = u"mənfi"
-        self.pointword = u"nöqtə"
+        self.negword = "mənfi"
+        self.pointword = "nöqtə"
 
     def to_cardinal(self, value):
         value_str = str(value)
@@ -110,17 +110,16 @@ class Num2Word_AZ(Num2Word_Base):
             integral_part = integral_part[1:]  # ignore minus sign here
 
         integral_part_in_words = self.int_to_word(integral_part)
-        fraction_part_in_words = "" if not fraction_part else self.int_to_word(
-            fraction_part, leading_zeros=True)
+        fraction_part_in_words = (
+            ""
+            if not fraction_part
+            else self.int_to_word(fraction_part, leading_zeros=True)
+        )
 
         value_in_words = integral_part_in_words
         if fraction_part:
             value_in_words = " ".join(
-                [
-                    integral_part_in_words,
-                    self.pointword,
-                    fraction_part_in_words
-                ]
+                [integral_part_in_words, self.pointword, fraction_part_in_words]
             )
 
         if value < 0:
@@ -178,7 +177,7 @@ class Num2Word_AZ(Num2Word_Base):
             remainder_to_3 = index % 3
             if remainder_to_3 == 0:
                 if index > 0:
-                    if set(reversed_str[index:index + 3]) != {'0'}:
+                    if set(reversed_str[index : index + 3]) != {"0"}:
                         words.insert(0, self.POWERS_OF_TEN[index])
                 if digit_int > 0:
                     # we say "min" not "bir min"
@@ -193,7 +192,7 @@ class Num2Word_AZ(Num2Word_Base):
                 if digit_int > 1:
                     words.insert(0, self.DIGITS[digit_int])
 
-        if num_str == '0':
+        if num_str == "0":
             words.append(self.DIGITS[0])
 
         if leading_zeros:

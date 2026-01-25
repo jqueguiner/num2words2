@@ -23,10 +23,10 @@ from .base import Num2Word_Base
 # Gujarati language support
 class Num2Word_GU(Num2Word_Base):
     CURRENCY_FORMS = {
-        'INR': (('રૂપિયો', 'રૂપિયા'), ('પૈસો', 'પૈસા')),
-        'USD': (('ડોલર', 'ડોલર'), ('સેન્ટ', 'સેન્ટ')),
-        'EUR': (('યૂરો', 'યૂરો'), ('સેન્ટ', 'સેન્ટ')),
-        'GBP': (('પાઉન્ડ', 'પાઉન્ડ'), ('પેન્સ', 'પેન્સ')),
+        "INR": (("રૂપિયો", "રૂપિયા"), ("પૈસો", "પૈસા")),
+        "USD": (("ડોલર", "ડોલર"), ("સેન્ટ", "સેન્ટ")),
+        "EUR": (("યૂરો", "યૂરો"), ("સેન્ટ", "સેન્ટ")),
+        "GBP": (("પાઉન્ડ", "પાઉન્ડ"), ("પેન્સ", "પેન્સ")),
     }
 
     def setup(self):
@@ -37,14 +37,14 @@ class Num2Word_GU(Num2Word_Base):
         """Convert a number to its word representation in Gujarati."""
         n = str(number).strip()
 
-        if n.startswith('-'):
+        if n.startswith("-"):
             n = n[1:]
             ret = self.negword
         else:
             ret = ""
 
-        if '.' in n:
-            left, right = n.split('.', 1)
+        if "." in n:
+            left, right = n.split(".", 1)
             ret += self._int_to_word(int(left)) + " " + self.pointword + " "
             ret += " ".join(self._int_to_word(int(d)) for d in right)
             return ret.strip()
@@ -58,8 +58,30 @@ class Num2Word_GU(Num2Word_Base):
 
         # Gujarati number words
         ones = ["", "એક", "બે", "ત્રણ", "ચાર", "પાંચ", "છ", "સાત", "આઠ", "નવ"]
-        tens = ["", "દસ", "વીસ", "ત્રીસ", "ચાલીસ", "પચાસ", "સાઠ", "સિત્તેર", "એંસી", "નેવું"]
-        teens = ["દસ", "અગિયાર", "બાર", "તેર", "ચૌદ", "પંદર", "સોળ", "સત્તર", "અઢાર", "ઓગણીસ"]
+        tens = [
+            "",
+            "દસ",
+            "વીસ",
+            "ત્રીસ",
+            "ચાલીસ",
+            "પચાસ",
+            "સાઠ",
+            "સિત્તેર",
+            "એંસી",
+            "નેવું",
+        ]
+        teens = [
+            "દસ",
+            "અગિયાર",
+            "બાર",
+            "તેર",
+            "ચૌદ",
+            "પંદર",
+            "સોળ",
+            "સત્તર",
+            "અઢાર",
+            "ઓગણીસ",
+        ]
 
         # Handle special numbers
         if number < 0:
@@ -146,18 +168,20 @@ class Num2Word_GU(Num2Word_Base):
         else:
             return "સન " + self.to_cardinal(val)
 
-    def to_currency(self, val, currency='INR', cents=True, separator=' અને ', adjective=False):
+    def to_currency(
+        self, val, currency="INR", cents=True, separator=" અને ", adjective=False
+    ):
         """Convert to currency in Gujarati."""
         is_negative = False
         if val < 0:
             is_negative = True
             val = abs(val)
 
-        parts = str(val).split('.')
+        parts = str(val).split(".")
         left = int(parts[0]) if parts[0] else 0
-        right = int(parts[1][:2].ljust(2, '0')) if len(parts) > 1 and parts[1] else 0
+        right = int(parts[1][:2].ljust(2, "0")) if len(parts) > 1 and parts[1] else 0
 
-        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS['INR'])
+        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS["INR"])
 
         left_str = self._int_to_word(left)
         result = left_str + " " + (cr1[1] if left != 1 else cr1[0])

@@ -21,25 +21,22 @@ from . import lang_EN
 
 
 class Num2Word_EN_NG(lang_EN.Num2Word_EN):
-
     CURRENCY_FORMS = {
-        'NGN': (('naira', 'naira'), ('kobo', 'kobo')),
-        'EUR': (('euro', 'euros'), ('cent', 'cents')),
-        'USD': (('dollar', 'dollars'), ('cent', 'cents')),
+        "NGN": (("naira", "naira"), ("kobo", "kobo")),
+        "EUR": (("euro", "euros"), ("cent", "cents")),
+        "USD": (("dollar", "dollars"), ("cent", "cents")),
     }
 
     CURRENCY_ADJECTIVES = {
-        'NGN': 'Nigerian',
-        'EUR': 'European',
-        'USD': 'US',
+        "NGN": "Nigerian",
+        "EUR": "European",
+        "USD": "US",
     }
 
     def to_currency(
-        self, val, currency='NGN',
-        kobo=True, separator=',',
-        adjective=False
+        self, val, currency="NGN", kobo=True, separator=",", adjective=False
     ):
         result = super(Num2Word_EN_NG, self).to_currency(
-            val, currency=currency, cents=kobo, separator=separator,
-            adjective=adjective)
+            val, currency=currency, cents=kobo, separator=separator, adjective=adjective
+        )
         return result

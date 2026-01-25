@@ -23,16 +23,38 @@ from .base import Num2Word_Base
 # Sanskrit language support
 class Num2Word_SA(Num2Word_Base):
     CURRENCY_FORMS = {
-        'INR': (('रूप्यकाणि', 'रूप्यकाणि'), ('पैसा', 'पैसा')),
-        'USD': (('dollar', 'dollars'), ('cent', 'cents')),
-        'EUR': (('euro', 'euros'), ('cent', 'cents'))
+        "INR": (("रूप्यकाणि", "रूप्यकाणि"), ("पैसा", "पैसा")),
+        "USD": (("dollar", "dollars"), ("cent", "cents")),
+        "EUR": (("euro", "euros"), ("cent", "cents")),
     }
 
     def setup(self):
         self.negword = "minus "
         self.pointword = "point"
-        self.ones = ['', 'एकम्', 'द्वे', 'त्रीणि', 'चत्वारि', 'पञ्च', 'षट्', 'सप्त', 'अष्ट', 'नव']
-        self.tens = ['', 'दश', 'विंशति', 'त्रिंशत्', 'चत्वारिंशत्', 'पञ्चाशत्', 'षष्टि', 'सप्तति', 'अशीति', 'नवति']
+        self.ones = [
+            "",
+            "एकम्",
+            "द्वे",
+            "त्रीणि",
+            "चत्वारि",
+            "पञ्च",
+            "षट्",
+            "सप्त",
+            "अष्ट",
+            "नव",
+        ]
+        self.tens = [
+            "",
+            "दश",
+            "विंशति",
+            "त्रिंशत्",
+            "चत्वारिंशत्",
+            "पञ्चाशत्",
+            "षष्टि",
+            "सप्तति",
+            "अशीति",
+            "नवति",
+        ]
         self.hundred = "शतम्"
         self.thousand = "सहस्रम्"
         self.million = "दशलक्षम्"
@@ -41,14 +63,14 @@ class Num2Word_SA(Num2Word_Base):
         """Convert a number to its word representation in Sanskrit."""
         n = str(number).strip()
 
-        if n.startswith('-'):
+        if n.startswith("-"):
             n = n[1:]
             ret = self.negword
         else:
             ret = ""
 
-        if '.' in n:
-            left, right = n.split('.', 1)
+        if "." in n:
+            left, right = n.split(".", 1)
             ret += self._int_to_word(int(left)) + " " + self.pointword + " "
             for digit in right:
                 ret += self._int_to_word(int(digit)) + " "
@@ -110,18 +132,22 @@ class Num2Word_SA(Num2Word_Base):
         """Convert to year in Sanskrit."""
         return self.to_cardinal(val)
 
-    def to_currency(self, val, currency='INR', cents=True, separator=' ', adjective=False):
+    def to_currency(
+        self, val, currency="INR", cents=True, separator=" ", adjective=False
+    ):
         """Convert to currency in Sanskrit."""
         is_negative = False
         if val < 0:
             is_negative = True
             val = abs(val)
 
-        parts = str(val).split('.')
+        parts = str(val).split(".")
         left = int(parts[0]) if parts[0] else 0
-        right = int(parts[1][:2].ljust(2, '0')) if len(parts) > 1 and parts[1] else 0
+        right = int(parts[1][:2].ljust(2, "0")) if len(parts) > 1 and parts[1] else 0
 
-        cr1, cr2 = self.CURRENCY_FORMS.get(currency, list(self.CURRENCY_FORMS.values())[0])
+        cr1, cr2 = self.CURRENCY_FORMS.get(
+            currency, list(self.CURRENCY_FORMS.values())[0]
+        )
 
         left_str = self._int_to_word(left)
         result = left_str + " " + (cr1[1] if left != 1 else cr1[0])

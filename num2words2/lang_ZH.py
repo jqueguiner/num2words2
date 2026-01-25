@@ -54,7 +54,7 @@ class Num2Word_ZH(Num2Word_Base):
     def set_high_numwords(self, high):
         max = 4 * len(high)
         for word, n in zip(high, range(max, 0, -4)):
-            self.cards[10 ** n] = word
+            self.cards[10**n] = word
 
     def to_cardinal(self, value, stuff_zero=2, reading=False, prefer=None):
         self.stuff_zero = stuff_zero
@@ -76,15 +76,16 @@ class Num2Word_ZH(Num2Word_Base):
             return (rtext, rnum)
         # stuff_zero logic between discontinous numbers
         # http://www.hkame.org.hk/uploaded_files/magazine/15/271.pdf
-        with_zero = ("%s%s%s" % (ltext, self.select_text(
-            self.low_numwords[-1]), rtext), lnum + rnum)
+        with_zero = (
+            "%s%s%s" % (ltext, self.select_text(self.low_numwords[-1]), rtext),
+            lnum + rnum,
+        )
         no_zero = ("%s%s" % (ltext, rtext), lnum + rnum)
         if len(str(lnum)) - len(str(rnum)) > 1:
             if self.stuff_zero == 1:  # 凡「零」必讀 All discontinous numbers
                 return with_zero
             elif self.stuff_zero == 2:  # Discontinous high numbers
-                if len(str(lnum)) - len(str(rnum)
-                                        ) > 1 and len(str(rnum)) % 4 != 0:
+                if len(str(lnum)) - len(str(rnum)) > 1 and len(str(rnum)) % 4 != 0:
                     return with_zero
                 return no_zero
             elif self.stuff_zero == 3:  # 凡「零」不讀 No zeros
@@ -97,13 +98,19 @@ class Num2Word_ZH(Num2Word_Base):
         self.set_str_selection(reading, prefer)
         self.verify_ordinal(value)
         base = self.to_cardinal(value, reading=reading, prefer=prefer)
-        return "%s%s%s" % (self.select_text(self.ord_prefix),
-                           base, self.select_text(counter))
+        return "%s%s%s" % (
+            self.select_text(self.ord_prefix),
+            base,
+            self.select_text(counter),
+        )
 
     def to_ordinal_num(self, value, counter="", reading=False, prefer=None):
         self.set_str_selection(reading, prefer)
-        return "%s%s%s" % (self.select_text(self.ord_prefix),
-                           value, self.select_text(counter))
+        return "%s%s%s" % (
+            self.select_text(self.ord_prefix),
+            value,
+            self.select_text(counter),
+        )
 
     def to_year(self, value, reading=False, prefer=None):
         self.set_str_selection(reading, prefer)
@@ -122,8 +129,16 @@ class Num2Word_ZH(Num2Word_Base):
 
         return "".join(self.select_text(s) for s in out)
 
-    def to_currency(self, val, currency='XXX', cents=False, separator="",
-                    adjective=False, reading=False, prefer=None):
+    def to_currency(
+        self,
+        val,
+        currency="XXX",
+        cents=False,
+        separator="",
+        adjective=False,
+        reading=False,
+        prefer=None,
+    ):
         """
         Args:
             val: Numeric value
@@ -138,8 +153,7 @@ class Num2Word_ZH(Num2Word_Base):
         Handles whole numbers and decimal numbers differently
         """
         self.set_str_selection(reading, prefer)
-        left, right, is_negative = parse_currency_parts(
-            val, is_int_with_cents=False)
+        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False)
 
         try:
             cr = self.CURRENCY_FORMS[currency]
@@ -147,8 +161,9 @@ class Num2Word_ZH(Num2Word_Base):
             # CURRENCY_FLOATS are the generic terms for demicals
         except KeyError:
             raise NotImplementedError(
-                'Currency code "%s" not implemented for "%s"' %
-                (currency, self.__class__.__name__))
+                'Currency code "%s" not implemented for "%s"'
+                % (currency, self.__class__.__name__)
+            )
 
         # CURRENCY_ADJECTIVES are not implemented
         minus_str = self.negword if is_negative else ""
@@ -159,11 +174,11 @@ class Num2Word_ZH(Num2Word_Base):
             cr_pre, cr_post = ("", cr)
         else:
             cr_pre, cr_post = (cr, self.CURRENCY_FORMS["XXX"])
-        cents_str = self.to_currency_float(
-            right, reading=reading, prefer=prefer)
+        cents_str = self.to_currency_float(right, reading=reading, prefer=prefer)
         # Only add "整" in capital format
-        cheque = self.cheque_suffix if len(
-            cents_str) == 0 and reading == "capital" else ""
+        cheque = (
+            self.cheque_suffix if len(cents_str) == 0 and reading == "capital" else ""
+        )
 
         for c in [minus_str, money_str, cr_post, *cents_str, cheque]:
             cr_pre += self.zh_to_cap(self.select_text(c), reading == "capital")
@@ -188,16 +203,14 @@ class Num2Word_ZH(Num2Word_Base):
         Select the capital form of a Chinese numeral
         """
         out = value
-        one, ten = self.select_text(
-            self.cards[1]), self.select_text(
-            self.cards[10])
+        one, ten = self.select_text(self.cards[1]), self.select_text(self.cards[10])
         if capital:
             for cap_w in self.CAP_map:
                 if cap_w[0] in out:
                     out = out.replace(cap_w[0], cap_w[1])
             return out
         elif out.startswith(one + ten):
-            out = out[len(one):]
+            out = out[len(one) :]
         return out
 
     def setup(self):
@@ -211,32 +224,28 @@ class Num2Word_ZH(Num2Word_Base):
         self.prefer = None
 
         self.high_numwords = [
-            "萬",       # 10 ** 4
-            "億",       # 10 ** 8
-            "兆",       # 10 ** 12
-            "京",       # 10 ** 16
-            "垓",       # 10 ** 20
-            "秭",       # 10 ** 24
-            "穣",       # 10 ** 28
-            "溝",       # 10 ** 32
-            "澗",       # 10 ** 36
-            "正",       # 10 ** 40
-            "載",       # 10 ** 44
-            "極",       # 10 ** 48
-            "恆河沙",   # 10 ** 52
-            "阿僧祇",   # 10 ** 56
-            "那由他",   # 10 ** 60
+            "萬",  # 10 ** 4
+            "億",  # 10 ** 8
+            "兆",  # 10 ** 12
+            "京",  # 10 ** 16
+            "垓",  # 10 ** 20
+            "秭",  # 10 ** 24
+            "穣",  # 10 ** 28
+            "溝",  # 10 ** 32
+            "澗",  # 10 ** 36
+            "正",  # 10 ** 40
+            "載",  # 10 ** 44
+            "極",  # 10 ** 48
+            "恆河沙",  # 10 ** 52
+            "阿僧祇",  # 10 ** 56
+            "那由他",  # 10 ** 60
             "不可思議",  # 10 ** 64
-            "無量",     # 10 ** 68
-            "不可說",   # 10 ** 72
+            "無量",  # 10 ** 68
+            "不可說",  # 10 ** 72
         ]
         self.high_numwords.reverse()
 
-        self.mid_numwords = [
-            (1000, '千'),
-            (100, '百'),
-            (10, '十')
-        ]
+        self.mid_numwords = [(1000, "千"), (100, "百"), (10, "十")]
         self.low_numwords = [
             "九",
             "八",
@@ -247,7 +256,7 @@ class Num2Word_ZH(Num2Word_Base):
             "三",
             "二",
             "一",
-            ("零", "〇")
+            ("零", "〇"),
         ]
 
     CAP_map = [
@@ -269,11 +278,11 @@ class Num2Word_ZH(Num2Word_Base):
 
     def select_text(self, text):
         """Select the correct text from the Chinese, phonetic symbol (注音) or
-            alternatives ('ㄧ' or '壹')"""
+        alternatives ('ㄧ' or '壹')"""
         if isinstance(text, strtype):
             return text
         if len(text) == 0:
-            return ''
+            return ""
         # Check if reading is provided
         if all(isinstance(item, tuple) for item in text):
             if self.reading is True:

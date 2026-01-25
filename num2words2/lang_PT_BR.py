@@ -27,17 +27,17 @@ def negativeword(self):
 
 
 class Num2Word_PT_BR(lang_PT.Num2Word_PT):
-    negword = 'menos '
+    negword = "menos "
 
     CURRENCY_FORMS = {
-        'BRL': (('real', 'reais'), ('centavo', 'centavos')),
-        'EUR': (('euro', 'euros'), ('cêntimo', 'cêntimos')),
-        'USD': (('dólar', 'dólares'), ('centavo', 'centavos')),
+        "BRL": (("real", "reais"), ("centavo", "centavos")),
+        "EUR": (("euro", "euros"), ("cêntimo", "cêntimos")),
+        "USD": (("dólar", "dólares"), ("centavo", "centavos")),
     }
 
     def __init__(self):
         super(Num2Word_PT_BR, self).__init__()
-        self.negword = 'menos '
+        self.negword = "menos "
 
     def setup(self):
         # First call parent setup
@@ -45,10 +45,27 @@ class Num2Word_PT_BR(lang_PT.Num2Word_PT):
 
         # Brazilian Portuguese uses different spelling for 16, 17, 19
         self.low_numwords = [
-            "vinte", "dezenove", "dezoito", "dezessete", "dezesseis",
-            "quinze", "catorze", "treze", "doze", "onze", "dez",
-            "nove", "oito", "sete", "seis", "cinco", "quatro", "três", "dois",
-            "um", "zero"
+            "vinte",
+            "dezenove",
+            "dezoito",
+            "dezessete",
+            "dezesseis",
+            "quinze",
+            "catorze",
+            "treze",
+            "doze",
+            "onze",
+            "dez",
+            "nove",
+            "oito",
+            "sete",
+            "seis",
+            "cinco",
+            "quatro",
+            "três",
+            "dois",
+            "um",
+            "zero",
         ]
 
         # Override thousand separators for Brazilian Portuguese ordinals
@@ -58,7 +75,7 @@ class Num2Word_PT_BR(lang_PT.Num2Word_PT):
             6: "milionésimo",
             9: "bilionésimo",  # Brazilian billion = 10^9
             12: "trilionésimo",  # Brazilian trillion = 10^12
-            15: "quatrilionésimo"  # Brazilian quadrillion = 10^15
+            15: "quatrilionésimo",  # Brazilian quadrillion = 10^15
         }
 
     def merge(self, curr, next):
@@ -124,13 +141,19 @@ class Num2Word_PT_BR(lang_PT.Num2Word_PT):
                             # Call parent for the rest (millions and below)
                             rest_str = super(Num2Word_PT_BR, self).to_cardinal(rest)
                             # Fix "milião" to "milhão" if it appears
-                            rest_str = rest_str.replace("milião", "milhão").replace("miliões", "milhões")
+                            rest_str = rest_str.replace("milião", "milhão").replace(
+                                "miliões", "milhões"
+                            )
                             result += " e %s" % rest_str
                     else:
                         # No billions, just add remainder
-                        remainder_str = super(Num2Word_PT_BR, self).to_cardinal(remainder)
+                        remainder_str = super(Num2Word_PT_BR, self).to_cardinal(
+                            remainder
+                        )
                         # Fix "milião" to "milhão" if it appears
-                        remainder_str = remainder_str.replace("milião", "milhão").replace("miliões", "milhões")
+                        remainder_str = remainder_str.replace(
+                            "milião", "milhão"
+                        ).replace("miliões", "milhões")
                         result += " e %s" % remainder_str
                 return result
 
@@ -146,7 +169,9 @@ class Num2Word_PT_BR(lang_PT.Num2Word_PT):
                 if remainder:
                     remainder_str = super(Num2Word_PT_BR, self).to_cardinal(remainder)
                     # Fix "milião" to "milhão" if it appears
-                    remainder_str = remainder_str.replace("milião", "milhão").replace("miliões", "milhões")
+                    remainder_str = remainder_str.replace("milião", "milhão").replace(
+                        "miliões", "milhões"
+                    )
                     # Use comma if remainder starts with hundreds (i.e., >= 100000)
                     if remainder >= 100000:
                         result += ", %s" % remainder_str
@@ -160,7 +185,9 @@ class Num2Word_PT_BR(lang_PT.Num2Word_PT):
                 if millions == 1:
                     result = "um milhão"
                 else:
-                    result = "%s milhões" % super(Num2Word_PT_BR, self).to_cardinal(millions)
+                    result = "%s milhões" % super(Num2Word_PT_BR, self).to_cardinal(
+                        millions
+                    )
 
                 if remainder:
                     # Use our own to_cardinal for remainder to ensure proper formatting
@@ -175,21 +202,33 @@ class Num2Word_PT_BR(lang_PT.Num2Word_PT):
                 # For values below 1 million, use parent implementation
                 result = super(Num2Word_PT_BR, self).to_cardinal(value)
                 # Fix "milião" to "milhão" throughout (shouldn't happen but just in case)
-                result = result.replace("milião", "milhão").replace("miliões", "milhões")
+                result = result.replace("milião", "milhão").replace(
+                    "miliões", "milhões"
+                )
 
         # Transforms "mil e cento e catorze" into "mil, cento e catorze"
         for ext in (
-                'mil', 'milhão', 'milhões', 'bilhão', 'bilhões',
-                'trilhão', 'trilhões', 'quatrilhão', 'quatrilhões'):
+            "mil",
+            "milhão",
+            "milhões",
+            "bilhão",
+            "bilhões",
+            "trilhão",
+            "trilhões",
+            "quatrilhão",
+            "quatrilhões",
+        ):
             # Check if pattern is "thousand-word hundreds-word e something"
-            if re.search('{} \\w*ento'.format(ext), result):
+            if re.search("{} \\w*ento".format(ext), result):
                 result = re.sub(
-                    '({}) (\\w*entos?)'.format(ext), r'\1, \2', result, count=1
+                    "({}) (\\w*entos?)".format(ext), r"\1, \2", result, count=1
                 )
 
         return result
 
-    def to_currency(self, val, currency='BRL', cents=True, separator=' e', adjective=False):
+    def to_currency(
+        self, val, currency="BRL", cents=True, separator=" e", adjective=False
+    ):
         from decimal import Decimal
 
         # Check if this is a whole number (integer or decimal with .00)
@@ -203,7 +242,11 @@ class Num2Word_PT_BR(lang_PT.Num2Word_PT):
 
         # Use parent class implementation with our currency forms
         result = super(Num2Word_PT_BR, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator, adjective=adjective
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
         )
 
         # For Brazilian Portuguese, we need to add "de" after millions/billions/trillions
@@ -213,10 +256,17 @@ class Num2Word_PT_BR(lang_PT.Num2Word_PT):
                 cr1, cr2 = self.CURRENCY_FORMS[currency]
                 currency_str = cr1[1] if abs(val) != 1 and len(cr1) > 1 else cr1[0]
                 # Add "de" for Brazilian terms (milhão/milhões, bilhão/bilhões, trilhão/trilhões)
-                for ext in ('milhão', 'milhões', 'bilhão', 'bilhões', 'trilhão', 'trilhões'):
-                    if re.match('.*{} (?={})'.format(ext, currency_str), result):
+                for ext in (
+                    "milhão",
+                    "milhões",
+                    "bilhão",
+                    "bilhões",
+                    "trilhão",
+                    "trilhões",
+                ):
+                    if re.match(".*{} (?={})".format(ext, currency_str), result):
                         result = result.replace(
-                            '{}'.format(ext), '{} de'.format(ext), 1
+                            "{}".format(ext), "{} de".format(ext), 1
                         )
             except KeyError:
                 pass  # Currency not in our forms, use parent's result as-is

@@ -22,13 +22,12 @@ from .base import Num2Word_Base
 
 class Num2Word_SW(Num2Word_Base):
     CURRENCY_FORMS = {
-        'TZS': (('shilingi', 'shilingi'), ('senti', 'senti')),  # Tanzanian Shilling
-        'KES': (('shilingi', 'shilingi'), ('senti', 'senti')),  # Kenyan Shilling
-        'UGX': (('shilingi', 'shilingi'), ('senti', 'senti')),  # Ugandan Shilling
-
-        'USD': (('dola', 'dola'), ('senti', 'senti')),          # US Dollar
-        'EUR': (('yuro', 'yuro'), ('senti', 'senti')),          # Euro
-        'GBP': (('pauni', 'pauni'), ('peni', 'peni')),          # British Pound
+        "TZS": (("shilingi", "shilingi"), ("senti", "senti")),  # Tanzanian Shilling
+        "KES": (("shilingi", "shilingi"), ("senti", "senti")),  # Kenyan Shilling
+        "UGX": (("shilingi", "shilingi"), ("senti", "senti")),  # Ugandan Shilling
+        "USD": (("dola", "dola"), ("senti", "senti")),  # US Dollar
+        "EUR": (("yuro", "yuro"), ("senti", "senti")),  # Euro
+        "GBP": (("pauni", "pauni"), ("peni", "peni")),  # British Pound
     }
 
     def setup(self):
@@ -51,7 +50,7 @@ class Num2Word_SW(Num2Word_Base):
             (50, "hamsini"),
             (40, "arobaini"),
             (30, "thelathini"),
-            (20, "ishirini")
+            (20, "ishirini"),
         ]
 
         self.low_numwords = [
@@ -60,21 +59,21 @@ class Num2Word_SW(Num2Word_Base):
             "kumi na saba",  # 17
             "kumi na sita",  # 16
             "kumi na tano",  # 15
-            "kumi na nne",   # 14
+            "kumi na nne",  # 14
             "kumi na tatu",  # 13
             "kumi na mbili",  # 12
             "kumi na moja",  # 11
-            "kumi",          # 10
-            "tisa",          # 9
-            "nane",          # 8
-            "saba",          # 7
-            "sita",          # 6
-            "tano",          # 5
-            "nne",           # 4
-            "tatu",          # 3
-            "mbili",         # 2
-            "moja",          # 1
-            "sifuri"         # 0
+            "kumi",  # 10
+            "tisa",  # 9
+            "nane",  # 8
+            "saba",  # 7
+            "sita",  # 6
+            "tano",  # 5
+            "nne",  # 4
+            "tatu",  # 3
+            "mbili",  # 2
+            "moja",  # 1
+            "sifuri",  # 0
         ]
 
         # Ordinal mappings
@@ -95,7 +94,7 @@ class Num2Word_SW(Num2Word_Base):
         """Set high numwords for large numbers."""
         cap = 9 + 9 * len(high)
         for word, n in zip(high, range(cap, 8, -9)):
-            self.cards[10 ** n] = word
+            self.cards[10**n] = word
 
     def merge(self, lpair, rpair):
         """Merge two number parts using Swahili grammar rules."""
@@ -164,8 +163,9 @@ class Num2Word_SW(Num2Word_Base):
         """Convert cents amount to verbose format."""
         return self.to_cardinal(number)
 
-    def to_currency(self, val, currency='TZS', cents=True, separator=' na',
-                    adjective=False):
+    def to_currency(
+        self, val, currency="TZS", cents=True, separator=" na", adjective=False
+    ):
         """
         Convert number to currency format in Swahili.
         """
@@ -174,46 +174,48 @@ class Num2Word_SW(Num2Word_Base):
         from decimal import Decimal
 
         from .currency import parse_currency_parts
+
         decimal_val = Decimal(str(val))
         has_fractional_cents = (decimal_val * 100) % 1 != 0
 
         # For Swahili, treat integers as whole currency units, not cents
-        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
-                                                        keep_precision=has_fractional_cents)
+        left, right, is_negative = parse_currency_parts(
+            val, is_int_with_cents=False, keep_precision=has_fractional_cents
+        )
 
         try:
             cr1, cr2 = self.CURRENCY_FORMS[currency]
         except KeyError:
             raise NotImplementedError(
-                'Currency code "%s" not implemented for "%s"' %
-                (currency, self.__class__.__name__))
+                'Currency code "%s" not implemented for "%s"'
+                % (currency, self.__class__.__name__)
+            )
 
         minus_str = "%s " % self.negword.strip() if is_negative else ""
         money_str = self.to_cardinal(left)
 
         # Check if input is explicitly a decimal number or has non-zero cents
-        has_decimal = isinstance(val, float) or str(val).find('.') != -1
+        has_decimal = isinstance(val, float) or str(val).find(".") != -1
 
         # Only include cents if there are actual cents or explicitly decimal
         if has_decimal or right > 0:
             # Handle fractional cents
             from decimal import Decimal
+
             if isinstance(right, Decimal):
                 # Convert fractional cents (e.g., 65.3 cents)
-                cents_str = self.to_cardinal_float(float(right)) if cents else str(float(right))
+                cents_str = (
+                    self.to_cardinal_float(float(right)) if cents else str(float(right))
+                )
             else:
                 cents_str = self.to_cardinal(right) if cents else "%02d" % right
-            return u'%s%s %s%s %s %s' % (
+            return "%s%s %s%s %s %s" % (
                 minus_str,
                 money_str,
                 self.pluralize(left, cr1),
                 separator,
                 cents_str,
-                self.pluralize(right, cr2)
+                self.pluralize(right, cr2),
             )
         else:
-            return u'%s%s %s' % (
-                minus_str,
-                money_str,
-                self.pluralize(left, cr1)
-            )
+            return "%s%s %s" % (minus_str, money_str, self.pluralize(left, cr1))

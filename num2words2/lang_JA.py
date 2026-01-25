@@ -343,17 +343,17 @@ ERA_START = [
 
 class Num2Word_JA(Num2Word_Base):
     CURRENCY_FORMS = {
-        'JPY': (('円', 'えん'), ('銭', '銭')),  # Adding sen (1/100 yen) support
-        'EUR': (('ユーロ', 'ユーロ'), ('セント', 'セント')),
-        'USD': (('ドル', 'ドル'), ('セント', 'セント')),
-        'GBP': (('ポンド', 'ポンド'), ('ペンス', 'ペンス')),
-        'CNY': (('元', '元'), ('分', '分')),  # Chinese yuan with fen (1/100 yuan)
+        "JPY": (("円", "えん"), ("銭", "銭")),  # Adding sen (1/100 yen) support
+        "EUR": (("ユーロ", "ユーロ"), ("セント", "セント")),
+        "USD": (("ドル", "ドル"), ("セント", "セント")),
+        "GBP": (("ポンド", "ポンド"), ("ペンス", "ペンス")),
+        "CNY": (("元", "元"), ("分", "分")),  # Chinese yuan with fen (1/100 yuan)
     }
 
     def set_high_numwords(self, high):
         max = 4 * len(high)
         for word, n in zip(high, range(max, 0, -4)):
-            self.cards[10 ** n] = word
+            self.cards[10**n] = word
 
     def setup(self):
         self.negword = "マイナス"
@@ -361,18 +361,18 @@ class Num2Word_JA(Num2Word_Base):
         self.exclude_title = ["点", "マイナス"]
 
         self.high_numwords = [
-            ("万", "まん"),    # 10**4 man
-            ("億", "おく"),    # 10**8 oku
+            ("万", "まん"),  # 10**4 man
+            ("億", "おく"),  # 10**8 oku
             ("兆", "ちょう"),  # 10**12 chō
-            ("京", "けい"),    # 10**16 kei
-            ("垓", "がい"),    # 10**20 gai
-            ("秭", "し"),      # 10**24 shi
+            ("京", "けい"),  # 10**16 kei
+            ("垓", "がい"),  # 10**20 gai
+            ("秭", "し"),  # 10**24 shi
             ("穣", "じょう"),  # 10**28 jō
-            ("溝", "こう"),    # 10**32 kō
-            ("澗", "かん"),    # 10**36 kan
-            ("正", "せい"),    # 10**40 sei
-            ("載", "さい"),    # 10**44 sai
-            ("極", "ごく"),    # 10**48 goku
+            ("溝", "こう"),  # 10**32 kō
+            ("澗", "かん"),  # 10**36 kan
+            ("正", "せい"),  # 10**40 sei
+            ("載", "さい"),  # 10**44 sai
+            ("極", "ごく"),  # 10**48 goku
         ]
 
         self.high_numwords.reverse()
@@ -383,16 +383,16 @@ class Num2Word_JA(Num2Word_Base):
         ]
 
         self.low_numwords = [
-            ("十", "じゅう"),                  # 10 jū
-            ("九", "きゅう"),                  # 9 kyū
-            ("八", "はち"),                    # 8 hachi
-            ("七", ("なな", "しち")),          # 7 nana, shichi
-            ("六", "ろく"),                    # 6 roku
-            ("五", "ご"),                      # 5 go
-            ("四", ("よん", "し")),            # 4 yon, shi
-            ("三", "さん"),                    # 3 san
-            ("二", "に"),                      # 2 ni
-            ("一", "いち"),                    # 1 ichi
+            ("十", "じゅう"),  # 10 jū
+            ("九", "きゅう"),  # 9 kyū
+            ("八", "はち"),  # 8 hachi
+            ("七", ("なな", "しち")),  # 7 nana, shichi
+            ("六", "ろく"),  # 6 roku
+            ("五", "ご"),  # 5 go
+            ("四", ("よん", "し")),  # 4 yon, shi
+            ("三", "さん"),  # 3 san
+            ("二", "に"),  # 2 ni
+            ("一", "いち"),  # 1 ichi
             # both are alternatives, 零 doesn't map to ゼロ or 〇 to れい
             (("零", "〇"), ("ゼロ", "れい")),  # 0 ZERO, rei
         ]
@@ -417,8 +417,7 @@ class Num2Word_JA(Num2Word_Base):
             if counter == "番":
                 return "ばんめ"
             else:
-                raise NotImplementedError(
-                    "Reading not implemented for %s" % counter)
+                raise NotImplementedError("Reading not implemented for %s" % counter)
         else:
             return counter + "目"
 
@@ -430,8 +429,9 @@ class Num2Word_JA(Num2Word_Base):
     def to_ordinal_num(self, value, reading=False, counter="番"):
         return "%s%s" % (value, self._ordinal_suffix(reading, counter))
 
-    def to_year(self, val, suffix=None, longval=True, reading=False,
-                prefer=None, era=True):
+    def to_year(
+        self, val, suffix=None, longval=True, reading=False, prefer=None, era=True
+    ):
         year = val
         # Gregorian calendar
         if not era:
@@ -450,16 +450,16 @@ class Num2Word_JA(Num2Word_Base):
         min_year = ERA_START[0][0]
         last_era_idx = len(ERA_START) - 1
         if year < min_year:
-            raise ValueError(
-                "Can't convert years less than %s to era" % min_year)
+            raise ValueError("Can't convert years less than %s to era" % min_year)
 
         first = 0
         last = last_era_idx
         era_idx = None
         while era_idx is None:
             mid = (first + last) // 2
-            if mid == last_era_idx or (ERA_START[mid][0] <= year and
-                                       ERA_START[mid + 1][0] > year):
+            if mid == last_era_idx or (
+                ERA_START[mid][0] <= year and ERA_START[mid + 1][0] > year
+            ):
                 era_idx = mid
                 # if an era lasting less than a year is preferred, choose it
                 if prefer:
@@ -485,21 +485,33 @@ class Num2Word_JA(Num2Word_Base):
             era_year_words = str(era_year)
         elif reading:
             era_name = era[1][1]
-            era_year_words = (self.to_cardinal(era_year, reading=True,
-                                               prefer=prefer)
-                              if era_year != 1 else "がん")
+            era_year_words = (
+                self.to_cardinal(era_year, reading=True, prefer=prefer)
+                if era_year != 1
+                else "がん"
+            )
             if era_year % 10 == 9:
                 era_year_words = era_year_words[:-3] + "く"
             fmt = "%s%sねん"
         else:
-            era_year_words = (self.to_cardinal(era_year, reading=False,
-                                               prefer=prefer)
-                              if era_year != 1 else "元")
+            era_year_words = (
+                self.to_cardinal(era_year, reading=False, prefer=prefer)
+                if era_year != 1
+                else "元"
+            )
 
         return fmt % (era_name, era_year_words)
 
-    def to_currency(self, val, currency="JPY", cents=False, separator="",
-                    adjective=False, reading=False, prefer=None):
+    def to_currency(
+        self,
+        val,
+        currency="JPY",
+        cents=False,
+        separator="",
+        adjective=False,
+        reading=False,
+        prefer=None,
+    ):
         # Check if value has fractional cents
         decimal_val = Decimal(str(val))
         has_fractional_cents = (decimal_val * 100) % 1 != 0
@@ -508,8 +520,7 @@ class Num2Word_JA(Num2Word_Base):
         if isinstance(val, int):
             val = float(val)
 
-        left, right, is_negative = parse_currency_parts(
-            val, is_int_with_cents=cents)
+        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=cents)
 
         try:
             cr1, cr2 = self.CURRENCY_FORMS[currency]
@@ -517,8 +528,9 @@ class Num2Word_JA(Num2Word_Base):
                 raise ValueError('Decimals not supported for "%s"' % currency)
         except KeyError:
             raise NotImplementedError(
-                'Currency code "%s" not implemented for "%s"' %
-                (currency, self.__class__.__name__))
+                'Currency code "%s" not implemented for "%s"'
+                % (currency, self.__class__.__name__)
+            )
 
         if adjective and currency in self.CURRENCY_ADJECTIVES:
             cr1 = prefix_currency(self.CURRENCY_ADJECTIVES[currency], cr1)
@@ -527,14 +539,20 @@ class Num2Word_JA(Num2Word_Base):
 
         if has_fractional_cents and cr2:
             # Handle fractional cents using to_cardinal_float
-            right_str = self.to_cardinal_float(right / 100.0, reading=reading, prefer=prefer)
-            cr2_str = (cr2[1] if reading else cr2[0]) if cr2 else ''
+            right_str = self.to_cardinal_float(
+                right / 100.0, reading=reading, prefer=prefer
+            )
+            cr2_str = (cr2[1] if reading else cr2[0]) if cr2 else ""
         else:
             # Handle normal integer cents
-            right_str = self.to_cardinal(right, reading=reading, prefer=prefer) if cr2 and right else ''
-            cr2_str = (cr2[1] if reading else cr2[0]) if (cr2 and right) else ''
+            right_str = (
+                self.to_cardinal(right, reading=reading, prefer=prefer)
+                if cr2 and right
+                else ""
+            )
+            cr2_str = (cr2[1] if reading else cr2[0]) if (cr2 and right) else ""
 
-        return '%s%s%s%s%s' % (
+        return "%s%s%s%s%s" % (
             minus_str,
             self.to_cardinal(left, reading=reading, prefer=prefer),
             cr1[1] if reading else cr1[0],
@@ -557,9 +575,12 @@ class Num2Word_JA(Num2Word_Base):
                 out.append((select_text(self.cards[1], reading, prefer), 1))
             else:
                 if div == value:  # The system tallies, eg Roman Numerals
-                    return [(
-                        div * select_text(self.cards[elem], reading, prefer),
-                        div * elem)]
+                    return [
+                        (
+                            div * select_text(self.cards[elem], reading, prefer),
+                            div * elem,
+                        )
+                    ]
                 out.append(self.splitnum(div, reading, prefer))
 
             out.append((select_text(self.cards[elem], reading, prefer), elem))
@@ -573,8 +594,7 @@ class Num2Word_JA(Num2Word_Base):
         try:
             assert int(value) == value
         except (ValueError, TypeError, AssertionError):
-            return self.to_cardinal_float(value, reading=reading,
-                                          prefer=prefer)
+            return self.to_cardinal_float(value, reading=reading, prefer=prefer)
 
         out = ""
         if value < 0:
@@ -598,7 +618,7 @@ class Num2Word_JA(Num2Word_Base):
         pre, post = self.float2tuple(float(value))
 
         post = str(post)
-        post = '0' * (self.precision - len(post)) + post
+        post = "0" * (self.precision - len(post)) + post
 
         out = [self.to_cardinal(pre, reading=reading, prefer=prefer)]
         # Handle negative decimals when integer part is 0
@@ -609,7 +629,6 @@ class Num2Word_JA(Num2Word_Base):
 
         for i in range(self.precision):
             curr = int(post[i])
-            out.append(to_s(
-                self.to_cardinal(curr, reading=reading, prefer=prefer)))
+            out.append(to_s(self.to_cardinal(curr, reading=reading, prefer=prefer)))
 
         return "".join(out)

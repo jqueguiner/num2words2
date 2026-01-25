@@ -23,10 +23,10 @@ from .base import Num2Word_Base
 # Marathi language support
 class Num2Word_MR(Num2Word_Base):
     CURRENCY_FORMS = {
-        'INR': (('रुपया', 'रुपये'), ('पैसा', 'पैसे')),
-        'USD': (('डॉलर', 'डॉलर'), ('सेंट', 'सेंट्स')),
-        'EUR': (('युरो', 'युरो'), ('सेंट', 'सेंट्स')),
-        'GBP': (('पाउंड', 'पाउंड'), ('पेन्स', 'पेन्स')),
+        "INR": (("रुपया", "रुपये"), ("पैसा", "पैसे")),
+        "USD": (("डॉलर", "डॉलर"), ("सेंट", "सेंट्स")),
+        "EUR": (("युरो", "युरो"), ("सेंट", "सेंट्स")),
+        "GBP": (("पाउंड", "पाउंड"), ("पेन्स", "पेन्स")),
     }
 
     def setup(self):
@@ -37,14 +37,14 @@ class Num2Word_MR(Num2Word_Base):
         """Convert a number to its word representation in Marathi."""
         n = str(number).strip()
 
-        if n.startswith('-'):
+        if n.startswith("-"):
             n = n[1:]
             ret = self.negword
         else:
             ret = ""
 
-        if '.' in n:
-            left, right = n.split('.', 1)
+        if "." in n:
+            left, right = n.split(".", 1)
             ret += self._int_to_word(int(left)) + " " + self.pointword + " "
             ret += " ".join(self._int_to_word(int(d)) for d in right)
             return ret.strip()
@@ -58,8 +58,30 @@ class Num2Word_MR(Num2Word_Base):
 
         # Marathi number words
         ones = ["", "एक", "दोन", "तीन", "चार", "पाच", "सहा", "सात", "आठ", "नऊ"]
-        tens = ["", "दहा", "वीस", "तीस", "चाळीस", "पन्नास", "साठ", "सत्तर", "ऐंशी", "नव्वद"]
-        teens = ["दहा", "अकरा", "बारा", "तेरा", "चौदा", "पंधरा", "सोळा", "सतरा", "अठरा", "एकोणीस"]
+        tens = [
+            "",
+            "दहा",
+            "वीस",
+            "तीस",
+            "चाळीस",
+            "पन्नास",
+            "साठ",
+            "सत्तर",
+            "ऐंशी",
+            "नव्वद",
+        ]
+        teens = [
+            "दहा",
+            "अकरा",
+            "बारा",
+            "तेरा",
+            "चौदा",
+            "पंधरा",
+            "सोळा",
+            "सतरा",
+            "अठरा",
+            "एकोणीस",
+        ]
 
         if number < 0:
             return self.negword + self._int_to_word(abs(number))
@@ -71,7 +93,9 @@ class Num2Word_MR(Num2Word_Base):
             result = tens[number // 10]
             if number % 10:
                 if number // 10 == 2:  # Special case for 20s
-                    result = "एक" + tens[2] if number == 21 else ones[number % 10] + tens[2]
+                    result = (
+                        "एक" + tens[2] if number == 21 else ones[number % 10] + tens[2]
+                    )
                 elif number // 10 == 9 and number % 10 == 9:  # 99
                     result = "नव्याण्णव"
                 else:
@@ -161,18 +185,20 @@ class Num2Word_MR(Num2Word_Base):
         else:
             return "सन " + self.to_cardinal(val)
 
-    def to_currency(self, val, currency='INR', cents=True, separator=' आणि ', adjective=False):
+    def to_currency(
+        self, val, currency="INR", cents=True, separator=" आणि ", adjective=False
+    ):
         """Convert to currency in Marathi."""
         is_negative = False
         if val < 0:
             is_negative = True
             val = abs(val)
 
-        parts = str(val).split('.')
+        parts = str(val).split(".")
         left = int(parts[0]) if parts[0] else 0
-        right = int(parts[1][:2].ljust(2, '0')) if len(parts) > 1 and parts[1] else 0
+        right = int(parts[1][:2].ljust(2, "0")) if len(parts) > 1 and parts[1] else 0
 
-        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS['INR'])
+        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS["INR"])
 
         left_str = self._int_to_word(left)
         result = left_str + " " + (cr1[1] if left != 1 else cr1[0])

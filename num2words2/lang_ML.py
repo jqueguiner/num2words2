@@ -23,17 +23,50 @@ from .base import Num2Word_Base
 # Malayalam language support
 class Num2Word_ML(Num2Word_Base):
     CURRENCY_FORMS = {
-        'INR': (('രൂപ', 'രൂപ'), ('പൈസ', 'പൈസ')),
-        'USD': (('dollar', 'dollars'), ('cent', 'cents')),
-        'EUR': (('euro', 'euros'), ('cent', 'cents')),
+        "INR": (("രൂപ", "രൂപ"), ("പൈസ", "പൈസ")),
+        "USD": (("dollar", "dollars"), ("cent", "cents")),
+        "EUR": (("euro", "euros"), ("cent", "cents")),
     }
 
     def setup(self):
         self.negword = "മൈനസ് "
         self.pointword = "പോയിന്റ്"
-        self.ones = ['', 'ഒന്ന്', 'രണ്ട്', 'മൂന്ന്', 'നാല്', 'അഞ്ച്', 'ആറ്', 'ഏഴ്', 'എട്ട്', 'ഒൻപത്']
-        self.tens = ['', 'പത്ത്', 'ഇരുപത്', 'മുപ്പത്', 'നാല്പത്', 'അമ്പത്', 'അറുപത്', 'എഴുപത്', 'എൺപത്', 'തൊണ്ണൂറ്']
-        self.teens = ['പത്ത്', 'പതിനൊന്ന്', 'പന്ത്രണ്ട്', 'പതിമൂന്ന്', 'പതിനാല്', 'പതിനഞ്ച്', 'പതിനാറ്', 'പതിനേഴ്', 'പതിനെട്ട്', 'പത്തൊൻപത്']
+        self.ones = [
+            "",
+            "ഒന്ന്",
+            "രണ്ട്",
+            "മൂന്ന്",
+            "നാല്",
+            "അഞ്ച്",
+            "ആറ്",
+            "ഏഴ്",
+            "എട്ട്",
+            "ഒൻപത്",
+        ]
+        self.tens = [
+            "",
+            "പത്ത്",
+            "ഇരുപത്",
+            "മുപ്പത്",
+            "നാല്പത്",
+            "അമ്പത്",
+            "അറുപത്",
+            "എഴുപത്",
+            "എൺപത്",
+            "തൊണ്ണൂറ്",
+        ]
+        self.teens = [
+            "പത്ത്",
+            "പതിനൊന്ന്",
+            "പന്ത്രണ്ട്",
+            "പതിമൂന്ന്",
+            "പതിനാല്",
+            "പതിനഞ്ച്",
+            "പതിനാറ്",
+            "പതിനേഴ്",
+            "പതിനെട്ട്",
+            "പത്തൊൻപത്",
+        ]
         self.hundred = "നൂറ്"
         self.thousand = "ആയിരം"
         self.lakh = "ലക്ഷം"
@@ -44,14 +77,14 @@ class Num2Word_ML(Num2Word_Base):
         """Convert a number to its word representation in Malayalam."""
         n = str(number).strip()
 
-        if n.startswith('-'):
+        if n.startswith("-"):
             n = n[1:]
             ret = self.negword
         else:
             ret = ""
 
-        if '.' in n:
-            left, right = n.split('.', 1)
+        if "." in n:
+            left, right = n.split(".", 1)
             ret += self._int_to_word(int(left)) + " " + self.pointword + " "
             ret += " ".join(self._int_to_word(int(d)) for d in right)
             return ret.strip()
@@ -133,18 +166,20 @@ class Num2Word_ML(Num2Word_Base):
         else:
             return "" + self.to_cardinal(val)
 
-    def to_currency(self, val, currency='INR', cents=True, separator=' ', adjective=False):
+    def to_currency(
+        self, val, currency="INR", cents=True, separator=" ", adjective=False
+    ):
         """Convert to currency in Malayalam."""
         is_negative = False
         if val < 0:
             is_negative = True
             val = abs(val)
 
-        parts = str(val).split('.')
+        parts = str(val).split(".")
         left = int(parts[0]) if parts[0] else 0
-        right = int(parts[1][:2].ljust(2, '0')) if len(parts) > 1 and parts[1] else 0
+        right = int(parts[1][:2].ljust(2, "0")) if len(parts) > 1 and parts[1] else 0
 
-        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS['INR'])
+        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS["INR"])
 
         left_str = self._int_to_word(left)
         result = left_str + " " + (cr1[1] if left != 1 else cr1[0])

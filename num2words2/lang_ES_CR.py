@@ -22,17 +22,22 @@ from .lang_ES import Num2Word_ES
 
 
 class Num2Word_ES_CR(Num2Word_ES):
-
     CURRENCY_FORMS = {
-        'CRC': (('colón', 'colónes'), ('céntimo', 'céntimos')),
-        'EUR': (('euro', 'euros'), ('céntimo', 'céntimos')),
-        'USD': (('dólar', 'dólares'), ('centavo', 'centavos')),
+        "CRC": (("colón", "colónes"), ("céntimo", "céntimos")),
+        "EUR": (("euro", "euros"), ("céntimo", "céntimos")),
+        "USD": (("dólar", "dólares"), ("centavo", "centavos")),
     }
 
-    def to_currency(self, val, currency='CRC', cents=True, separator=' y', adjective=False):
+    def to_currency(
+        self, val, currency="CRC", cents=True, separator=" y", adjective=False
+    ):
         # Use parent class implementation with our currency forms
         result = super(Num2Word_ES_CR, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator, adjective=adjective
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
         )
         # Handle exception, in spanish is "un euro" and not "uno euro"
         return result.replace("uno", "un")

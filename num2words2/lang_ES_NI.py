@@ -22,14 +22,19 @@ from .lang_ES import Num2Word_ES
 
 class Num2Word_ES_NI(Num2Word_ES):
     CURRENCY_FORMS = {
-        'NIO': (('córdoba', 'córdobas'), ('centavo', 'centavos')),
-        'EUR': (('euro', 'euros'), ('céntimo', 'céntimos')),
-        'USD': (('dólar', 'dólares'), ('centavo', 'centavos')),
+        "NIO": (("córdoba", "córdobas"), ("centavo", "centavos")),
+        "EUR": (("euro", "euros"), ("céntimo", "céntimos")),
+        "USD": (("dólar", "dólares"), ("centavo", "centavos")),
     }
 
-    def to_currency(self, val, currency='NIO', cents=True, separator=' con',
-                    adjective=False):
+    def to_currency(
+        self, val, currency="NIO", cents=True, separator=" con", adjective=False
+    ):
         result = super(Num2Word_ES, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator,
-            adjective=adjective)
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
+        )
         return result.replace("uno", "un")

@@ -23,17 +23,39 @@ from .base import Num2Word_Base
 # Urdu language support
 class Num2Word_UR(Num2Word_Base):
     CURRENCY_FORMS = {
-        'PKR': (('روپیہ', 'روپے'), ('پیسہ', 'پیسے')),
-        'USD': (('dollar', 'dollars'), ('cent', 'cents')),
-        'EUR': (('euro', 'euros'), ('cent', 'cents')),
+        "PKR": (("روپیہ", "روپے"), ("پیسہ", "پیسے")),
+        "USD": (("dollar", "dollars"), ("cent", "cents")),
+        "EUR": (("euro", "euros"), ("cent", "cents")),
     }
 
     def setup(self):
         self.negword = "منفی "
         self.pointword = "اعشاریہ"
-        self.ones = ['', 'ایک', 'دو', 'تین', 'چار', 'پانچ', 'چھ', 'سات', 'آٹھ', 'نو']
-        self.tens = ['', 'دس', 'بیس', 'تیس', 'چالیس', 'پچاس', 'ساٹھ', 'ستر', 'اسی', 'نوے']
-        self.teens = ['دس', 'گیارہ', 'بارہ', 'تیرہ', 'چودہ', 'پندرہ', 'سولہ', 'سترہ', 'اٹھارہ', 'انیس']
+        self.ones = ["", "ایک", "دو", "تین", "چار", "پانچ", "چھ", "سات", "آٹھ", "نو"]
+        self.tens = [
+            "",
+            "دس",
+            "بیس",
+            "تیس",
+            "چالیس",
+            "پچاس",
+            "ساٹھ",
+            "ستر",
+            "اسی",
+            "نوے",
+        ]
+        self.teens = [
+            "دس",
+            "گیارہ",
+            "بارہ",
+            "تیرہ",
+            "چودہ",
+            "پندرہ",
+            "سولہ",
+            "سترہ",
+            "اٹھارہ",
+            "انیس",
+        ]
         self.hundred = "سو"
         self.thousand = "ہزار"
         self.lakh = "لاکھ"
@@ -44,14 +66,14 @@ class Num2Word_UR(Num2Word_Base):
         """Convert a number to its word representation in Urdu."""
         n = str(number).strip()
 
-        if n.startswith('-'):
+        if n.startswith("-"):
             n = n[1:]
             ret = self.negword
         else:
             ret = ""
 
-        if '.' in n:
-            left, right = n.split('.', 1)
+        if "." in n:
+            left, right = n.split(".", 1)
             ret += self._int_to_word(int(left)) + " " + self.pointword + " "
             ret += " ".join(self._int_to_word(int(d)) for d in right)
             return ret.strip()
@@ -142,18 +164,20 @@ class Num2Word_UR(Num2Word_Base):
         else:
             return "" + self.to_cardinal(val)
 
-    def to_currency(self, val, currency='PKR', cents=True, separator=' ', adjective=False):
+    def to_currency(
+        self, val, currency="PKR", cents=True, separator=" ", adjective=False
+    ):
         """Convert to currency in Urdu."""
         is_negative = False
         if val < 0:
             is_negative = True
             val = abs(val)
 
-        parts = str(val).split('.')
+        parts = str(val).split(".")
         left = int(parts[0]) if parts[0] else 0
-        right = int(parts[1][:2].ljust(2, '0')) if len(parts) > 1 and parts[1] else 0
+        right = int(parts[1][:2].ljust(2, "0")) if len(parts) > 1 and parts[1] else 0
 
-        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS['PKR'])
+        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS["PKR"])
 
         left_str = self._int_to_word(left)
         result = left_str + " " + (cr1[1] if left != 1 else cr1[0])

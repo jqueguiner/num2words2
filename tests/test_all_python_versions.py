@@ -28,8 +28,12 @@ def run_command(cmd, cwd=None, capture_output=True):
     """Run a command and return the result."""
     try:
         result = subprocess.run(
-            cmd, shell=True, cwd=cwd,
-            capture_output=capture_output, text=True, timeout=300
+            cmd,
+            shell=True,
+            cwd=cwd,
+            capture_output=capture_output,
+            text=True,
+            timeout=300,
         )
         return result.returncode, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
@@ -69,9 +73,9 @@ def get_available_python_versions_pyenv():
         return []
 
     versions = []
-    for line in stdout.strip().split('\n'):
+    for line in stdout.strip().split("\n"):
         line = line.strip()
-        if line and not line.startswith('system') and '/' not in line:
+        if line and not line.startswith("system") and "/" not in line:
             versions.append(line)
     return versions
 
@@ -98,10 +102,11 @@ def run_python_version_test_pyenv(version, project_dir):
         # Copy project files to temp directory
         temp_project = Path(temp_dir) / "num2words2"
         shutil.copytree(
-            project_dir, temp_project,
+            project_dir,
+            temp_project,
             ignore=shutil.ignore_patterns(
-                '.git', '__pycache__', '*.pyc', '.tox', 'venv', 'env'
-            )
+                ".git", "__pycache__", "*.pyc", ".tox", "venv", "env"
+            ),
         )
 
         # Set Python version for this directory
@@ -112,9 +117,7 @@ def run_python_version_test_pyenv(version, project_dir):
             return False
 
         # Verify Python version
-        returncode, stdout, stderr = run_command(
-            "python --version", cwd=temp_project
-        )
+        returncode, stdout, stderr = run_command("python --version", cwd=temp_project)
         if returncode != 0:
             print(f"❌ Failed to get Python version: {stderr}")
             return False
@@ -204,9 +207,7 @@ CMD ["python", "-m", "pytest", "tests/", "-v"]
 """
 
     # Create temporary Dockerfile
-    with tempfile.NamedTemporaryFile(
-        mode='w', suffix='.dockerfile', delete=False
-    ) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".dockerfile", delete=False) as f:
         f.write(dockerfile_content)
         dockerfile_path = f.name
 
@@ -217,7 +218,7 @@ CMD ["python", "-m", "pytest", "tests/", "-v"]
 
         returncode, stdout, stderr = run_command(
             f"docker build -f {dockerfile_path} -t {image_name} {project_dir}",
-            capture_output=False
+            capture_output=False,
         )
 
         if returncode != 0:
@@ -227,8 +228,7 @@ CMD ["python", "-m", "pytest", "tests/", "-v"]
         # Run tests in container
         print("🧪 Running tests in Docker container...")
         returncode, stdout, stderr = run_command(
-            f"docker run --rm {image_name}",
-            capture_output=False
+            f"docker run --rm {image_name}", capture_output=False
         )
 
         # Cleanup image
@@ -247,25 +247,29 @@ CMD ["python", "-m", "pytest", "tests/", "-v"]
 
 
 def main():
-    desc = 'Test num2words2 across multiple Python versions'
+    desc = "Test num2words2 across multiple Python versions"
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument(
-        '--method', choices=['pyenv', 'docker'], default='pyenv',
-        help='Method to use for testing (default: pyenv)'
+        "--method",
+        choices=["pyenv", "docker"],
+        default="pyenv",
+        help="Method to use for testing (default: pyenv)",
     )
     parser.add_argument(
-        '--versions', default='3.8,3.9,3.10,3.11,3.12,3.13',
-        help='Comma-separated list of Python versions to test'
+        "--versions",
+        default="3.8,3.9,3.10,3.11,3.12,3.13",
+        help="Comma-separated list of Python versions to test",
     )
     parser.add_argument(
-        '--project-dir', default='.',
-        help='Project directory (default: current directory)'
+        "--project-dir",
+        default=".",
+        help="Project directory (default: current directory)",
     )
 
     args = parser.parse_args()
 
     project_dir = os.path.abspath(args.project_dir)
-    versions = [v.strip() for v in args.versions.split(',')]
+    versions = [v.strip() for v in args.versions.split(",")]
 
     print("🚀 num2words2 Multi-Python Version Testing")
     print("=" * 50)
@@ -275,11 +279,11 @@ def main():
     print()
 
     # Check prerequisites
-    if args.method == 'pyenv':
+    if args.method == "pyenv":
         if not check_pyenv():
             sys.exit(1)
         available_versions = get_available_python_versions_pyenv()
-    elif args.method == 'docker':
+    elif args.method == "docker":
         if not check_docker():
             sys.exit(1)
         available_versions = None
@@ -288,7 +292,7 @@ def main():
     results = {}
 
     for version in versions:
-        if args.method == 'pyenv':
+        if args.method == "pyenv":
             # Check if version is available, install if needed
             if available_versions and version not in available_versions:
                 if not install_python_version_pyenv(version):
@@ -296,7 +300,7 @@ def main():
                     continue
 
             success = run_python_version_test_pyenv(version, project_dir)
-        elif args.method == 'docker':
+        elif args.method == "docker":
             success = run_python_version_test_docker(version, project_dir)
 
         results[version] = success
@@ -326,11 +330,11 @@ def main():
         print("\n💡 To debug failures, run individual tests:")
         for version, success in results.items():
             if not success:
-                if args.method == 'pyenv':
+                if args.method == "pyenv":
                     cmd = f"   pyenv local {version} && "
                     cmd += "python -m pytest tests/ -v"
                     print(cmd)
-                elif args.method == 'docker':
+                elif args.method == "docker":
                     print(f"   # Check Docker logs for Python {version}")
         sys.exit(1)
     else:

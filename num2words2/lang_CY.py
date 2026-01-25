@@ -225,8 +225,8 @@ class Num2Word_CY(Num2Word_EUR):
     MINUS_PREFIX_WORD = "meinws "
     FLOAT_INFIX_WORD = " pwynt "
 
-#    def setup(self):
-#        Num2Word_EU.setup(self)
+    #    def setup(self):
+    #        Num2Word_EU.setup(self)
 
     def __init__(self):
         pass
@@ -251,15 +251,11 @@ class Num2Word_CY(Num2Word_EUR):
             result = "meinws " + result
         return result
 
-    def hundred_group(
-        self, number, informal=False, gender="masc", ordinal=False
-    ):
+    def hundred_group(self, number, informal=False, gender="masc", ordinal=False):
         hundreds = number // 100
         until100 = number % 100  # 0 - 99
         # list group of number words and mutation info (for the following word)
-        result = (
-            []
-        )
+        result = []
         if gender == "fem":
             CW = CARDINAL_WORDS_FEM
         else:
@@ -311,16 +307,12 @@ class Num2Word_CY(Num2Word_EUR):
                     if units == 0:
                         result.extend([("hanner cant", None), (OBJ, None)])
                     elif units == 1:
-                        result.extend(
-                            [("hanner cant ac un", None), (OBJ, None)]
-                        )
+                        result.extend([("hanner cant ac un", None), (OBJ, None)])
                     else:
                         result.append(("hanner cant a", "AM"))
                         result.extend(CW[units])
             else:
-                if (number < 20 and number > 0) or (
-                    number == 0 and hundreds == 0
-                ):
+                if (number < 20 and number > 0) or (number == 0 and hundreds == 0):
                     if gender == "fem":
                         result.extend(CARDINAL_WORDS_FEM[int(number)])
                     else:
@@ -357,9 +349,7 @@ class Num2Word_CY(Num2Word_EUR):
         elif number > 100:
             raise NotImplementedError("The given number is too large.")
 
-        return self.to_cardinal(
-            number, informal=False, gender=gender, ordinal=True
-        )
+        return self.to_cardinal(number, informal=False, gender=gender, ordinal=True)
 
     def to_cardinal(
         self,
@@ -389,12 +379,8 @@ class Num2Word_CY(Num2Word_EUR):
         # split in groups of 10**3
         # groups of three digits starting from right (units (1 - 999),
         # thousands, millions, ...)
-        groups = (
-            []
-        )
-        lowestgroup = (
-            None  # find the lowest group of 3 digits > 0 for the ordinals
-        )
+        groups = []
+        lowestgroup = None  # find the lowest group of 3 digits > 0 for the ordinals
         for pot in [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36]:
             gr = (number % 10**pot) // 10 ** (pot - 3)
             groups.append((gr, pot))
@@ -450,11 +436,16 @@ class Num2Word_CY(Num2Word_EUR):
                 currency_str = "bunt"
             else:
                 currency_str = "bunnoedd"
-            return u'%s%s %s' % (minus_str, money_str, currency_str)
+            return "%s%s %s" % (minus_str, money_str, currency_str)
 
         # For floats, call parent implementation
-        return super().to_currency(val, currency=currency, cents=cents,
-                                   separator=separator, adjective=adjective)
+        return super().to_currency(
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
+        )
 
     def _money_verbose(self, number, currency):
         # used in super().to_currency(), we need to add gender

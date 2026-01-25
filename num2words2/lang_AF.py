@@ -22,11 +22,11 @@ from .lang_EUR import Num2Word_EUR
 
 class Num2Word_AF(Num2Word_EUR):
     CURRENCY_FORMS = {
-        'ZAR': (('rand', 'rand'), ('sent', 'sent')),
-        'EUR': (('euro', 'euro'), ('sent', 'sent')),
-        'GBP': (('pond', 'pond'), ('penny', 'pence')),
-        'USD': (('dollar', 'dollar'), ('sent', 'sent')),
-        'CNY': (('yuan', 'yuan'), ('jiao', 'fen')),
+        "ZAR": (("rand", "rand"), ("sent", "sent")),
+        "EUR": (("euro", "euro"), ("sent", "sent")),
+        "GBP": (("pond", "pond"), ("penny", "pence")),
+        "USD": (("dollar", "dollar"), ("sent", "sent")),
+        "CNY": (("yuan", "yuan"), ("jiao", "fen")),
     }
 
     GIGA_SUFFIX = "iljard"
@@ -42,9 +42,7 @@ class Num2Word_AF(Num2Word_EUR):
         self.errmsg_floatord = (
             "Kan nie die desimale getal %s as 'n ordinale getal behandel nie."
         )
-        self.errmsg_nonnum = (
-            "Slegs getalle (tipe(%s)) kan na woorde omgeskakel word."
-        )
+        self.errmsg_nonnum = "Slegs getalle (tipe(%s)) kan na woorde omgeskakel word."
         self.errmsg_negord = (
             "Kan nie die negatiewe getal %s as 'n ordinale getal behandel nie."
         )
@@ -53,27 +51,69 @@ class Num2Word_AF(Num2Word_EUR):
 
         # High number words for very large numbers
         lows = ["non", "okt", "sept", "sext", "kwint", "kwadr", "tr", "b", "m"]
-        units = ["", "un", "duo", "tre", "kwattuor", "kwin", "seks", "sept",
-                 "okto", "novem"]
-        tens = ["des", "vigint", "trigint", "kwadragint", "kwinquagint",
-                "seksagint", "septuagint", "oktogint", "nonagint"]
+        units = [
+            "",
+            "un",
+            "duo",
+            "tre",
+            "kwattuor",
+            "kwin",
+            "seks",
+            "sept",
+            "okto",
+            "novem",
+        ]
+        tens = [
+            "des",
+            "vigint",
+            "trigint",
+            "kwadragint",
+            "kwinquagint",
+            "seksagint",
+            "septuagint",
+            "oktogint",
+            "nonagint",
+        ]
 
-        self.high_numwords = (
-            ["send"] + self.gen_high_numwords(units, tens, lows))
+        self.high_numwords = ["send"] + self.gen_high_numwords(units, tens, lows)
 
         # Mid-range numbers (thousands, hundreds, tens)
-        self.mid_numwords = [(1000, "duisend"), (100, "honderd"),
-                             (90, "negentig"), (80, "tagtig"),
-                             (70, "sewentig"), (60, "sestig"),
-                             (50, "vyftig"), (40, "veertig"),
-                             (30, "dertig")]
+        self.mid_numwords = [
+            (1000, "duisend"),
+            (100, "honderd"),
+            (90, "negentig"),
+            (80, "tagtig"),
+            (70, "sewentig"),
+            (60, "sestig"),
+            (50, "vyftig"),
+            (40, "veertig"),
+            (30, "dertig"),
+        ]
 
         # Low numbers (0-20)
-        self.low_numwords = ["twintig", "negentien", "agttien", "sewentien",
-                             "sestien", "vyftien", "veertien", "dertien",
-                             "twaalf", "elf", "tien", "nege", "agt", "sewe",
-                             "ses", "vyf", "vier", "drie", "twee", "een",
-                             "nul"]
+        self.low_numwords = [
+            "twintig",
+            "negentien",
+            "agttien",
+            "sewentien",
+            "sestien",
+            "vyftien",
+            "veertien",
+            "dertien",
+            "twaalf",
+            "elf",
+            "tien",
+            "nege",
+            "agt",
+            "sewe",
+            "ses",
+            "vyf",
+            "vier",
+            "drie",
+            "twee",
+            "een",
+            "nul",
+        ]
 
         # Ordinal mappings
         self.ords = {
@@ -90,13 +130,12 @@ class Num2Word_AF(Num2Word_EUR):
             "tien": "tiend",
             "elf": "elfd",
             "twaalf": "twaalfd",
-
             # Compound endings
             "ig": "igst",
             "erd": "erdst",
             "end": "endst",
             "joen": "joenst",
-            "rd": "rdst"
+            "rd": "rdst",
         }
 
     def merge(self, curr, next):
@@ -105,12 +144,12 @@ class Num2Word_AF(Num2Word_EUR):
         if cnum == 1:
             if nnum == 100 or nnum == 1000:
                 return ("een " + ntext, nnum)
-            elif nnum < 10 ** 6:
+            elif nnum < 10**6:
                 return next
             ctext = "een"
 
         if nnum > cnum:
-            if nnum >= 10 ** 6:
+            if nnum >= 10**6:
                 ctext += " "
             elif nnum == 100 or nnum == 1000:
                 ctext += " "
@@ -123,7 +162,7 @@ class Num2Word_AF(Num2Word_EUR):
                 # Afrikaans compound formation: vier-en-dertig
                 ntext = ntext + "-en-" + ctext
                 ctext = ""
-            elif cnum >= 10 ** 6:
+            elif cnum >= 10**6:
                 ctext += " "
             elif cnum >= 100:
                 ctext += " "
@@ -139,7 +178,7 @@ class Num2Word_AF(Num2Word_EUR):
         # Handle special compound ordinals
         for key in self.ords:
             if outword.endswith(key):
-                outword = outword[:len(outword) - len(key)] + self.ords[key]
+                outword = outword[: len(outword) - len(key)] + self.ords[key]
                 break
 
         return outword + "e"
@@ -162,11 +201,16 @@ class Num2Word_AF(Num2Word_EUR):
         # Most Afrikaans currencies use the same form for singular and plural
         return forms[0]
 
-    def to_currency(self, val, currency='ZAR', cents=True, separator=' en',
-                    adjective=False):
+    def to_currency(
+        self, val, currency="ZAR", cents=True, separator=" en", adjective=False
+    ):
         return super(Num2Word_AF, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator,
-            adjective=adjective)
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
+        )
 
     def to_year(self, val, longval=True):
         # Handle special year cases

@@ -23,33 +23,44 @@ from .base import Num2Word_Base
 # Sinhala language support
 class Num2Word_SI(Num2Word_Base):
     CURRENCY_FORMS = {
-        'LKR': (('රුපියල්', 'රුපියල්'), ('සත', 'සත')),
-        'USD': (('dollar', 'dollars'), ('cent', 'cents')),
-        'EUR': (('euro', 'euros'), ('cent', 'cents')),
+        "LKR": (("රුපියල්", "රුපියල්"), ("සත", "සත")),
+        "USD": (("dollar", "dollars"), ("cent", "cents")),
+        "EUR": (("euro", "euros"), ("cent", "cents")),
     }
 
     def setup(self):
         self.negword = "minus "
         self.pointword = "point"
-        self.ones = ['', 'එක', 'දෙක', 'තුන', 'හතර', 'පහ', 'හය', 'හත', 'අට', 'නවය']
-        self.tens = ['', 'දහය', 'විස්ස', 'තිහ', 'හතළිහ', 'පනහ', 'හැට', 'හැත්තෑව', 'අසූව', 'අනූව']
-        self.hundred = 'සියය'
-        self.thousand = 'දහස'
-        self.lakh = 'ලක්ෂය'
-        self.crore = 'කෝටිය'
+        self.ones = ["", "එක", "දෙක", "තුන", "හතර", "පහ", "හය", "හත", "අට", "නවය"]
+        self.tens = [
+            "",
+            "දහය",
+            "විස්ස",
+            "තිහ",
+            "හතළිහ",
+            "පනහ",
+            "හැට",
+            "හැත්තෑව",
+            "අසූව",
+            "අනූව",
+        ]
+        self.hundred = "සියය"
+        self.thousand = "දහස"
+        self.lakh = "ලක්ෂය"
+        self.crore = "කෝටිය"
 
     def to_cardinal(self, number):
         """Convert a number to its word representation in Sinhala."""
         n = str(number).strip()
 
-        if n.startswith('-'):
+        if n.startswith("-"):
             n = n[1:]
             ret = self.negword
         else:
             ret = ""
 
-        if '.' in n:
-            left, right = n.split('.', 1)
+        if "." in n:
+            left, right = n.split(".", 1)
             ret += self._int_to_word(int(left)) + " " + self.pointword + " "
             for digit in right:
                 ret += self._int_to_word(int(digit)) + " "
@@ -129,18 +140,20 @@ class Num2Word_SI(Num2Word_Base):
         """Convert to year."""
         return self.to_cardinal(val)
 
-    def to_currency(self, val, currency='LKR', cents=True, separator=' ', adjective=False):
+    def to_currency(
+        self, val, currency="LKR", cents=True, separator=" ", adjective=False
+    ):
         """Convert to currency in Sinhala."""
         is_negative = False
         if val < 0:
             is_negative = True
             val = abs(val)
 
-        parts = str(val).split('.')
+        parts = str(val).split(".")
         left = int(parts[0]) if parts[0] else 0
-        right = int(parts[1][:2].ljust(2, '0')) if len(parts) > 1 and parts[1] else 0
+        right = int(parts[1][:2].ljust(2, "0")) if len(parts) > 1 and parts[1] else 0
 
-        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS['LKR'])
+        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS["LKR"])
 
         left_str = self.to_cardinal(left)
         result = left_str + " " + (cr1[1] if left != 1 else cr1[0])

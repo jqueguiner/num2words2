@@ -8,9 +8,9 @@ class Num2Word_LO(Num2Word_Base):
     """Lao language number to words conversion."""
 
     CURRENCY_FORMS = {
-        'LAK': (('ກີບ', 'ກີບ'), ('ອັດ', 'ອັດ')),
-        'USD': (('ໂດລາ', 'ໂດລາ'), ('ເຊັນ', 'ເຊັນ')),
-        'EUR': (('ເອີໂຣ', 'ເອີໂຣ'), ('ເຊັນ', 'ເຊັນ')),
+        "LAK": (("ກີບ", "ກີບ"), ("ອັດ", "ອັດ")),
+        "USD": (("ໂດລາ", "ໂດລາ"), ("ເຊັນ", "ເຊັນ")),
+        "EUR": (("ເອີໂຣ", "ເອີໂຣ"), ("ເຊັນ", "ເຊັນ")),
     }
 
     def setup(self):
@@ -19,30 +19,30 @@ class Num2Word_LO(Num2Word_Base):
 
         # Lao numbers 0-9
         self.ones = [
-            'ສູນ',      # 0
-            'ໜຶ່ງ',     # 1
-            'ສອງ',      # 2
-            'ສາມ',      # 3
-            'ສີ່',       # 4
-            'ຫ້າ',       # 5
-            'ຫົກ',       # 6
-            'ເຈັດ',      # 7
-            'ແປດ',      # 8
-            'ເກົ້າ',     # 9
+            "ສູນ",  # 0
+            "ໜຶ່ງ",  # 1
+            "ສອງ",  # 2
+            "ສາມ",  # 3
+            "ສີ່",  # 4
+            "ຫ້າ",  # 5
+            "ຫົກ",  # 6
+            "ເຈັດ",  # 7
+            "ແປດ",  # 8
+            "ເກົ້າ",  # 9
         ]
 
     def to_cardinal(self, number):
         """Convert a number to its word representation in Lao."""
         n = str(number).strip()
 
-        if n.startswith('-'):
+        if n.startswith("-"):
             n = n[1:]
             ret = self.negword
         else:
             ret = ""
 
-        if '.' in n:
-            left, right = n.split('.', 1)
+        if "." in n:
+            left, right = n.split(".", 1)
             ret += self._int_to_word(int(left)) + " " + self.pointword + " "
             for digit in right:
                 ret += self._int_to_word(int(digit)) + " "
@@ -126,18 +126,20 @@ class Num2Word_LO(Num2Word_Base):
         """Convert to year in Lao."""
         return "ປີ " + self.to_cardinal(val)
 
-    def to_currency(self, val, currency='LAK', cents=True, separator=' ', adjective=False):
+    def to_currency(
+        self, val, currency="LAK", cents=True, separator=" ", adjective=False
+    ):
         """Convert to currency in Lao."""
         is_negative = False
         if val < 0:
             is_negative = True
             val = abs(val)
 
-        parts = str(val).split('.')
+        parts = str(val).split(".")
         left = int(parts[0]) if parts[0] else 0
-        right = int(parts[1][:2].ljust(2, '0')) if len(parts) > 1 and parts[1] else 0
+        right = int(parts[1][:2].ljust(2, "0")) if len(parts) > 1 and parts[1] else 0
 
-        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS['LAK'])
+        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS["LAK"])
 
         left_str = self._int_to_word(left)
         result = left_str + " " + cr1[0]

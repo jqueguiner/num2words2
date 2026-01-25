@@ -23,9 +23,13 @@ jobs:
         python -m pip install --upgrade pip
         pip install tox tox-gh-actions coveralls
         pip install -r tests/requirements-test.txt
+        pip install -e .
     - name: Test with tox
       run: |
         tox -v || (echo "Tox failed. Here's the log:" && cat .tox/*/log/*.log 2>/dev/null && exit 1)
+    - name: Run E2E sentence tests
+      run: |
+        python tests/test_e2e_with_sentence_function.py
     - name: Build package
       if: matrix.python-version == '3.11'
       run: |

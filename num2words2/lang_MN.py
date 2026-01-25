@@ -20,34 +20,34 @@ from __future__ import unicode_literals
 from .base import Num2Word_Base
 from .utils import get_digits, splitbyx
 
-ZERO = 'тэг'
+ZERO = "тэг"
 
 ONES = {
-    1: ('нэг', 'нэг'),
-    2: ('хоёр', 'хоёр'),
-    3: ('гурав', 'гурван'),
-    4: ('дөрөв', 'дөрвөн'),
-    5: ('тав', 'таван'),
-    6: ('зургаа', 'зургаан'),
-    7: ('долоо', 'долоон'),
-    8: ('найм', 'найман'),
-    9: ('ес', 'есөн'),
+    1: ("нэг", "нэг"),
+    2: ("хоёр", "хоёр"),
+    3: ("гурав", "гурван"),
+    4: ("дөрөв", "дөрвөн"),
+    5: ("тав", "таван"),
+    6: ("зургаа", "зургаан"),
+    7: ("долоо", "долоон"),
+    8: ("найм", "найман"),
+    9: ("ес", "есөн"),
 }
 
-TEN = ('арав', 'арван')
+TEN = ("арав", "арван")
 
 TWENTIES = {
-    2: ('хорь', 'хорин'),
-    3: ('гуч', 'гучин'),
-    4: ('дөч', 'дөчин'),
-    5: ('тавь', 'тавин'),
-    6: ('жар', 'жаран'),
-    7: ('дал', 'далан'),
-    8: ('ная', 'наян'),
-    9: ('ер', 'ерэн'),
+    2: ("хорь", "хорин"),
+    3: ("гуч", "гучин"),
+    4: ("дөч", "дөчин"),
+    5: ("тавь", "тавин"),
+    6: ("жар", "жаран"),
+    7: ("дал", "далан"),
+    8: ("ная", "наян"),
+    9: ("ер", "ерэн"),
 }
 
-HUNDRED = ('зуу', 'зуун')
+HUNDRED = ("зуу", "зуун")
 
 THOUSANDS = {
     1: "мянга",  # 10^3
@@ -75,17 +75,16 @@ THOUSANDS = {
 }
 
 POINT_WORDS = {
-    1: 'аравны',
-    2: 'зууны',
-    3: 'мянганы',
-    4: 'арван мянганы',
-    5: 'зуун мянганы',
-    6: 'саяны',
+    1: "аравны",
+    2: "зууны",
+    3: "мянганы",
+    4: "арван мянганы",
+    5: "зуун мянганы",
+    6: "саяны",
 }
 
 
 class Num2Word_MN(Num2Word_Base):
-
     CURRENCY_FORMS = {
         "AED": (("дирхам",), ("филс",)),
         "AUD": (("доллар",), ("цент",)),
@@ -122,7 +121,7 @@ class Num2Word_MN(Num2Word_Base):
         "UAH": (("гривн",), ("копейк",)),
         "USD": (("доллар",), ("цент",)),
         "VND": (("донг",), ("су",)),
-        "ZAR": (("ранд",), ("сента",))
+        "ZAR": (("ранд",), ("сента",)),
     }
 
     CURRENCY_ADJECTIVES = {
@@ -141,18 +140,18 @@ class Num2Word_MN(Num2Word_Base):
         "SEK": "Шведийн",
         "SGD": "Сингапур",
         "TWD": "Тайванийн",
-        "USD": "Америк"
+        "USD": "Америк",
     }
 
     def setup(self):
         self.negword = "хасах"
 
     def to_cardinal(self, value, all_suffixed=False):
-        n = str(value).replace(',', '.')
-        if '.' in n:
-            is_negative = n.startswith('-')
+        n = str(value).replace(",", ".")
+        if "." in n:
+            is_negative = n.startswith("-")
             abs_n = n[1:] if is_negative else n
-            left, right = abs_n.split('.')
+            left, right = abs_n.split(".")
 
             # Бутархай хэсэг нь тэг бол бүхэл тоо шиг хувирна
             if int(right) == 0:
@@ -162,13 +161,13 @@ class Num2Word_MN(Num2Word_Base):
             if fractional_length > 6:
                 raise NotImplementedError()
 
-            result = '%s, %s %s' % (
+            result = "%s, %s %s" % (
                 self._int2word(int(left), all_suffixed=all_suffixed),
                 POINT_WORDS[fractional_length],
-                self._int2word(int(right), all_suffixed=all_suffixed)
+                self._int2word(int(right), all_suffixed=all_suffixed),
             )
             if is_negative:
-                result = self.negword + ' ' + result
+                result = self.negword + " " + result
             return result
         else:
             return self._int2word(int(n), all_suffixed=all_suffixed)
@@ -178,7 +177,7 @@ class Num2Word_MN(Num2Word_Base):
 
     def _int2word(self, n, all_suffixed=False):
         if n < 0:
-            return ' '.join([self.negword, self._int2word(abs(n))])
+            return " ".join([self.negword, self._int2word(abs(n))])
 
         if n == 0:
             return ZERO
@@ -189,7 +188,6 @@ class Num2Word_MN(Num2Word_Base):
         i = len(chunks)
 
         for x in chunks:
-
             i -= 1
 
             if x == 0:
@@ -222,10 +220,10 @@ class Num2Word_MN(Num2Word_Base):
             if i > 0:
                 words.append(THOUSANDS[i])
 
-        if all_suffixed and words and words[-1] == 'мянга':
-            words[-1] = 'мянган'
+        if all_suffixed and words and words[-1] == "мянга":
+            words[-1] = "мянган"
 
-        return ' '.join(words)
+        return " ".join(words)
 
     def to_ordinal(self, value):
         number = int(value)
@@ -236,25 +234,25 @@ class Num2Word_MN(Num2Word_Base):
 
     def to_ordinal_num(self, value):
         number = int(value)
-        return '%s %s' % (number, self._get_ordinal_suffix(number))
+        return "%s %s" % (number, self._get_ordinal_suffix(number))
 
     def _get_ordinal_suffix(self, number):
         number_str = str(number)
-        suffix = 'дугаар'
-        if number_str[-1] != '0':
-            if number_str[-1] in ('1', '4', '9'):
-                suffix = 'дүгээр'
-        elif number_str[-2] != '0':
-            if number_str[-2] in ('4', '9'):
-                suffix = 'дүгээр'
+        suffix = "дугаар"
+        if number_str[-1] != "0":
+            if number_str[-1] in ("1", "4", "9"):
+                suffix = "дүгээр"
+        elif number_str[-2] != "0":
+            if number_str[-2] in ("4", "9"):
+                suffix = "дүгээр"
         return suffix
 
     def to_year(self, value):
-        prefix = ''
+        prefix = ""
         if value < 0:
             value = abs(value)
-            prefix = 'МЭӨ '
-        return '%s%s он' % (prefix, self.to_cardinal(value, all_suffixed=True))
+            prefix = "МЭӨ "
+        return "%s%s он" % (prefix, self.to_cardinal(value, all_suffixed=True))
 
     def _money_verbose(self, number, currency):
         return self.to_cardinal(number, all_suffixed=True)
@@ -262,8 +260,9 @@ class Num2Word_MN(Num2Word_Base):
     def _cents_verbose(self, number, currency):
         return self.to_cardinal(number, all_suffixed=True)
 
-    def to_currency(self, val, currency='MNT', cents=True, separator=',',
-                    adjective=True):
+    def to_currency(
+        self, val, currency="MNT", cents=True, separator=",", adjective=True
+    ):
         # If input is an integer, just return the cardinal number
         if isinstance(val, int):
             return self.to_cardinal(val)
@@ -273,21 +272,25 @@ class Num2Word_MN(Num2Word_Base):
         from decimal import Decimal
 
         from .currency import parse_currency_parts
+
         decimal_val = Decimal(str(val))
         has_fractional_cents = (decimal_val * 100) % 1 != 0
 
-        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
-                                                        keep_precision=has_fractional_cents)
+        left, right, is_negative = parse_currency_parts(
+            val, is_int_with_cents=False, keep_precision=has_fractional_cents
+        )
 
         try:
             cr1, cr2 = self.CURRENCY_FORMS[currency]
         except KeyError:
             raise NotImplementedError(
-                'Currency code "%s" not implemented for "%s"' %
-                (currency, self.__class__.__name__))
+                'Currency code "%s" not implemented for "%s"'
+                % (currency, self.__class__.__name__)
+            )
 
         if adjective and currency in self.CURRENCY_ADJECTIVES:
             from .currency import prefix_currency
+
             cr1 = prefix_currency(self.CURRENCY_ADJECTIVES[currency], cr1)
 
         minus_str = "%s " % self.negword.strip() if is_negative else ""
@@ -297,23 +300,23 @@ class Num2Word_MN(Num2Word_Base):
         if right > 0:
             # Handle fractional cents
             from decimal import Decimal
+
             if isinstance(right, Decimal):
                 # Convert fractional cents (e.g., 65.3 cents)
-                cents_str = self.to_cardinal(float(right)) if cents else str(float(right))
+                cents_str = (
+                    self.to_cardinal(float(right)) if cents else str(float(right))
+                )
             else:
-                cents_str = self._cents_verbose(right, currency) \
-                    if cents else str(right)
-            return u'%s%s %s%s %s %s' % (
+                cents_str = (
+                    self._cents_verbose(right, currency) if cents else str(right)
+                )
+            return "%s%s %s%s %s %s" % (
                 minus_str,
                 money_str,
                 self.pluralize(left, cr1),
                 separator,
                 cents_str,
-                self.pluralize(right, cr2)
+                self.pluralize(right, cr2),
             )
         else:
-            return u'%s%s %s' % (
-                minus_str,
-                money_str,
-                self.pluralize(left, cr1)
-            )
+            return "%s%s %s" % (minus_str, money_str, self.pluralize(left, cr1))

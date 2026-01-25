@@ -20,53 +20,53 @@ from __future__ import unicode_literals
 from .base import Num2Word_Base
 from .utils import get_digits, splitbyx
 
-ZERO = 'нөл'
+ZERO = "нөл"
 
 ONES = {
-    1: 'бір',
-    2: 'екі',
-    3: 'үш',
-    4: 'төрт',
-    5: 'бес',
-    6: 'алты',
-    7: 'жеті',
-    8: 'сегіз',
-    9: 'тоғыз',
+    1: "бір",
+    2: "екі",
+    3: "үш",
+    4: "төрт",
+    5: "бес",
+    6: "алты",
+    7: "жеті",
+    8: "сегіз",
+    9: "тоғыз",
 }
 
-TEN = 'он'
+TEN = "он"
 
 TWENTIES = {
-    2: 'жиырма',
-    3: 'отыз',
-    4: 'қырық',
-    5: 'елу',
-    6: 'алпыс',
-    7: 'жетпіс',
-    8: 'сексен',
-    9: 'тоқсан',
+    2: "жиырма",
+    3: "отыз",
+    4: "қырық",
+    5: "елу",
+    6: "алпыс",
+    7: "жетпіс",
+    8: "сексен",
+    9: "тоқсан",
 }
 
-HUNDRED = 'жүз'
+HUNDRED = "жүз"
 
 THOUSANDS = {
-    1: 'мың',
-    2: 'миллион',
-    3: 'миллиард',
-    4: 'триллион',
-    5: 'квадриллион',
-    6: 'квинтиллион',
-    7: 'секстиллион',
-    8: 'септиллион',
-    9: 'октиллион',
-    10: 'нониллион',
+    1: "мың",
+    2: "миллион",
+    3: "миллиард",
+    4: "триллион",
+    5: "квадриллион",
+    6: "квинтиллион",
+    7: "секстиллион",
+    8: "септиллион",
+    9: "октиллион",
+    10: "нониллион",
 }
 
 
 class Num2Word_KZ(Num2Word_Base):
     CURRENCY_FORMS = {
-        'USD': ('доллар', 'цент'),
-        'KZT': ('теңге', 'тиын'),
+        "USD": ("доллар", "цент"),
+        "KZT": ("теңге", "тиын"),
     }
 
     def setup(self):
@@ -74,19 +74,19 @@ class Num2Word_KZ(Num2Word_Base):
         self.pointword = "бүтін"
 
     def to_cardinal(self, number):
-        n = str(number).replace(',', '.')
-        if '.' in n:
-            is_negative = n.startswith('-')
+        n = str(number).replace(",", ".")
+        if "." in n:
+            is_negative = n.startswith("-")
             abs_n = n[1:] if is_negative else n
-            left, right = abs_n.split('.')
-            leading_zero_count = len(right) - len(right.lstrip('0'))
-            result = u'%s %s %s' % (
+            left, right = abs_n.split(".")
+            leading_zero_count = len(right) - len(right.lstrip("0"))
+            result = "%s %s %s" % (
                 self._int2word(int(left)),
                 self.pointword,
-                (ZERO + ' ') * leading_zero_count + self._int2word(int(right))
+                (ZERO + " ") * leading_zero_count + self._int2word(int(right)),
             )
             if is_negative:
-                result = self.negword + ' ' + result
+                result = self.negword + " " + result
             return result
         else:
             return self._int2word(int(n))
@@ -97,7 +97,7 @@ class Num2Word_KZ(Num2Word_Base):
     def to_ordinal(self, number):
         """Convert to ordinal in Kazakh"""
         if number == 0:
-            return ZERO + 'інші'
+            return ZERO + "інші"
 
         # Get the cardinal form
         cardinal = self.to_cardinal(number)
@@ -107,26 +107,26 @@ class Num2Word_KZ(Num2Word_Base):
         # Common suffixes: -ыншы/-інші, -ншы/-нші
 
         # Check last character to determine suffix
-        if cardinal[-1] in 'аоұыеэ':
-            return cardinal + 'ншы'
-        elif cardinal[-1] in 'әіүө':
-            return cardinal + 'нші'
-        elif cardinal[-1] in 'бвгғджзйклмнңпрстфхһцчшщ':
+        if cardinal[-1] in "аоұыеэ":
+            return cardinal + "ншы"
+        elif cardinal[-1] in "әіүө":
+            return cardinal + "нші"
+        elif cardinal[-1] in "бвгғджзйклмнңпрстфхһцчшщ":
             # After consonants
-            if any(v in cardinal[-2:] for v in 'аоұы'):
-                return cardinal + 'ыншы'
+            if any(v in cardinal[-2:] for v in "аоұы"):
+                return cardinal + "ыншы"
             else:
-                return cardinal + 'інші'
+                return cardinal + "інші"
         else:
             # Default case
-            return cardinal + 'інші'
+            return cardinal + "інші"
 
     def _cents_verbose(self, number, currency):
-        return self._int2word(number, currency == 'KZT')
+        return self._int2word(number, currency == "KZT")
 
     def _int2word(self, n, feminine=False):
         if n < 0:
-            return ' '.join([self.negword, self._int2word(abs(n))])
+            return " ".join([self.negword, self._int2word(abs(n))])
 
         if n == 0:
             return ZERO
@@ -158,4 +158,4 @@ class Num2Word_KZ(Num2Word_Base):
             if i > 0:
                 words.append(THOUSANDS[i])
 
-        return ' '.join(words)
+        return " ".join(words)

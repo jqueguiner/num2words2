@@ -26,11 +26,22 @@ def find_python_files(directory):
     python_files = []
     for root, dirs, files in os.walk(directory):
         # Skip common non-source directories
-        dirs[:] = [d for d in dirs if d not in {'.git', '__pycache__',
-                                                '.tox', 'venv', 'env',
-                                                '.env', 'node_modules'}]
+        dirs[:] = [
+            d
+            for d in dirs
+            if d
+            not in {
+                ".git",
+                "__pycache__",
+                ".tox",
+                "venv",
+                "env",
+                ".env",
+                "node_modules",
+            }
+        ]
         for file in files:
-            if file.endswith('.py'):
+            if file.endswith(".py"):
                 python_files.append(os.path.join(root, file))
     return python_files
 
@@ -38,13 +49,13 @@ def find_python_files(directory):
 def check_file_for_num2words(file_path):
     """Check if a file contains num2words imports."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
         # Patterns to match num2words imports
         patterns = [
-            r'from\s+num2words\s+import',
-            r'import\s+num2words',
-            r'from\s+num2words\.',
+            r"from\s+num2words\s+import",
+            r"import\s+num2words",
+            r"from\s+num2words\.",
         ]
         for pattern in patterns:
             if re.search(pattern, content):
@@ -61,23 +72,32 @@ def migrate_file_content(content):
 
     # Pattern replacements - order matters!
     replacements = [
-        (r'from\s+num2words\.([a-zA-Z_][a-zA-Z0-9_]*)\s+import',
-         r'from num2words2.\1 import', 'Updated submodule import'),
-        (r'from\s+num2words\s+import', 'from num2words2 import',
-         'Updated import statement'),
-        (r'(^|\s)import\s+num2words(?!\w)',
-         r'\1import num2words2 as num2words', 'Updated import with alias'),
+        (
+            r"from\s+num2words\.([a-zA-Z_][a-zA-Z0-9_]*)\s+import",
+            r"from num2words2.\1 import",
+            "Updated submodule import",
+        ),
+        (
+            r"from\s+num2words\s+import",
+            "from num2words2 import",
+            "Updated import statement",
+        ),
+        (
+            r"(^|\s)import\s+num2words(?!\w)",
+            r"\1import num2words2 as num2words",
+            "Updated import with alias",
+        ),
     ]
 
     new_content = content
     for pattern, replacement, description in replacements:
         matches = re.findall(pattern, new_content, re.MULTILINE)
         if matches:
-            new_content = re.sub(pattern, replacement, new_content,
-                                 flags=re.MULTILINE)
+            new_content = re.sub(pattern, replacement, new_content, flags=re.MULTILINE)
             changes_made.append(
                 f"  - {description} ({len(matches)} "
-                f"occurrence{'s' if len(matches) != 1 else ''})")
+                f"occurrence{'s' if len(matches) != 1 else ''})"
+            )
 
     return new_content, changes_made
 
@@ -101,33 +121,35 @@ def migrate_file(file_path, dry_run=False):
     if not changes:
         return None
 
-    result = {
-        'file': file_path,
-        'changes': changes,
-        'backup': None
-    }
+    result = {"file": file_path, "changes": changes, "backup": None}
 
     if not dry_run:
         # Create backup
         backup_path = create_backup(file_path)
-        result['backup'] = backup_path
+        result["backup"] = backup_path
         # Write new content
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write(new_content)
 
     return result
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description='Migrate from num2words to num2words2')
-    parser.add_argument('directory', nargs='?', default='.',
-                        help='Directory to scan (default: current directory)')
-    parser.add_argument('--dry-run', action='store_true',
-                        help='Show what would be changed without making '
-                             'changes')
-    parser.add_argument('--requirements', action='store_true',
-                        help='Also check requirements files')
+    parser = argparse.ArgumentParser(description="Migrate from num2words to num2words2")
+    parser.add_argument(
+        "directory",
+        nargs="?",
+        default=".",
+        help="Directory to scan (default: current directory)",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be changed without making " "changes",
+    )
+    parser.add_argument(
+        "--requirements", action="store_true", help="Also check requirements files"
+    )
 
     args = parser.parse_args()
 
@@ -135,12 +157,11 @@ def main():
         print(f"Error: Directory '{args.directory}' does not exist.")
         sys.exit(1)
 
-    print(f"🔍 Scanning for num2words imports in: "
-          f"{os.path.abspath(args.directory)}")
+    print(f"🔍 Scanning for num2words imports in: " f"{os.path.abspath(args.directory)}")
     print()
 
     # Find Python files
-    if os.path.isfile(args.directory) and args.directory.endswith('.py'):
+    if os.path.isfile(args.directory) and args.directory.endswith(".py"):
         python_files = [args.directory]
     else:
         python_files = find_python_files(args.directory)
@@ -148,8 +169,13 @@ def main():
     # Also check requirements files if requested
     req_files = []
     if args.requirements:
-        req_patterns = ['requirements*.txt', 'requirements*.in',
-                        'pyproject.toml', 'setup.py', 'setup.cfg']
+        req_patterns = [
+            "requirements*.txt",
+            "requirements*.in",
+            "pyproject.toml",
+            "setup.py",
+            "setup.cfg",
+        ]
         for pattern in req_patterns:
             req_files.extend(Path(args.directory).rglob(pattern))
         req_files = [str(f) for f in req_files]
@@ -175,15 +201,17 @@ def main():
         print("✅ No num2words imports found. Your codebase is already clean!")
         return
 
-    print(f"📝 Found num2words imports in {len(migrated_files)} "
-          f"file{'s' if len(migrated_files) != 1 else ''}:")
+    print(
+        f"📝 Found num2words imports in {len(migrated_files)} "
+        f"file{'s' if len(migrated_files) != 1 else ''}:"
+    )
     print()
 
     for result in migrated_files:
         print(f"📄 {result['file']}")
-        for change in result['changes']:
+        for change in result["changes"]:
             print(change)
-        if result['backup']:
+        if result["backup"]:
             print(f"  - Backup created: {result['backup']}")
         print()
 
@@ -201,8 +229,10 @@ def main():
         print("4. If everything works, you can remove the backup files")
 
     print()
-    print("📚 For more information, see: "
-          "https://github.com/jqueguiner/num2words#migration")
+    print(
+        "📚 For more information, see: "
+        "https://github.com/jqueguiner/num2words#migration"
+    )
 
 
 if __name__ == "__main__":

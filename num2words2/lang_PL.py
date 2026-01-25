@@ -22,162 +22,138 @@ import itertools
 from .base import Num2Word_Base
 from .utils import get_digits, splitbyx
 
-ZERO = ('zero',)
+ZERO = ("zero",)
 
 ONES = {
-    1: ('jeden',),
-    2: ('dwa',),
-    3: ('trzy',),
-    4: ('cztery',),
-    5: ('pięć',),
-    6: ('sześć',),
-    7: ('siedem',),
-    8: ('osiem',),
-    9: ('dziewięć',),
+    1: ("jeden",),
+    2: ("dwa",),
+    3: ("trzy",),
+    4: ("cztery",),
+    5: ("pięć",),
+    6: ("sześć",),
+    7: ("siedem",),
+    8: ("osiem",),
+    9: ("dziewięć",),
 }
 
 ONES_ORDINALS = {
-    1: ('pierwszy', "pierwszo"),
-    2: ('drugi', "dwu"),
-    3: ('trzeci', "trzy"),
-    4: ('czwarty', "cztero"),
-    5: ('piąty', "pięcio"),
-    6: ('szósty', "sześcio"),
-    7: ('siódmy', "siedmio"),
-    8: ('ósmy', "ośmio"),
-    9: ('dziewiąty', "dziewięcio"),
-    10: ('dziesiąty', "dziesięcio"),
-    11: ('jedenasty', "jedenasto"),
-    12: ('dwunasty', "dwunasto"),
-    13: ('trzynasty', "trzynasto"),
-    14: ('czternasty', "czternasto"),
-    15: ('piętnasty', "piętnasto"),
-    16: ('szesnasty', "szesnasto"),
-    17: ('siedemnasty', "siedemnasto"),
-    18: ('osiemnasty', "osiemnasto"),
-    19: ('dziewiętnasty', "dziewiętnasto"),
+    1: ("pierwszy", "pierwszo"),
+    2: ("drugi", "dwu"),
+    3: ("trzeci", "trzy"),
+    4: ("czwarty", "cztero"),
+    5: ("piąty", "pięcio"),
+    6: ("szósty", "sześcio"),
+    7: ("siódmy", "siedmio"),
+    8: ("ósmy", "ośmio"),
+    9: ("dziewiąty", "dziewięcio"),
+    10: ("dziesiąty", "dziesięcio"),
+    11: ("jedenasty", "jedenasto"),
+    12: ("dwunasty", "dwunasto"),
+    13: ("trzynasty", "trzynasto"),
+    14: ("czternasty", "czternasto"),
+    15: ("piętnasty", "piętnasto"),
+    16: ("szesnasty", "szesnasto"),
+    17: ("siedemnasty", "siedemnasto"),
+    18: ("osiemnasty", "osiemnasto"),
+    19: ("dziewiętnasty", "dziewiętnasto"),
 }
 
 TENS = {
-    0: ('dziesięć',),
-    1: ('jedenaście',),
-    2: ('dwanaście',),
-    3: ('trzynaście',),
-    4: ('czternaście',),
-    5: ('piętnaście',),
-    6: ('szesnaście',),
-    7: ('siedemnaście',),
-    8: ('osiemnaście',),
-    9: ('dziewiętnaście',),
+    0: ("dziesięć",),
+    1: ("jedenaście",),
+    2: ("dwanaście",),
+    3: ("trzynaście",),
+    4: ("czternaście",),
+    5: ("piętnaście",),
+    6: ("szesnaście",),
+    7: ("siedemnaście",),
+    8: ("osiemnaście",),
+    9: ("dziewiętnaście",),
 }
 
 
 TWENTIES = {
-    2: ('dwadzieścia',),
-    3: ('trzydzieści',),
-    4: ('czterdzieści',),
-    5: ('pięćdziesiąt',),
-    6: ('sześćdziesiąt',),
-    7: ('siedemdziesiąt',),
-    8: ('osiemdziesiąt',),
-    9: ('dziewięćdziesiąt',),
+    2: ("dwadzieścia",),
+    3: ("trzydzieści",),
+    4: ("czterdzieści",),
+    5: ("pięćdziesiąt",),
+    6: ("sześćdziesiąt",),
+    7: ("siedemdziesiąt",),
+    8: ("osiemdziesiąt",),
+    9: ("dziewięćdziesiąt",),
 }
 
 TWENTIES_ORDINALS = {
-    2: ('dwudziesty', "dwudziesto"),
-    3: ('trzydziesty', "trzydiesto"),
-    4: ('czterdziesty', "czterdziesto"),
-    5: ('pięćdziesiąty', "pięćdziesięcio"),
-    6: ('sześćdziesiąty', "sześćdziesięcio"),
-    7: ('siedemdziesiąty', "siedemdziesięcio"),
-    8: ('osiemdziesiąty', "osiemdziesięcio"),
-    9: ('dziewięćdziesiąty', "dziewięćdziesięcio"),
+    2: ("dwudziesty", "dwudziesto"),
+    3: ("trzydziesty", "trzydiesto"),
+    4: ("czterdziesty", "czterdziesto"),
+    5: ("pięćdziesiąty", "pięćdziesięcio"),
+    6: ("sześćdziesiąty", "sześćdziesięcio"),
+    7: ("siedemdziesiąty", "siedemdziesięcio"),
+    8: ("osiemdziesiąty", "osiemdziesięcio"),
+    9: ("dziewięćdziesiąty", "dziewięćdziesięcio"),
 }
 
 HUNDREDS = {
-    1: ('sto',),
-    2: ('dwieście',),
-    3: ('trzysta',),
-    4: ('czterysta',),
-    5: ('pięćset',),
-    6: ('sześćset',),
-    7: ('siedemset',),
-    8: ('osiemset',),
-    9: ('dziewięćset',),
+    1: ("sto",),
+    2: ("dwieście",),
+    3: ("trzysta",),
+    4: ("czterysta",),
+    5: ("pięćset",),
+    6: ("sześćset",),
+    7: ("siedemset",),
+    8: ("osiemset",),
+    9: ("dziewięćset",),
 }
 
 HUNDREDS_ORDINALS = {
-    1: ('setny', "stu"),
-    2: ('dwusetny', "dwustu"),
-    3: ('trzysetny', "trzystu"),
-    4: ('czterysetny', "czterystu"),
-    5: ('pięćsetny', "pięcset"),
-    6: ('sześćsetny', "sześćset"),
-    7: ('siedemsetny', "siedemset"),
-    8: ('osiemsetny', "ośiemset"),
-    9: ('dziewięćsetny', "dziewięćset"),
+    1: ("setny", "stu"),
+    2: ("dwusetny", "dwustu"),
+    3: ("trzysetny", "trzystu"),
+    4: ("czterysetny", "czterystu"),
+    5: ("pięćsetny", "pięcset"),
+    6: ("sześćsetny", "sześćset"),
+    7: ("siedemsetny", "siedemset"),
+    8: ("osiemsetny", "ośiemset"),
+    9: ("dziewięćsetny", "dziewięćset"),
 }
 
 THOUSANDS = {
-    1: ('tysiąc', 'tysiące', 'tysięcy'),  # 10^3
+    1: ("tysiąc", "tysiące", "tysięcy"),  # 10^3
 }
 
-prefixes_ordinal = {
-    1: "tysięczny",
-    2: "milionowy",
-    3: "milairdowy"
-}
+prefixes_ordinal = {1: "tysięczny", 2: "milionowy", 3: "milairdowy"}
 
-prefixes = (   # 10^(6*x)
-    "mi",      # 10^6
-    "bi",      # 10^12
-    "try",     # 10^18
+prefixes = (  # 10^(6*x)
+    "mi",  # 10^6
+    "bi",  # 10^12
+    "try",  # 10^18
     "kwadry",  # 10^24
     "kwinty",  # 10^30
     "seksty",  # 10^36
-    "septy",   # 10^42
-    "okty",    # 10^48
-    "nony",    # 10^54
-    "decy"     # 10^60
+    "septy",  # 10^42
+    "okty",  # 10^48
+    "nony",  # 10^54
+    "decy",  # 10^60
 )
 suffixes = ("lion", "liard")  # 10^x or 10^(x+3)
 
 for idx, (p, s) in enumerate(itertools.product(prefixes, suffixes)):
     name = p + s
-    THOUSANDS[idx + 2] = (name, name + 'y', name + 'ów')
+    THOUSANDS[idx + 2] = (name, name + "y", name + "ów")
 
 
 class Num2Word_PL(Num2Word_Base):
     CURRENCY_FORMS = {
-        'PLN': (
-            ('złoty', 'złote', 'złotych'), ('grosz', 'grosze', 'groszy')
+        "PLN": (("złoty", "złote", "złotych"), ("grosz", "grosze", "groszy")),
+        "EUR": (("euro", "euro", "euro"), ("cent", "centy", "centów")),
+        "USD": (
+            ("dolar amerykański", "dolary amerykańskie", "dolarów amerykańskich"),
+            ("cent", "centy", "centów"),
         ),
-        'EUR': (
-            ('euro', 'euro', 'euro'), ('cent', 'centy', 'centów')
-        ),
-        'USD': (
-            (
-                'dolar amerykański',
-                'dolary amerykańskie',
-                'dolarów amerykańskich'
-            ),
-            (
-                'cent',
-                'centy',
-                'centów'
-            )
-        ),
-        'GBP': (
-            (
-                'funt brytyjski',
-                'funty brytyjskie',
-                'funtów brytyjskich'
-            ),
-            (
-                'pens',
-                'pensy',
-                'pensów'
-            )
+        "GBP": (
+            ("funt brytyjski", "funty brytyjskie", "funtów brytyjskich"),
+            ("pens", "pensy", "pensów"),
         ),
     }
 
@@ -186,36 +162,40 @@ class Num2Word_PL(Num2Word_Base):
         self.pointword = "przecinek"
 
     def to_cardinal(self, number):
-        n = str(number).replace(',', '.')
-        if '.' in n:
-            is_negative = n.startswith('-')
+        # Handle whole number floats (like 9999.0)
+        if isinstance(number, float) and number == int(number):
+            return self._int2word(int(number))
+
+        n = str(number).replace(",", ".")
+        if "." in n:
+            is_negative = n.startswith("-")
             abs_n = n[1:] if is_negative else n
-            left, right = abs_n.split('.')
+            left, right = abs_n.split(".")
 
             # Say each decimal digit individually
             decimal_parts = []
             for digit in right:
-                if digit == '0':
+                if digit == "0":
                     decimal_parts.append(ZERO[0])
                 else:
                     decimal_parts.append(ONES[int(digit)][0])
-            decimal_part = ' '.join(decimal_parts)
+            decimal_part = " ".join(decimal_parts)
 
-            result = u'%s %s %s' % (
+            result = "%s %s %s" % (
                 self._int2word(int(left)),
                 self.pointword,
-                decimal_part
+                decimal_part,
             )
             if is_negative:
-                result = self.negword + ' ' + result
+                result = self.negword + " " + result
             return result
         else:
             # Handle negative integers
-            is_negative = n.startswith('-')
+            is_negative = n.startswith("-")
             if is_negative:
                 abs_n = n[1:]
                 result = self._int2word(int(abs_n))
-                return self.negword + ' ' + result
+                return self.negword + " " + result
             else:
                 return self._int2word(int(n))
 
@@ -249,8 +229,9 @@ class Num2Word_PL(Num2Word_Base):
             words.append(TWENTIES_ORDINALS[n2][0])
             words.append(ONES_ORDINALS[n1][0])
 
-    def to_currency(self, val, currency='EUR', cents=True, separator=',',
-                    adjective=False):
+    def to_currency(
+        self, val, currency="EUR", cents=True, separator=",", adjective=False
+    ):
         # Handle integers specially - just add currency name without cents
         if isinstance(val, int):
             try:
@@ -258,8 +239,12 @@ class Num2Word_PL(Num2Word_Base):
             except (KeyError, AttributeError):
                 # Fallback to base implementation for unknown currency
                 return super(Num2Word_PL, self).to_currency(
-                    val, currency=currency, cents=cents, separator=separator,
-                    adjective=adjective)
+                    val,
+                    currency=currency,
+                    cents=cents,
+                    separator=separator,
+                    adjective=adjective,
+                )
 
             minus_str = self.negword if val < 0 else ""
             abs_val = abs(val)
@@ -275,12 +260,16 @@ class Num2Word_PL(Num2Word_Base):
                 # Use the pluralize method for proper currency form selection
                 currency_str = self.pluralize(abs_val, cr1)
 
-            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+            return ("%s %s %s" % (minus_str, money_str, currency_str)).strip()
 
         # For floats, use the parent class implementation
         return super(Num2Word_PL, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator,
-            adjective=adjective)
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
+        )
 
     def to_ordinal(self, number):
         if number % 1 != 0:
@@ -333,4 +322,4 @@ class Num2Word_PL(Num2Word_Base):
             if i > 0:
                 words.append(self.pluralize(x, THOUSANDS[i]))
 
-        return ' '.join(words)
+        return " ".join(words)

@@ -22,10 +22,10 @@ from .lang_EUR import Num2Word_EUR
 
 class Num2Word_NL(Num2Word_EUR):
     CURRENCY_FORMS = {
-        'EUR': (('euro', 'euro'), ('cent', 'cent')),
-        'GBP': (('pond', 'pond'), ('penny', 'pence')),
-        'USD': (('dollar', 'dollar'), ('cent', 'cent')),
-        'CNY': (('yuan', 'yuan'), ('jiao', 'fen')),
+        "EUR": (("euro", "euro"), ("cent", "cent")),
+        "GBP": (("pond", "pond"), ("penny", "pence")),
+        "USD": (("dollar", "dollar"), ("cent", "cent")),
+        "CNY": (("yuan", "yuan"), ("jiao", "fen")),
     }
 
     GIGA_SUFFIX = "iljard"
@@ -38,76 +38,117 @@ class Num2Word_NL(Num2Word_EUR):
         self.pointword = "komma"
         # "Cannot treat float %s as ordinal."
         self.errmsg_floatord = (
-            "Het zwevende puntnummer %s kan niet omgezet worden " +
-            "naar een ordernummer."
+            "Het zwevende puntnummer %s kan niet omgezet worden "
+            + "naar een ordernummer."
         )
         # "type(((type(%s)) ) not in [long, int, float]"
         self.errmsg_nonnum = (
-            "Alleen nummers (type (%s)) kunnen naar " +
-            "woorden omgezet worden."
+            "Alleen nummers (type (%s)) kunnen naar " + "woorden omgezet worden."
         )
         # "Cannot treat negative num %s as ordinal."
         self.errmsg_negord = (
-            "Het negatieve getal %s kan niet omgezet " +
-            "worden naar een ordernummer."
+            "Het negatieve getal %s kan niet omgezet " + "worden naar een ordernummer."
         )
         # "abs(%s) must be less than %s."
         self.errmsg_toobig = "Het getal %s moet minder zijn dan %s."
         self.exclude_title = []
 
         lows = ["non", "okt", "sept", "sext", "quint", "quadr", "tr", "b", "m"]
-        units = ["", "un", "duo", "tre", "quattuor", "quin", "sex", "sept",
-                 "okto", "novem"]
-        tens = ["dez", "vigint", "trigint", "quadragint", "quinquagint",
-                "sexagint", "septuagint", "oktogint", "nonagint"]
+        units = [
+            "",
+            "un",
+            "duo",
+            "tre",
+            "quattuor",
+            "quin",
+            "sex",
+            "sept",
+            "okto",
+            "novem",
+        ]
+        tens = [
+            "dez",
+            "vigint",
+            "trigint",
+            "quadragint",
+            "quinquagint",
+            "sexagint",
+            "septuagint",
+            "oktogint",
+            "nonagint",
+        ]
 
-        self.high_numwords = (
-            ["zend"] + self.gen_high_numwords(units, tens, lows))
+        self.high_numwords = ["zend"] + self.gen_high_numwords(units, tens, lows)
 
-        self.mid_numwords = [(1000, "duizend"), (100, "honderd"),
-                             (90, "negentig"), (80, "tachtig"),
-                             (70, "zeventig"), (60, "zestig"),
-                             (50, "vijftig"), (40, "veertig"),
-                             (30, "dertig")]
+        self.mid_numwords = [
+            (1000, "duizend"),
+            (100, "honderd"),
+            (90, "negentig"),
+            (80, "tachtig"),
+            (70, "zeventig"),
+            (60, "zestig"),
+            (50, "vijftig"),
+            (40, "veertig"),
+            (30, "dertig"),
+        ]
 
-        self.low_numwords = ["twintig", "negentien", "achttien", "zeventien",
-                             "zestien", "vijftien", "veertien", "dertien",
-                             "twaalf", "elf", "tien", "negen", "acht", "zeven",
-                             "zes", "vijf", "vier", "drie", "twee", "één",
-                             "nul"]
+        self.low_numwords = [
+            "twintig",
+            "negentien",
+            "achttien",
+            "zeventien",
+            "zestien",
+            "vijftien",
+            "veertien",
+            "dertien",
+            "twaalf",
+            "elf",
+            "tien",
+            "negen",
+            "acht",
+            "zeven",
+            "zes",
+            "vijf",
+            "vier",
+            "drie",
+            "twee",
+            "één",
+            "nul",
+        ]
 
         # Wiktionary says it is "nulde", not "nulte" or "nule"
         # https://en.wiktionary.org/wiki/nulde
-        self.ords = {"nul": "nuld",
-                     "één": "eerst",
-                     "twee": "tweed",
-                     "drie": "derd",
-                     "vier": "vierd",
-                     "vijf": "vijfd",
-                     "zes": "zesd",
-                     "zeven": "zevend",
-                     "acht": "achtst",
-                     "negen": "negend",
-                     "tien": "tiend",
-                     "elf": "elfd",
-                     "twaalf": "twaalfd",
-
-                     "ig": "igst",
-                     "erd": "erdst",
-                     "end": "endst",
-                     "joen": "joenst",
-                     "rd": "rdst"}
+        self.ords = {
+            "nul": "nuld",
+            "één": "eerst",
+            "twee": "tweed",
+            "drie": "derd",
+            "vier": "vierd",
+            "vijf": "vijfd",
+            "zes": "zesd",
+            "zeven": "zevend",
+            "acht": "achtst",
+            "negen": "negend",
+            "tien": "tiend",
+            "elf": "elfd",
+            "twaalf": "twaalfd",
+            "ig": "igst",
+            "erd": "erdst",
+            "end": "endst",
+            "joen": "joenst",
+            "rd": "rdst",
+        }
 
     def merge(self, curr, next):
         ctext, cnum, ntext, nnum = curr + next
 
         if cnum == 1:
-            if nnum < 10 ** 6:
+            if nnum < 10**6:
                 return next
             ctext = "een"
 
         if nnum > cnum:
-            if nnum >= 10 ** 6:
+            if nnum >= 10**6:
                 ctext += " "
             val = cnum * nnum
         else:
@@ -120,15 +161,16 @@ class Num2Word_NL(Num2Word_EUR):
                 else:
                     ntext += "en"
                 ntext, ctext = ctext, ntext  # + "en"
-            elif cnum >= 10 ** 6:
+            elif cnum >= 10**6:
                 ctext += " "
             val = cnum + nnum
 
         word = ctext + ntext
         return word, val
 
-    def to_currency(self, val, currency='EUR', cents=True, separator=' en',
-                    adjective=False):
+    def to_currency(
+        self, val, currency="EUR", cents=True, separator=" en", adjective=False
+    ):
         # Handle integers specially - just add currency name without cents
         if isinstance(val, int):
             try:
@@ -136,8 +178,12 @@ class Num2Word_NL(Num2Word_EUR):
             except (KeyError, AttributeError):
                 # Fallback to base implementation for unknown currency
                 return super(Num2Word_NL, self).to_currency(
-                    val, currency=currency, cents=cents, separator=separator,
-                    adjective=adjective)
+                    val,
+                    currency=currency,
+                    cents=cents,
+                    separator=separator,
+                    adjective=adjective,
+                )
 
             minus_str = self.negword if val < 0 else ""
             abs_val = abs(val)
@@ -147,21 +193,29 @@ class Num2Word_NL(Num2Word_EUR):
             if abs_val == 1:
                 currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
             else:
-                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+                currency_str = (
+                    cr1[1]
+                    if isinstance(cr1, tuple) and len(cr1) > 1
+                    else (cr1[0] if isinstance(cr1, tuple) else cr1)
+                )
 
-            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+            return ("%s %s %s" % (minus_str, money_str, currency_str)).strip()
 
         # For floats, use the parent class implementation
         return super(Num2Word_NL, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator,
-            adjective=adjective)
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
+        )
 
     def to_ordinal(self, value):
         self.verify_ordinal(value)
         outword = self.to_cardinal(value)
         for key in self.ords:
             if outword.endswith(key):
-                outword = outword[:len(outword) - len(key)] + self.ords[key]
+                outword = outword[: len(outword) - len(key)] + self.ords[key]
                 break
         return outword + "e"
 

@@ -23,90 +23,76 @@ from .currency import parse_currency_parts
 
 class Num2Word_ET(Num2Word_Base):
     CURRENCY_FORMS = {
-        'EUR': (
-            ('euro', 'eurot'), ('sent', 'senti')
-        ),
-        'USD': (
-            ('dollar', 'dollarit'), ('sent', 'senti')
-        ),
-        'GBP': (
-            ('nael', 'naela'), ('penn', 'penni')
-        ),
-        'SEK': (
-            ('kroon', 'krooni'), ('ööri', 'ööri')
-        ),
-        'NOK': (
-            ('kroon', 'krooni'), ('ööri', 'ööri')
-        ),
-        'DKK': (
-            ('kroon', 'krooni'), ('ööri', 'ööri')
-        ),
-        'RUB': (
-            ('rubla', 'rubla'), ('kopikas', 'kopikat')
-        ),
+        "EUR": (("euro", "eurot"), ("sent", "senti")),
+        "USD": (("dollar", "dollarit"), ("sent", "senti")),
+        "GBP": (("nael", "naela"), ("penn", "penni")),
+        "SEK": (("kroon", "krooni"), ("ööri", "ööri")),
+        "NOK": (("kroon", "krooni"), ("ööri", "ööri")),
+        "DKK": (("kroon", "krooni"), ("ööri", "ööri")),
+        "RUB": (("rubla", "rubla"), ("kopikas", "kopikat")),
     }
 
     def __init__(self):
         super(Num2Word_ET, self).__init__()
 
         self.ones = [
-            '',
-            'üks',
-            'kaks',
-            'kolm',
-            'neli',
-            'viis',
-            'kuus',
-            'seitse',
-            'kaheksa',
-            'üheksa'
+            "",
+            "üks",
+            "kaks",
+            "kolm",
+            "neli",
+            "viis",
+            "kuus",
+            "seitse",
+            "kaheksa",
+            "üheksa",
         ]
 
         self.tens = [
-            '',
-            'kümme',
-            'kakskümmend',
-            'kolmkümmend',
-            'nelikümmend',
-            'viiskümmend',
-            'kuuskümmend',
-            'seitsekümmend',
-            'kaheksakümmend',
-            'üheksakümmend'
+            "",
+            "kümme",
+            "kakskümmend",
+            "kolmkümmend",
+            "nelikümmend",
+            "viiskümmend",
+            "kuuskümmend",
+            "seitsekümmend",
+            "kaheksakümmend",
+            "üheksakümmend",
         ]
 
         self.scale = {
-            100: 'sada',
-            1000: 'tuhat',
-            1000000: 'miljon',
-            1000000000: 'miljard',
-            1000000000000: 'triljon'
+            100: "sada",
+            1000: "tuhat",
+            1000000: "miljon",
+            1000000000: "miljard",
+            1000000000000: "triljon",
         }
 
         self.ordinals_ones = [
-            '',
-            'esimene',
-            'teine',
-            'kolmas',
-            'neljas',
-            'viies',
-            'kuues',
-            'seitsmes',
-            'kaheksas',
-            'üheksas'
+            "",
+            "esimene",
+            "teine",
+            "kolmas",
+            "neljas",
+            "viies",
+            "kuues",
+            "seitsmes",
+            "kaheksas",
+            "üheksas",
         ]
 
         self.ordinals_tens = [
-            '',
-            'kümnes',
-            'kahekümnes',
-            'kolmekümnes',
-            'nelikümnes',
-            'viiekümnes',
-            'kuuekümnes',
-            'seitsmekümnes',
-            'kaheksakümnes',
-            'üheksakümnes'
+            "",
+            "kümnes",
+            "kahekümnes",
+            "kolmekümnes",
+            "nelikümnes",
+            "viiekümnes",
+            "kuuekümnes",
+            "seitsmekümnes",
+            "kaheksakümnes",
+            "üheksakümnes",
         ]
 
         self.negword = "miinus "
@@ -120,7 +106,7 @@ class Num2Word_ET(Num2Word_Base):
         Converts a number to words in Estonian.
         """
         if n == 0:
-            return 'null'
+            return "null"
 
         parts = []
 
@@ -128,76 +114,76 @@ class Num2Word_ET(Num2Word_Base):
         if n >= 1000000000000:
             trillions = n // 1000000000000
             if trillions == 1:
-                parts.append('üks triljon')
+                parts.append("üks triljon")
             else:
-                parts.append(self._int_to_word(trillions) + ' triljonit')
+                parts.append(self._int_to_word(trillions) + " triljonit")
             n %= 1000000000000
 
         # Handle billions
         if n >= 1000000000:
             billions = n // 1000000000
             if billions == 1:
-                parts.append('üks miljard')
+                parts.append("üks miljard")
             else:
-                parts.append(self._int_to_word(billions) + ' miljardit')
+                parts.append(self._int_to_word(billions) + " miljardit")
             n %= 1000000000
 
         # Handle millions
         if n >= 1000000:
             millions = n // 1000000
             if millions == 1:
-                parts.append('üks miljon')
+                parts.append("üks miljon")
             else:
-                parts.append(self._int_to_word(millions) + ' miljonit')
+                parts.append(self._int_to_word(millions) + " miljonit")
             n %= 1000000
 
         # Handle thousands
         if n >= 1000:
             thousands = n // 1000
             if thousands == 1:
-                parts.append('tuhat')
+                parts.append("tuhat")
             elif thousands == 100:
                 # Special case: 100000 should be "sada tuhat" not "ükssada tuhat"
-                parts.append('sada tuhat')
+                parts.append("sada tuhat")
             else:
-                parts.append(self._int_to_word(thousands) + ' tuhat')
+                parts.append(self._int_to_word(thousands) + " tuhat")
             n %= 1000
 
         # Handle hundreds
         if n >= 100:
             hundreds = n // 100
             if hundreds == 1:
-                parts.append('ükssada')
+                parts.append("ükssada")
             elif hundreds == 2:
-                parts.append('kakssada')
+                parts.append("kakssada")
             elif hundreds == 3:
-                parts.append('kolmsada')
+                parts.append("kolmsada")
             elif hundreds == 4:
-                parts.append('nelisada')
+                parts.append("nelisada")
             elif hundreds == 5:
-                parts.append('viissada')
+                parts.append("viissada")
             elif hundreds == 6:
-                parts.append('kuussada')
+                parts.append("kuussada")
             elif hundreds == 7:
-                parts.append('seitsesada')
+                parts.append("seitsesada")
             elif hundreds == 8:
-                parts.append('kaheksasada')
+                parts.append("kaheksasada")
             elif hundreds == 9:
-                parts.append('üheksasada')
+                parts.append("üheksasada")
             n %= 100
 
         # Handle special case for teens (11-19)
         if 10 < n < 20:
             teens_map = {
-                11: 'üksteist',
-                12: 'kaksteist',
-                13: 'kolmteist',
-                14: 'neliteist',
-                15: 'viisteist',
-                16: 'kuusteist',
-                17: 'seitseteist',
-                18: 'kaheksateist',
-                19: 'üheksateist'
+                11: "üksteist",
+                12: "kaksteist",
+                13: "kolmteist",
+                14: "neliteist",
+                15: "viisteist",
+                16: "kuusteist",
+                17: "seitseteist",
+                18: "kaheksateist",
+                19: "üheksateist",
             }
             parts.append(teens_map[n])
         else:
@@ -211,11 +197,11 @@ class Num2Word_ET(Num2Word_Base):
             if n > 0:
                 parts.append(self.ones[n])
 
-        return ' '.join(parts)
+        return " ".join(parts)
 
     def _int_to_cardinal(self, n):
         if n == 0:
-            return 'null'
+            return "null"
 
         if n < 0:
             return self.negword + self._int_to_word(-n)
@@ -225,25 +211,25 @@ class Num2Word_ET(Num2Word_Base):
     def _int_to_ordinal(self, n):
         """Convert to ordinal number."""
         if n == 0:
-            return 'nullis'
+            return "nullis"
 
         if n < 10:
             return self.ordinals_ones[n]
 
         if n == 10:
-            return 'kümnes'
+            return "kümnes"
 
         if n < 20:
             teens_ordinals = {
-                11: 'üheteistkümnes',
-                12: 'kaheteistkümnes',
-                13: 'kolmeteistkümnes',
-                14: 'neljateistkümnes',
-                15: 'viieteistkümnes',
-                16: 'kuueteistkümnes',
-                17: 'seitsmeteistkümnes',
-                18: 'kaheksateistkümnes',
-                19: 'üheksateistkümnes'
+                11: "üheteistkümnes",
+                12: "kaheteistkümnes",
+                13: "kolmeteistkümnes",
+                14: "neljateistkümnes",
+                15: "viieteistkümnes",
+                16: "kuueteistkümnes",
+                17: "seitsmeteistkümnes",
+                18: "kaheksateistkümnes",
+                19: "üheksateistkümnes",
             }
             return teens_ordinals[n]
 
@@ -254,17 +240,17 @@ class Num2Word_ET(Num2Word_Base):
                 return self.ordinals_tens[tens_val]
             else:
                 # For compound numbers, make the last part ordinal
-                return self.tens[tens_val] + ' ' + self.ordinals_ones[ones_val]
+                return self.tens[tens_val] + " " + self.ordinals_ones[ones_val]
 
         if n == 100:
-            return 'sajas'
+            return "sajas"
 
         if n == 1000:
-            return 'tuhandes'
+            return "tuhandes"
 
         # For larger numbers, convert to cardinal and add 's' suffix
         cardinal = self._int_to_cardinal(n)
-        return cardinal + 's'
+        return cardinal + "s"
 
     def to_cardinal(self, n):
         try:
@@ -291,7 +277,7 @@ class Num2Word_ET(Num2Word_Base):
 
                     # Convert post to string with proper padding
                     post_str = str(post)
-                    post_str = '0' * (self.precision - len(post_str)) + post_str
+                    post_str = "0" * (self.precision - len(post_str)) + post_str
 
                     # Say each digit individually
                     for digit in post_str:
@@ -318,12 +304,13 @@ class Num2Word_ET(Num2Word_Base):
             if isinstance(n, str):
                 n = int(n)
 
-            return str(n) + '.'
+            return str(n) + "."
         except BaseException:
-            return str(n) + '.'
+            return str(n) + "."
 
-    def to_currency(self, val, currency='EUR', cents=True, separator=' ja ',
-                    adjective=False):
+    def to_currency(
+        self, val, currency="EUR", cents=True, separator=" ja ", adjective=False
+    ):
         """Convert a number to currency words."""
         # Track if input was originally an integer
         is_integer_input = isinstance(val, int)
@@ -331,20 +318,23 @@ class Num2Word_ET(Num2Word_Base):
         # Check if value has fractional cents
         if not is_integer_input:
             from decimal import Decimal
+
             decimal_val = Decimal(str(val))
             has_fractional_cents = (decimal_val * 100) % 1 != 0
         else:
             has_fractional_cents = False
 
-        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
-                                                        keep_precision=has_fractional_cents)
+        left, right, is_negative = parse_currency_parts(
+            val, is_int_with_cents=False, keep_precision=has_fractional_cents
+        )
 
         try:
             cr1, cr2 = self.CURRENCY_FORMS[currency]
         except KeyError:
             raise NotImplementedError(
-                'Currency "%s" not implemented for "%s"' % (
-                    currency, self.__class__.__name__))
+                'Currency "%s" not implemented for "%s"'
+                % (currency, self.__class__.__name__)
+            )
 
         minus_str = "miinus " if is_negative else ""
         money_str = self._int_to_cardinal(left)
@@ -363,6 +353,7 @@ class Num2Word_ET(Num2Word_Base):
         if cents:
             # Handle fractional cents
             from decimal import Decimal
+
             if isinstance(right, Decimal):
                 # Convert fractional cents (e.g., 65.3 cents)
                 cents_str = self.to_cardinal(float(right)) if right > 0 else "null"
@@ -378,8 +369,13 @@ class Num2Word_ET(Num2Word_Base):
             cents_currency = cr2[1]  # plural
 
         return "%s%s %s%s%s %s" % (
-            minus_str, money_str, currency_str,
-            separator, cents_str, cents_currency)
+            minus_str,
+            money_str,
+            currency_str,
+            separator,
+            cents_str,
+            cents_currency,
+        )
 
     def to_year(self, n):
         """Convert to year representation."""

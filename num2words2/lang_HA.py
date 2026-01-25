@@ -29,58 +29,58 @@ class Num2Word_HA(Num2Word_Base):
     """
 
     CURRENCY_FORMS = {
-        'NGN': (('naira', 'naira'), ('kobo', 'kobo')),
-        'USD': (('dala', 'dala'), ('cent', 'cent')),
-        'EUR': (('yuro', 'yuro'), ('cent', 'cent')),
-        'GBP': (('fam', 'fam'), ('pence', 'pence')),
-        'JPY': (('yen', 'yen'), ('sen', 'sen')),
-        'CNY': (('yuan', 'yuan'), ('fen', 'fen')),
+        "NGN": (("naira", "naira"), ("kobo", "kobo")),
+        "USD": (("dala", "dala"), ("cent", "cent")),
+        "EUR": (("yuro", "yuro"), ("cent", "cent")),
+        "GBP": (("fam", "fam"), ("pence", "pence")),
+        "JPY": (("yen", "yen"), ("sen", "sen")),
+        "CNY": (("yuan", "yuan"), ("fen", "fen")),
     }
 
     # Hausa numerals
     ONES = {
-        0: 'sifiri',
-        1: 'ɗaya',
-        2: 'biyu',
-        3: 'uku',
-        4: 'huɗu',
-        5: 'biyar',
-        6: 'shida',
-        7: 'bakwai',
-        8: 'takwas',
-        9: 'tara'
+        0: "sifiri",
+        1: "ɗaya",
+        2: "biyu",
+        3: "uku",
+        4: "huɗu",
+        5: "biyar",
+        6: "shida",
+        7: "bakwai",
+        8: "takwas",
+        9: "tara",
     }
 
     TEENS = {
-        10: 'goma',
-        11: 'sha ɗaya',
-        12: 'sha biyu',
-        13: 'sha uku',
-        14: 'sha huɗu',
-        15: 'sha biyar',
-        16: 'sha shida',
-        17: 'sha bakwai',
-        18: 'sha takwas',
-        19: 'sha tara'
+        10: "goma",
+        11: "sha ɗaya",
+        12: "sha biyu",
+        13: "sha uku",
+        14: "sha huɗu",
+        15: "sha biyar",
+        16: "sha shida",
+        17: "sha bakwai",
+        18: "sha takwas",
+        19: "sha tara",
     }
 
     TENS = {
-        2: 'ashirin',
-        3: 'talatin',
-        4: 'arba\'in',
-        5: 'hamsin',
-        6: 'sittin',
-        7: 'saba\'in',
-        8: 'tamanin',
-        9: 'casa\'in'
+        2: "ashirin",
+        3: "talatin",
+        4: "arba'in",
+        5: "hamsin",
+        6: "sittin",
+        7: "saba'in",
+        8: "tamanin",
+        9: "casa'in",
     }
 
     SCALE = {
-        100: 'ɗari',
-        1000: 'dubu',
-        1000000: 'miliyan',
-        1000000000: 'biliyan',
-        1000000000000: 'tiriliyan'
+        100: "ɗari",
+        1000: "dubu",
+        1000000: "miliyan",
+        1000000000: "biliyan",
+        1000000000000: "tiriliyan",
     }
 
     def setup(self):
@@ -201,10 +201,10 @@ class Num2Word_HA(Num2Word_Base):
         """Convert a number to its Hausa year representation."""
         return self.to_cardinal(value)
 
-    def to_currency(self, value, currency='NGN', cents=True):
+    def to_currency(self, value, currency="NGN", cents=True):
         """Convert a value to its Hausa currency representation."""
         if currency not in self.CURRENCY_FORMS:
-            currency = 'NGN'  # Default to Nigerian Naira
+            currency = "NGN"  # Default to Nigerian Naira
 
         result = []
         is_negative = value < 0
@@ -212,6 +212,7 @@ class Num2Word_HA(Num2Word_Base):
 
         # Check if value has fractional cents
         from decimal import Decimal
+
         decimal_val = Decimal(str(value))
         has_fractional_cents = (decimal_val * 100) % 1 != 0
 
@@ -243,6 +244,7 @@ class Num2Word_HA(Num2Word_Base):
             minor_name = currency_forms[1][0]  # Use singular form
             # Handle fractional minor units
             from decimal import Decimal
+
             if isinstance(minor_units, Decimal):
                 # Convert fractional cents (e.g., 65.3 kobo)
                 minor_words = self.to_cardinal(float(minor_units))

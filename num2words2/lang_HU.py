@@ -19,7 +19,7 @@ from __future__ import division, print_function, unicode_literals
 
 from . import lang_EUR
 
-ZERO = 'nulla'
+ZERO = "nulla"
 
 
 class Num2Word_HU(lang_EUR.Num2Word_EUR):
@@ -32,44 +32,58 @@ class Num2Word_HU(lang_EUR.Num2Word_EUR):
         self.negword = "mínusz "
         self.pointword = "egész"
 
-        self.mid_numwords = [(1000, "ezer"), (100, "száz"), (90, "kilencven"),
-                             (80, "nyolcvan"), (70, "hetven"), (60, "hatvan"),
-                             (50, "ötven"), (40, "negyven"), (30, "harminc")]
+        self.mid_numwords = [
+            (1000, "ezer"),
+            (100, "száz"),
+            (90, "kilencven"),
+            (80, "nyolcvan"),
+            (70, "hetven"),
+            (60, "hatvan"),
+            (50, "ötven"),
+            (40, "negyven"),
+            (30, "harminc"),
+        ]
 
-        low_numwords = ["kilenc", "nyolc", "hét", "hat", "öt", "négy", "három",
-                        "kettő", "egy"]
-        self.low_numwords = (['tizen' + w for w in low_numwords]
-                             + ['tíz']
-                             + low_numwords)
-        self.low_numwords = (['huszon' + w for w in low_numwords]
-                             + ['húsz']
-                             + self.low_numwords
-                             + [ZERO])
+        low_numwords = [
+            "kilenc",
+            "nyolc",
+            "hét",
+            "hat",
+            "öt",
+            "négy",
+            "három",
+            "kettő",
+            "egy",
+        ]
+        self.low_numwords = ["tizen" + w for w in low_numwords] + ["tíz"] + low_numwords
+        self.low_numwords = (
+            ["huszon" + w for w in low_numwords] + ["húsz"] + self.low_numwords + [ZERO]
+        )
 
         self.partial_ords = {
-            'nulla': 'nullad',
-            'egy': 'egyed',
-            'kettő': 'ketted',
-            'három': 'harmad',
-            'négy': 'negyed',
-            'öt': 'ötöd',
-            'hat': 'hatod',
-            'hét': 'heted',
-            'nyolc': 'nyolcad',
-            'kilenc': 'kilenced',
-            'tíz': 'tized',
-            'húsz': 'huszad',
-            'harminc': 'harmincad',
-            'negyven': 'negyvened',
-            'ötven': 'ötvened',
-            'hatvan': 'hatvanad',
-            'hetven': 'hetvened',
-            'nyolcvan': 'nyolcvanad',
-            'kilencven': 'kilencvened',
-            'száz': 'század',
-            'ezer': 'ezred',
-            'illió': 'milliomod',
-            'illiárd': 'milliárdod'
+            "nulla": "nullad",
+            "egy": "egyed",
+            "kettő": "ketted",
+            "három": "harmad",
+            "négy": "negyed",
+            "öt": "ötöd",
+            "hat": "hatod",
+            "hét": "heted",
+            "nyolc": "nyolcad",
+            "kilenc": "kilenced",
+            "tíz": "tized",
+            "húsz": "huszad",
+            "harminc": "harmincad",
+            "negyven": "negyvened",
+            "ötven": "ötvened",
+            "hatvan": "hatvanad",
+            "hetven": "hetvened",
+            "nyolcvan": "nyolcvanad",
+            "kilencven": "kilencvened",
+            "száz": "század",
+            "ezer": "ezred",
+            "illió": "milliomod",
+            "illiárd": "milliárdod",
         }
 
     def to_cardinal(self, value, zero=ZERO):
@@ -79,8 +93,8 @@ class Num2Word_HU(lang_EUR.Num2Word_EUR):
             out = self.negword + self.to_cardinal(-value)
         elif value == 0:
             out = zero
-        elif zero == '' and value == 2:
-            out = 'két'
+        elif zero == "" and value == 2:
+            out = "két"
         elif value < 30:
             out = self.cards[value]
         elif value < 100:
@@ -113,45 +127,49 @@ class Num2Word_HU(lang_EUR.Num2Word_EUR):
         if thousands != 1:
             prefix = self.to_cardinal(thousands, zero="") + prefix
         postfix = self.to_cardinal(value % 1000, zero="")
-        return prefix + ('' if value <= 2000 or not postfix else '-') + postfix
+        return prefix + ("" if value <= 2000 or not postfix else "-") + postfix
 
     def big_number_to_cardinal(self, value):
         digits = len(str(value))
         digits = digits if digits % 3 != 0 else digits - 2
         exp = 10 ** (digits // 3 * 3)
-        rest = self.to_cardinal(value % exp, '')
-        return (self.to_cardinal(value // exp, '') + self.cards[exp]
-                + ('-' + rest if rest else ''))
+        rest = self.to_cardinal(value % exp, "")
+        return (
+            self.to_cardinal(value // exp, "")
+            + self.cards[exp]
+            + ("-" + rest if rest else "")
+        )
 
     def to_ordinal(self, value):
         if value < 0:
             return self.negword + self.to_ordinal(-value)
         if value == 1:
-            return 'első'
+            return "első"
         elif value == 2:
-            return 'második'
+            return "második"
         else:
             out = self.to_cardinal(value)
             for card_word, ord_word in self.partial_ords.items():
-                if out[-len(card_word):] == card_word:
-                    out = out[:-len(card_word)] + ord_word
+                if out[-len(card_word) :] == card_word:
+                    out = out[: -len(card_word)] + ord_word
                     break
-        return out + 'ik'
+        return out + "ik"
 
     def to_ordinal_num(self, value):
         self.verify_ordinal(value)
-        return str(value) + '.'
+        return str(value) + "."
 
     def to_year(self, val, suffix=None, longval=True):
         # suffix is prefix here
-        prefix = ''
+        prefix = ""
         if val < 0 or suffix is not None:
             val = abs(val)
-            prefix = (suffix + ' ' if suffix is not None else 'i. e. ')
+            prefix = suffix + " " if suffix is not None else "i. e. "
         return prefix + self.to_cardinal(val)
 
-    def to_currency(self, val, currency='HUF', cents=True, separator=',',
-                    adjective=False):
+    def to_currency(
+        self, val, currency="HUF", cents=True, separator=",", adjective=False
+    ):
         # Handle integers specially - just add currency name without cents
         if isinstance(val, int):
             try:
@@ -159,8 +177,12 @@ class Num2Word_HU(lang_EUR.Num2Word_EUR):
             except (KeyError, AttributeError):
                 # Fallback to base implementation for unknown currency
                 return super(Num2Word_HU, self).to_currency(
-                    val, currency=currency, cents=cents, separator=separator,
-                    adjective=adjective)
+                    val,
+                    currency=currency,
+                    cents=cents,
+                    separator=separator,
+                    adjective=adjective,
+                )
 
             minus_str = self.negword if val < 0 else ""
             abs_val = abs(val)
@@ -170,20 +192,31 @@ class Num2Word_HU(lang_EUR.Num2Word_EUR):
             if abs_val == 1:
                 currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
             else:
-                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+                currency_str = (
+                    cr1[1]
+                    if isinstance(cr1, tuple) and len(cr1) > 1
+                    else (cr1[0] if isinstance(cr1, tuple) else cr1)
+                )
 
-            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+            return ("%s %s %s" % (minus_str, money_str, currency_str)).strip()
 
         # For floats, use the parent class implementation
         return super(Num2Word_HU, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator,
-            adjective=adjective)
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
+        )
 
     def to_cardinal_float(self, value):
         if abs(value) != value:
             return self.negword + self.to_cardinal_float(-value)
-        left, right = str(value).split('.')
-        return (self.to_cardinal(int(left))
-                + ' egész '
-                + self.to_cardinal(int(right))
-                + ' ' + self.partial_ords[self.cards[10 ** len(right)]])
+        left, right = str(value).split(".")
+        return (
+            self.to_cardinal(int(left))
+            + " egész "
+            + self.to_cardinal(int(right))
+            + " "
+            + self.partial_ords[self.cards[10 ** len(right)]]
+        )

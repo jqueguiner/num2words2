@@ -18,35 +18,128 @@
 
 from decimal import Decimal
 
-RANKING = ['', 'প্রথম', 'দ্বিতীয়', 'তৃতীয়', 'চতুর্থ', 'পঞ্চম', 'ষষ্ঠ',
-           'সপ্তম', 'অষ্টম', 'নবম', 'দশম']  # pragma: no cover
+RANKING = [
+    "",
+    "প্রথম",
+    "দ্বিতীয়",
+    "তৃতীয়",
+    "চতুর্থ",
+    "পঞ্চম",
+    "ষষ্ঠ",
+    "সপ্তম",
+    "অষ্টম",
+    "নবম",
+    "দশম",
+]  # pragma: no cover
 
-AKOK = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়',
-        'সাত', 'আট', 'নয়']  # pragma: no cover
+AKOK = [
+    "",
+    "এক",
+    "দুই",
+    "তিন",
+    "চার",
+    "পাঁচ",
+    "ছয়",
+    "সাত",
+    "আট",
+    "নয়",
+]  # pragma: no cover
 
 DOSOK = [
-    'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনের',
-    'ষোল', 'সতের', 'আঠারো', 'উনিশ',
-    'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ',
-    'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ',
-    'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেত্রিশ', 'চৌত্রিশ', 'পঁইত্রিশ',
-    'ছত্রিশ', 'সাতত্রিশ', 'আটত্রিশ', 'উনচল্লিশ', 'চল্লিশ',
-    'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চৌচল্লিশ',
-    'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আটচল্লিশ', 'উনপঞ্চাশ',
-    'পঞ্চাশ', 'একান্ন', 'বাহান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন',
-    'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'উনষাট', 'ষাট',
-    'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি',
-    'ছিষট্টি', 'সাতষট্টি', 'আটষট্টি', 'উনসত্তর', 'সত্তর',
-    'একাত্তর ', 'বাহাত্তর', 'তিয়াত্তর', 'চুয়াত্তর', 'পঁচাত্তর',
-    'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'উনআশি', 'আশি',
-    'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশি',
-    'ছিয়াশি', 'সাতাশি', 'আটাশি', 'উননব্বই', 'নব্বই',
-    'একানব্বই', 'বিরানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই',
-    'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'
+    "দশ",
+    "এগারো",
+    "বারো",
+    "তেরো",
+    "চৌদ্দ",
+    "পনের",
+    "ষোল",
+    "সতের",
+    "আঠারো",
+    "উনিশ",
+    "বিশ",
+    "একুশ",
+    "বাইশ",
+    "তেইশ",
+    "চব্বিশ",
+    "পঁচিশ",
+    "ছাব্বিশ",
+    "সাতাশ",
+    "আটাশ",
+    "উনত্রিশ",
+    "ত্রিশ",
+    "একত্রিশ",
+    "বত্রিশ",
+    "তেত্রিশ",
+    "চৌত্রিশ",
+    "পঁইত্রিশ",
+    "ছত্রিশ",
+    "সাতত্রিশ",
+    "আটত্রিশ",
+    "উনচল্লিশ",
+    "চল্লিশ",
+    "একচল্লিশ",
+    "বিয়াল্লিশ",
+    "তেতাল্লিশ",
+    "চৌচল্লিশ",
+    "পঁয়তাল্লিশ",
+    "ছেচল্লিশ",
+    "সাতচল্লিশ",
+    "আটচল্লিশ",
+    "উনপঞ্চাশ",
+    "পঞ্চাশ",
+    "একান্ন",
+    "বাহান্ন",
+    "তিপ্পান্ন",
+    "চুয়ান্ন",
+    "পঞ্চান্ন",
+    "ছাপ্পান্ন",
+    "সাতান্ন",
+    "আটান্ন",
+    "উনষাট",
+    "ষাট",
+    "একষট্টি",
+    "বাষট্টি",
+    "তেষট্টি",
+    "চৌষট্টি",
+    "পঁয়ষট্টি",
+    "ছিষট্টি",
+    "সাতষট্টি",
+    "আটষট্টি",
+    "উনসত্তর",
+    "সত্তর",
+    "একাত্তর ",
+    "বাহাত্তর",
+    "তিয়াত্তর",
+    "চুয়াত্তর",
+    "পঁচাত্তর",
+    "ছিয়াত্তর",
+    "সাতাত্তর",
+    "আটাত্তর",
+    "উনআশি",
+    "আশি",
+    "একাশি",
+    "বিরাশি",
+    "তিরাশি",
+    "চুরাশি",
+    "পঁচাশি",
+    "ছিয়াশি",
+    "সাতাশি",
+    "আটাশি",
+    "উননব্বই",
+    "নব্বই",
+    "একানব্বই",
+    "বিরানব্বই",
+    "তিরানব্বই",
+    "চুরানব্বই",
+    "পঁচানব্বই",
+    "ছিয়ানব্বই",
+    "সাতানব্বই",
+    "আটানব্বই",
+    "নিরানব্বই",
 ]  # pragma: no cover
-HAZAR = ' হাজার '  # pragma: no cover
-LAKH = ' লাখ '  # pragma: no cover
-KOTI = ' কোটি '  # pragma: no cover
+HAZAR = " হাজার "  # pragma: no cover
+LAKH = " লাখ "  # pragma: no cover
+KOTI = " কোটি "  # pragma: no cover
 MAX_NUMBER = 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999  # noqa: E501 # pragma: no cover
 
 
@@ -55,7 +148,6 @@ class NumberTooLargeError(Exception):
 
 
 class Num2Word_BN:
-
     def __init__(self):
         self.negword = "ঋণাত্মক"  # Bengali word for "negative"
 
@@ -65,15 +157,15 @@ class Num2Word_BN:
 
     @staticmethod
     def parse_number(number: Decimal):
-        dosomik = str(number - int(number)).split('.')[1:]
-        dosomik_str = ''.join(dosomik) if dosomik else 0
+        dosomik = str(number - int(number)).split(".")[1:]
+        dosomik_str = "".join(dosomik) if dosomik else 0
         return int(number), int(dosomik_str)
 
     @staticmethod
     def parse_paisa(number: Decimal):
         # 1-99 for paisa count so two digits are valid.
-        paisa = str(number - int(number)).split('.')[1:]
-        paisa_str = ''.join(paisa) if paisa else 0
+        paisa = str(number - int(number)).split(".")[1:]
+        paisa_str = "".join(paisa) if paisa else 0
 
         # this is need, when we parse to decimal it removes trailing 0 .
         if paisa_str:
@@ -83,48 +175,48 @@ class Num2Word_BN:
     def _is_smaller_than_max_number(self, number):
         if MAX_NUMBER >= number:
             return True
-        raise NumberTooLargeError(f'Too Large number maximum '
-                                  f'value={MAX_NUMBER}')
+        raise NumberTooLargeError(f"Too Large number maximum " f"value={MAX_NUMBER}")
 
     def _dosomik_to_bengali_word(self, number):
-        word = ''
+        word = ""
         for i in str(number):
-            word += ' ' + AKOK[int(i)]
+            word += " " + AKOK[int(i)]
         return word
 
     def _number_to_bengali_word(self, number):
         if number == 0:
-            return 'শূন্য'
+            return "শূন্য"
 
-        words = ''
+        words = ""
 
-        if number >= 10 ** 7:
-            words += self._number_to_bengali_word(number // 10 ** 7) + KOTI
-            number %= 10 ** 7
+        if number >= 10**7:
+            words += self._number_to_bengali_word(number // 10**7) + KOTI
+            number %= 10**7
 
-        if number >= 10 ** 5:
-            words += self._number_to_bengali_word(number // 10 ** 5) + LAKH
-            number %= 10 ** 5
+        if number >= 10**5:
+            words += self._number_to_bengali_word(number // 10**5) + LAKH
+            number %= 10**5
 
         if number >= 1000:
             words += self._number_to_bengali_word(number // 1000) + HAZAR
             number %= 1000
 
         if number >= 100:
-            words += AKOK[number // 100] + 'শত '
+            words += AKOK[number // 100] + "শত "
             number %= 100
 
         if 10 <= number <= 99:
-            words += DOSOK[number - 10] + ' '
+            words += DOSOK[number - 10] + " "
             number = 0
 
         if 0 < number < 10:
-            words += AKOK[number] + ' '
+            words += AKOK[number] + " "
 
         return words.strip()
 
-    def to_currency(self, val, currency='BDT', cents=True, separator=',',
-                    adjective=False):
+    def to_currency(
+        self, val, currency="BDT", cents=True, separator=",", adjective=False
+    ):
         """
         This function represent a number to word in bangla taka and paisa.
         example:
@@ -135,19 +227,18 @@ class Num2Word_BN:
         """
         # Check for too large numbers first
         if abs(val) >= MAX_NUMBER:
-            raise NumberTooLargeError(
-                f"Number is too large. Max: {MAX_NUMBER}"
-            )
+            raise NumberTooLargeError(f"Number is too large. Max: {MAX_NUMBER}")
 
         # Check if value has fractional cents
         decimal_val = Decimal(str(val))
         has_fractional_cents = (decimal_val * 100) % 1 != 0
 
         # Handle integers specially - just add currency name without paisa
+        # Only pure integers, NOT floats that happen to be whole numbers
         if isinstance(val, int):
             number = self.str_to_number(val)
             self._is_smaller_than_max_number(number)
-            return f'{self._number_to_bengali_word(int(number))} টাকা'.strip()
+            return f"{self._number_to_bengali_word(int(number))} টাকা".strip()
 
         # For floats, include paisa
         dosomik_word = None
@@ -157,16 +248,16 @@ class Num2Word_BN:
 
         # Always show paisa for floats, even if it's zero
         if decimal_part == 0:
-            dosomik_word = ' শূন্য পয়সা'  # "zero paisa" in Bengali
+            dosomik_word = " শূন্য পয়সা"  # "zero paisa" in Bengali
         elif decimal_part > 0:
             if has_fractional_cents:
                 # Handle fractional paisa using to_cardinal for fractional decimal values
                 fractional_paisa = float(decimal_part)
-                dosomik_word = f' {self.to_cardinal(fractional_paisa)} পয়সা'
+                dosomik_word = f" {self.to_cardinal(fractional_paisa)} পয়সা"
             else:
-                dosomik_word = f' {self._number_to_bengali_word(decimal_part)} পয়সা'
+                dosomik_word = f" {self._number_to_bengali_word(decimal_part)} পয়সা"
 
-        words = f'{self._number_to_bengali_word(number)} টাকা'
+        words = f"{self._number_to_bengali_word(number)} টাকা"
 
         if dosomik_word:
             return (words + dosomik_word).strip()
@@ -186,7 +277,7 @@ class Num2Word_BN:
         is_negative = False
         if isinstance(number, (int, float, Decimal)) and number < 0:
             is_negative = True
-        elif isinstance(number, str) and number.strip().startswith('-'):
+        elif isinstance(number, str) and number.strip().startswith("-"):
             is_negative = True
 
         dosomik_word = None
@@ -195,7 +286,9 @@ class Num2Word_BN:
         self._is_smaller_than_max_number(number)
 
         if decimal_part > 0:
-            dosomik_word = f' দশমিক{self._dosomik_to_bengali_word(decimal_part)}'  # noqa: E501
+            dosomik_word = (
+                f" দশমিক{self._dosomik_to_bengali_word(decimal_part)}"  # noqa: E501
+            )
 
         words = self._number_to_bengali_word(number)
 
@@ -205,7 +298,7 @@ class Num2Word_BN:
             result = words.strip()
 
         if is_negative:
-            result = self.negword + ' ' + result
+            result = self.negword + " " + result
         return result
 
     def to_ordinal(self, number):
@@ -226,9 +319,9 @@ class Num2Word_BN:
             return RANKING[number]
         else:
             rank = self.to_cardinal(int(abs(number)))
-            if rank.endswith('ত'):
-                return rank + 'ম'
-            return rank + 'তম'
+            if rank.endswith("ত"):
+                return rank + "ম"
+            return rank + "তম"
 
     def to_year(self, number):
         """
@@ -239,4 +332,4 @@ class Num2Word_BN:
         and so on.
         """
         self._is_smaller_than_max_number(number)
-        return self.to_cardinal(int(abs(number))) + ' সাল'
+        return self.to_cardinal(int(abs(number))) + " সাল"

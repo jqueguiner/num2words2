@@ -187,7 +187,7 @@ class Num2Word_BE(Num2Word_Base):
     def to_cardinal(self, number, gender="m"):
         n = str(number).replace(",", ".")
         if "." in n:
-            is_negative = n.startswith('-')
+            is_negative = n.startswith("-")
             abs_n = n[1:] if is_negative else n
             left, right = abs_n.split(".")
             if set(right) == {"0"}:
@@ -228,9 +228,7 @@ class Num2Word_BE(Num2Word_Base):
         try:
             if len(outwords) > 1:
                 if outwords[-2] in self.ords_adjective:
-                    outwords[-2] = self.ords_adjective.get(
-                        outwords[-2], outwords[-2]
-                    )
+                    outwords[-2] = self.ords_adjective.get(outwords[-2], outwords[-2])
                 elif outwords[-2] == "дзесяць":
                     outwords[-2] = outwords[-2][:-1] + "і"
             if len(outwords) == 3:
@@ -239,9 +237,7 @@ class Num2Word_BE(Num2Word_Base):
             lastword = self.ords[lastword]
         except KeyError:
             if lastword[:-3] in self.ords_adjective:
-                lastword = (
-                    self.ords_adjective.get(lastword[:-3], lastword) + "соты"
-                )
+                lastword = self.ords_adjective.get(lastword[:-3], lastword) + "соты"
             elif lastword[-7:] == "дзесяць":
                 lastword = "дзясяты"
             elif lastword[-9:] == "семдзесят":
@@ -289,9 +285,7 @@ class Num2Word_BE(Num2Word_Base):
         ):
             new_outwords = []
             for _w in outwords:
-                replacement = next(
-                    (x for x in TWENTIES_ORD if x[0] in _w), None
-                )
+                replacement = next((x for x in TWENTIES_ORD if x[0] in _w), None)
                 if replacement:
                     _w = _w.replace(replacement[0], replacement[1])
                 new_outwords.append(_w)

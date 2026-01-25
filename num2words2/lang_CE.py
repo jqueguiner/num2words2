@@ -381,7 +381,11 @@ class Num2Word_CE(Num2Word_EUR):
 
         # Handle negative integers
         elif number < 0:
-            return self.negword + " " + self.to_cardinal(abs(number), clazz=clazz, case=case)
+            return (
+                self.negword
+                + " "
+                + self.to_cardinal(abs(number), clazz=clazz, case=case)
+            )
 
         elif number < 20:
             return self.makecase(number, case, clazz)
@@ -399,9 +403,7 @@ class Num2Word_CE(Num2Word_EUR):
             hundreds = number // 100
             tens = number % 100
             if hundreds > 1:
-                hundert = (
-                    CARDINALS[hundreds]["attr"].replace("д*", clazz) + " "
-                )
+                hundert = CARDINALS[hundreds]["attr"].replace("д*", clazz) + " "
             else:
                 hundert = ""
             if tens != 0:
@@ -480,11 +482,13 @@ class Num2Word_CE(Num2Word_EUR):
         """
         # Check if value has fractional cents
         from decimal import Decimal
+
         decimal_val = Decimal(str(val))
         has_fractional_cents = (decimal_val * 100) % 1 != 0
 
-        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
-                                                        keep_precision=has_fractional_cents)
+        left, right, is_negative = parse_currency_parts(
+            val, is_int_with_cents=False, keep_precision=has_fractional_cents
+        )
 
         try:
             cr1, cr2 = self.CURRENCY_FORMS[currency]
@@ -500,6 +504,7 @@ class Num2Word_CE(Num2Word_EUR):
         money_str = self._money_verbose(left, currency, case)
         # Handle fractional cents
         from decimal import Decimal
+
         if isinstance(right, Decimal):
             # Convert fractional cents (e.g., 65.3 cents)
             if cents:

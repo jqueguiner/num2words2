@@ -22,12 +22,12 @@ from .lang_EUR import Num2Word_EUR
 
 class Num2Word_FR(Num2Word_EUR):
     CURRENCY_FORMS = {
-        'EUR': (('euro', 'euros'), ('centime', 'centimes')),
-        'USD': (('dollar', 'dollars'), ('cent', 'cents')),
-        'FRF': (('franc', 'francs'), ('centime', 'centimes')),
-        'GBP': (('livre', 'livres'), ('penny', 'pence')),
-        'CNY': (('yuan', 'yuans'), ('fen', 'jiaos')),
-        'JPY': (('yen', 'yens'), ('sen', 'sens')),
+        "EUR": (("euro", "euros"), ("centime", "centimes")),
+        "USD": (("dollar", "dollars"), ("cent", "cents")),
+        "FRF": (("franc", "francs"), ("centime", "centimes")),
+        "GBP": (("livre", "livres"), ("penny", "pence")),
+        "CNY": (("yuan", "yuans"), ("fen", "jiaos")),
+        "JPY": (("yen", "yens"), ("sen", "sens")),
     }
 
     def setup(self):
@@ -35,21 +35,43 @@ class Num2Word_FR(Num2Word_EUR):
 
         self.negword = "moins "
         self.pointword = "virgule"
-        self.errmsg_nonnum = (
-            u"Seulement des nombres peuvent être convertis en mots."
-        )
+        self.errmsg_nonnum = "Seulement des nombres peuvent être convertis en mots."
         self.errmsg_toobig = (
-            u"Nombre trop grand pour être converti en mots (abs(%s) > %s)."
+            "Nombre trop grand pour être converti en mots (abs(%s) > %s)."
         )
         self.exclude_title = ["et", "virgule", "moins"]
-        self.mid_numwords = [(1000, "mille"), (100, "cent"),
-                             (80, "quatre-vingts"), (60, "soixante"),
-                             (50, "cinquante"), (40, "quarante"),
-                             (30, "trente")]
-        self.low_numwords = ["vingt", "dix-neuf", "dix-huit", "dix-sept",
-                             "seize", "quinze", "quatorze", "treize", "douze",
-                             "onze", "dix", "neuf", "huit", "sept", "six",
-                             "cinq", "quatre", "trois", "deux", "un", "zéro"]
+        self.mid_numwords = [
+            (1000, "mille"),
+            (100, "cent"),
+            (80, "quatre-vingts"),
+            (60, "soixante"),
+            (50, "cinquante"),
+            (40, "quarante"),
+            (30, "trente"),
+        ]
+        self.low_numwords = [
+            "vingt",
+            "dix-neuf",
+            "dix-huit",
+            "dix-sept",
+            "seize",
+            "quinze",
+            "quatorze",
+            "treize",
+            "douze",
+            "onze",
+            "dix",
+            "neuf",
+            "huit",
+            "sept",
+            "six",
+            "cinq",
+            "quatre",
+            "trois",
+            "deux",
+            "un",
+            "zéro",
+        ]
         self.ords = {
             "cinq": "cinquième",
             "neuf": "neuvième",
@@ -62,13 +84,13 @@ class Num2Word_FR(Num2Word_EUR):
             if nnum < 1000000:
                 return next
         else:
-            if (not (cnum - 80) % 100
-                or (not cnum % 100 and cnum < 1000))\
-                    and nnum < 1000000 \
-                    and ctext[-1] == "s":
+            if (
+                (not (cnum - 80) % 100 or (not cnum % 100 and cnum < 1000))
+                and nnum < 1000000
+                and ctext[-1] == "s"
+            ):
                 ctext = ctext[:-1]
-            if cnum < 1000 and nnum != 1000 and \
-                    ntext[-1] != "s" and not nnum % 100:
+            if cnum < 1000 and nnum != 1000 and ntext[-1] != "s" and not nnum % 100:
                 ntext += "s"
 
         if nnum < cnum < 100:
@@ -89,7 +111,7 @@ class Num2Word_FR(Num2Word_EUR):
         word = self.to_cardinal(value)
         for src, repl in self.ords.items():
             if word.endswith(src):
-                word = word[:-len(src)] + repl
+                word = word[: -len(src)] + repl
                 break
         else:
             if word[-1] == "e":
@@ -103,8 +125,13 @@ class Num2Word_FR(Num2Word_EUR):
         out += "er" if value == 1 else "me"
         return out
 
-    def to_currency(self, val, currency='EUR', cents=True, separator=' et',
-                    adjective=False):
+    def to_year(self, val, suffix=None, longval=True):
+        """Convert number to year representation."""
+        return self.to_cardinal(int(val))
+
+    def to_currency(
+        self, val, currency="EUR", cents=True, separator=" et", adjective=False
+    ):
         # Handle integers specially - just add currency name without cents
         if isinstance(val, int):
             try:
@@ -124,10 +151,14 @@ class Num2Word_FR(Num2Word_EUR):
             else:
                 currency_str = cr1[1] if len(cr1) > 1 else cr1[0]  # plural
 
-            return u'%s%s %s' % (minus_str, money_str, currency_str)
+            return "%s%s %s" % (minus_str, money_str, currency_str)
 
         # For floats, use the original implementation
         result = super(Num2Word_FR, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator,
-            adjective=adjective)
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
+        )
         return result

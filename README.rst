@@ -32,14 +32,7 @@ Otherwise, you can download the source package and then execute::
 
     python setup.py install
 
-The test suite in this library is new, so it's rather thin, but it can be run with::
 
-    python setup.py test
-
-To run the full CI test suite which includes linting and multiple python environments::
-
-    pip install tox
-    tox
 
 Development Setup
 -----------------
@@ -62,6 +55,63 @@ This will automatically format and lint your code before each commit using:
 * flake8 - style and quality checks
 * trailing-whitespace removal
 * end-of-file fixing
+
+
+Testing
+-------
+
+The library uses `pytest` for testing. First, install the development dependencies:
+
+.. code-block:: bash
+
+    make dev-install
+
+Then, you can run the test suite using several methods:
+
+*   **Run basic tests:** This runs tests with your current Python environment.
+
+    .. code-block:: bash
+
+        make test
+
+*   **Run with Tox:** This runs tests against all supported Python versions, which is the standard for CI.
+
+    .. code-block:: bash
+
+        tox
+
+Generating End-to-End Tests with LLMs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The repository includes a powerful script to generate high-quality, realistic test cases using Large Language Models (LLMs). This helps ensure accuracy across multiple languages and complex scenarios.
+
+**What it does:** The ``tests/scripts/generate_llm_tests.py`` script uses an LLM (like GPT-4o) to create sentences containing numbers, dates, and currencies, and then generates the expected word-for-word conversion.
+
+**Requirements:**
+
+*   An OpenAI API key. You must set it as an environment variable: ``export OPENAI_API_KEY='your-key-here'``
+
+**How to Use:**
+
+To generate 10 new test sentences for French and Spanish, you can run:
+
+.. code-block:: bash
+
+    python tests/scripts/generate_llm_tests.py --languages fr,es --samples 10
+
+The new tests will be appended to ``tests/data/e2e_test_sentences.csv``.
+
+**Key Options:**
+
+*   ``--languages``: Comma-separated list of language codes (e.g., ``en_IN,de,it``).
+*   ``--samples``: Number of samples to generate per language.
+*   ``--mode``: Use ``sentences`` for full sentences or ``numbers`` for direct number-to-word conversions.
+*   ``--model``: The OpenAI model to use (e.g., ``gpt-4o``, ``gpt-4o-mini``).
+*   ``--output``: Specify a different output file.
+*   ``--overwrite``: Overwrite the output file instead of appending.
+
+This tool is essential for expanding test coverage and ensuring the library's robustness.
+
 
 Usage
 -----

@@ -4,209 +4,209 @@ import math
 
 from .lang_EUR import Num2Word_EUR
 
-GENERIC_DOLLARS = ('dòlar', 'dòlars')
-GENERIC_CENTS = ('centau', 'centaus')
+GENERIC_DOLLARS = ("dòlar", "dòlars")
+GENERIC_CENTS = ("centau", "centaus")
 CURRENCIES_UNA = (
-    'SLL',
-    'SEK',
-    'NOK',
-    'CZK',
-    'DKK',
-    'ISK',
-    'SKK',
-    'GBP',
-    'CYP',
-    'EGP',
-    'FKP',
-    'GIP',
-    'LBP',
-    'SDG',
-    'SHP',
-    'SSP',
-    'SYP',
-    'INR',
-    'IDR',
-    'LKR',
-    'MUR',
-    'NPR',
-    'PKR',
-    'SCR',
-    'ESP',
-    'TRY',
-    'ITL',
+    "SLL",
+    "SEK",
+    "NOK",
+    "CZK",
+    "DKK",
+    "ISK",
+    "SKK",
+    "GBP",
+    "CYP",
+    "EGP",
+    "FKP",
+    "GIP",
+    "LBP",
+    "SDG",
+    "SHP",
+    "SSP",
+    "SYP",
+    "INR",
+    "IDR",
+    "LKR",
+    "MUR",
+    "NPR",
+    "PKR",
+    "SCR",
+    "ESP",
+    "TRY",
+    "ITL",
 )
-CENTS_UNA = ('EGP', 'JOD', 'LBP', 'SDG', 'SSP', 'SYP')
+CENTS_UNA = ("EGP", "JOD", "LBP", "SDG", "SSP", "SYP")
 
 
 class Num2Word_CA(Num2Word_EUR):
     CURRENCY_FORMS = {
-        'EUR': (('euro', 'euros'), ('cèntim', 'cèntims')),
-        'ESP': (('pesseta', 'pessetes'), ('cèntim', 'cèntims')),
-        'USD': (GENERIC_DOLLARS, ('centau', 'centaus')),
-        'PEN': (('sol', 'sols'), ('cèntim', 'cèntims')),
-        'CRC': (('colón', 'colons'), GENERIC_CENTS),
-        'AUD': (GENERIC_DOLLARS, GENERIC_CENTS),
-        'CAD': (GENERIC_DOLLARS, GENERIC_CENTS),
-        'GBP': (('lliura', 'lliures'), ('penic', 'penics')),
-        'RUB': (('ruble', 'rubles'), ('copec', 'copecs')),
-        'SEK': (('corona', 'corones'), ('öre', 'öre')),
-        'NOK': (('corona', 'corones'), ('øre', 'øre')),
-        'PLN': (('zloty', 'zlotys'), ('grosz', 'groszy')),
-        'MXN': (('peso', 'pesos'), GENERIC_CENTS),
-        'RON': (('leu', 'lei'), ('ban', 'bani')),
-        'INR': (('rupia', 'rupies'), ('paisa', 'paise')),
-        'HUF': (('fòrint', 'fòrints'), ('fillér', 'fillérs')),
-        'FRF': (('franc', 'francs'), ('cèntim', 'cèntims')),
-        'CNY': (('iuan', 'iuans'), ('fen', 'jiao')),
-        'CZK': (('corona', 'corones'), ('haléř', 'haléřů')),
-        'NIO': (('córdoba', 'córdobas'), GENERIC_CENTS),
-        'VES': (('bolívar', 'bolívars'), ('cèntim', 'cèntims')),
-        'BRL': (('real', 'reals'), GENERIC_CENTS),
-        'CHF': (('franc', 'francs'), ('cèntim', 'cèntims')),
-        'JPY': (('ien', 'iens'), ('sen', 'sen')),
-        'KRW': (('won', 'wons'), ('jeon', 'jeon')),
-        'KPW': (('won', 'wons'), ('chŏn', 'chŏn')),
-        'TRY': (('lira', 'lires'), ('kuruş', 'kuruş')),
-        'ZAR': (('rand', 'rands'), ('cèntim', 'cèntims')),
-        'KZT': (('tenge', 'tenge'), ('tin', 'tin')),
-        'UAH': (('hrívnia', 'hrívnies'), ('kopiika', 'kopíok')),
-        'THB': (('baht', 'bahts'), ('satang', 'satang')),
-        'AED': (('dirham', 'dirhams'), ('fils', 'fulūs')),
-        'AFN': (('afgani', 'afganis'), ('puli', 'puls')),
-        'ALL': (('lek', 'lekë'), ('qqindarka', 'qindarkë')),
-        'AMD': (('dram', 'drams'), ('luma', 'lumas')),
-        'ANG': (('florí', 'florins'), ('cèntim', 'cèntims')),
-        'AOA': (('kwanza', 'kwanzes'), ('cèntim', 'cèntims')),
-        'ARS': (('peso', 'pesos'), GENERIC_CENTS),
-        'AWG': (('florí', 'florins'), GENERIC_CENTS),
-        'AZN': (('manat', 'manats'), ('qəpik', 'qəpik')),
-        'BBD': (GENERIC_DOLLARS, GENERIC_CENTS),
-        'BDT': (('taka', 'taka'), ('poisha', 'poisha')),
-        'BGN': (('lev', 'leva'), ('stotinka', 'stotinki')),
-        'BHD': (('dinar', 'dinars'), ('fils', 'fulūs')),
-        'BIF': (('franc', 'francs'), ('cèntim', 'cèntims')),
-        'BMD': (GENERIC_DOLLARS, GENERIC_CENTS),
-        'BND': (GENERIC_DOLLARS, GENERIC_CENTS),
-        'BOB': (('boliviano', 'bolivianos'), GENERIC_CENTS),
-        'BSD': (GENERIC_DOLLARS, GENERIC_CENTS),
-        'BTN': (('ngultrum', 'ngultrums'), ('chetrum', 'chetrums')),
-        'BWP': (('pula', 'pula'), ('thebe', 'thebe')),
-        'BYN': (('ruble', 'rubles'), ('copec', 'copecs')),
-        'BYR': (('ruble', 'rubles'), ('copec', 'copecs')),
-        'BZD': (GENERIC_DOLLARS, ('cèntim', 'cèntims')),
-        'CDF': (('franc', 'francs'), ('cèntim', 'cèntims')),
-        'CLP': (('peso', 'pesos'), GENERIC_CENTS),
-        'COP': (('peso', 'pesos'), GENERIC_CENTS),
-        'CUP': (('peso', 'pesos'), GENERIC_CENTS),
-        'CVE': (('escut', 'escuts'), GENERIC_CENTS),
-        'CYP': (('lliura', 'lliures'), ('cèntim', 'cèntims')),
-        'DJF': (('franc', 'francs'), ('cèntim', 'cèntims')),
-        'DKK': (('corona', 'corones'), ('øre', 'øre')),
-        'DOP': (('peso', 'pesos'), GENERIC_CENTS),
-        'DZD': (('dinar', 'dinars'), ('cèntim', 'cèntims')),
-        'ECS': (('sucre', 'sucres'), GENERIC_CENTS),
-        'EGP': (('lliura', 'lliures'), ('piastre', 'piastres')),
-        'ERN': (('nakfa', 'nakfes'), ('cèntim', 'cèntims')),
-        'ETB': (('birr', 'birr'), ('cèntim', 'cèntims')),
-        'FJD': (GENERIC_DOLLARS, GENERIC_CENTS),
-        'FKP': (('lliura', 'lliures'), ('penic', 'penics')),
-        'GEL': (('lari', 'laris'), ('tetri', 'tetri')),
-        'GHS': (('cedi', 'cedis'), ('pesewa', 'pesewas')),
-        'GIP': (('lliura', 'lliures'), ('penic', 'penics')),
-        'GMD': (('dalasi', 'dalasis'), ('butut', 'bututs')),
-        'GNF': (('franc', 'francs'), ('cèntim', 'cèntims')),
-        'GTQ': (('quetzal', 'quetzals'), GENERIC_CENTS),
-        'GYD': (GENERIC_DOLLARS, GENERIC_CENTS),
-        'HKD': (GENERIC_DOLLARS, GENERIC_CENTS),
-        'HNL': (('lempira', 'lempires'), GENERIC_CENTS),
-        'HRK': (('kuna', 'kuna'), ('lipa', 'lipa')),
-        'HTG': (('gourde', 'gourdes'), ('cèntim', 'cèntims')),
-        'IDR': (('rúpia', 'rúpies'), ('cèntim', 'cèntims')),
-        'ILS': (('xéquel', 'xéquels'), ('agorà', 'agorot')),
-        'IQD': (('dinar', 'dinars'), ('fils', 'fils')),
-        'IRR': (('rial', 'rials'), ('dinar', 'dinars')),
-        'ISK': (('corona', 'corones'), ('eyrir', 'aurar')),
-        'ITL': (('lira', 'lires'), ('cèntim', 'cèntims')),
-        'JMD': (GENERIC_DOLLARS, ('cèntim', 'cèntims')),
-        'JOD': (('dinar', 'dinars'), ('piastra', 'piastres')),
-        'KES': (('xiling', 'xílings'), ('cèntim', 'cèntims')),
-        'KGS': (('som', 'som'), ('tyiyn', 'tyiyn')),
-        'KHR': (('riel', 'riels'), ('cèntim', 'cèntims')),
-        'KMF': (('franc', 'francs'), ('cèntim', 'cèntims')),
-        'KWD': (('dinar', 'dinars'), ('fils', 'fils')),
-        'KYD': (GENERIC_DOLLARS, ('cèntim', 'cèntims')),
-        'LAK': (('kip', 'kips'), ('at', 'at')),
-        'LBP': (('lliura', 'lliures'), ('piastra', 'piastres')),
-        'LKR': (('rúpia', 'rúpies'), ('cèntim', 'cèntims')),
-        'LRD': (GENERIC_DOLLARS, ('cèntim', 'cèntims')),
-        'LSL': (('loti', 'maloti'), ('sente', 'lisente')),
-        'LTL': (('lita', 'litai'), ('cèntim', 'cèntims')),
-        'LYD': (('dinar', 'dinars'), ('dírham', 'dírhams')),
-        'MAD': (('dírham', 'dirhams'), ('cèntim', 'cèntims')),
-        'MDL': (('leu', 'lei'), ('ban', 'bani')),
-        'MGA': (('ariary', 'ariary'), ('iraimbilanja', 'iraimbilanja')),
-        'MKD': (('denar', 'denari'), ('deni', 'deni')),
-        'MMK': (('kyat', 'kyats'), ('pya', 'pyas')),
-        'MNT': (('tögrög', 'tögrög'), ('möngö', 'möngö')),
-        'MOP': (('pataca', 'pataques'), ('avo', 'avos')),
-        'MRO': (('ouguiya', 'ouguiya'), ('khoums', 'khoums')),
-        'MRU': (('ouguiya', 'ouguiya'), ('khoums', 'khoums')),
-        'MUR': (('rupia', 'rúpies'), ('cèntim', 'cèntims')),
-        'MVR': (('rufiyaa', 'rufiyaa'), ('laari', 'laari')),
-        'MWK': (('kwacha', 'kwacha'), ('tambala', 'tambala')),
-        'MYR': (('ringgit', 'ringgits'), ('sen', 'sens')),
-        'MZN': (('metical', 'meticals'), GENERIC_CENTS),
-        'NAD': (GENERIC_DOLLARS, ('cèntim', 'cèntims')),
-        'NGN': (('naira', 'naires'), ('kobo', 'kobos')),
-        'NPR': (('rupia', 'rupies'), ('paisa', 'paises')),
-        'NZD': (GENERIC_DOLLARS, GENERIC_CENTS),
-        'OMR': (('rial', 'rials'), ('baisa', 'baisa')),
-        'PAB': (GENERIC_DOLLARS, ('centésimo', 'centésimos')),
-        'PGK': (('kina', 'kina'), ('toea', 'toea')),
-        'PHP': (('peso', 'pesos'), GENERIC_CENTS),
-        'PKR': (('rupia', 'rupies'), ('paisa', 'paise')),
-        'PLZ': (('zloty', 'zlotys'), ('grosz', 'groszy')),
-        'PYG': (('guaraní', 'guaranís'), ('cèntim', 'cèntims')),
-        'QAR': (('rial', 'rials'), ('dírham', 'dírhams')),
-        'QTQ': (('quetzal', 'quetzals'), GENERIC_CENTS),
-        'RSD': (('dinar', 'dinars'), ('para', 'para')),
-        'RUR': (('ruble', 'rubles'), ('copec', 'copecs')),
-        'RWF': (('franc', 'francs'), ('cèntim', 'cèntims')),
-        'SAR': (('riyal', 'riyals'), ('hàl·lala', 'hàl·lalat')),
-        'SBD': (GENERIC_DOLLARS, ('cèntim', 'cèntims')),
-        'SCR': (('rupia', 'rupies'), ('cèntim', 'cèntims')),
-        'SDG': (('lliura', 'lliures'), ('piastre', 'piastres')),
-        'SGD': (GENERIC_DOLLARS, ('cèntim', 'cèntims')),
-        'SHP': (('lliura', 'lliures'), ('penic', 'penics')),
-        'SLL': (('leonE', 'leones'), ('cèntim', 'cèntims')),
-        'SRD': (GENERIC_DOLLARS, ('cèntim', 'cèntims')),
-        'SSP': (('lliura', 'lliures'), ('piastre', 'piastres')),
-        'STD': (('dobra', 'dobrAs'), ('cèntim', 'cèntims')),
-        'SVC': (('colón', 'colons'), GENERIC_CENTS),
-        'SYP': (('lliura', 'lliures'), ('piastre', 'piastres')),
-        'SZL': (('lilangeni', 'emalangeni'), ('cèntim', 'cèntims')),
-        'TJS': (('somoni', 'somoni'), ('diram', 'diram')),
-        'TMT': (('manat', 'manats'), ('teňňesi', 'teňňesi')),
-        'TND': (('dinar', 'dinars'), ('mil·lim', 'mil·limat')),
-        'TOP': (('paanga', 'paangas'), ('seniti', 'seniti')),
-        'TTD': (GENERIC_DOLLARS, ('cèntim', 'cèntims')),
-        'TWD': (('nou dòlar', 'nous dòlars'), ('fen', 'fen')),
-        'TZS': (('xíling', 'xílings'), ('cèntim', 'cèntims')),
-        'UGX': (('xíling', 'xílings'), ('cèntim', 'cèntims')),
-        'UYU': (('peso', 'pesos'), ('centèsim', 'centèsims')),
-        'UZS': (('som', 'som'), ('tiyin', 'tiyin')),
-        'VND': (('dong', 'dongs'), ('xu', 'xu')),
-        'VUV': (('vatu', 'vatus'), ('cèntim', 'cèntims')),
-        'WST': (('tala', 'tala'), ('sene', 'sene')),
-        'XAF': (('franc CFA', 'francs CFA'), ('cèntim', 'cèntims')),
-        'XCD': (GENERIC_DOLLARS, ('cèntim', 'cèntims')),
-        'XOF': (('franc CFA', 'francs CFA'), ('cèntim', 'cèntims')),
-        'XPF': (('franc CFP', 'francs CFP'), ('cèntim', 'cèntims')),
-        'YER': (('rial', 'rials'), ('fils', 'fils')),
-        'YUM': (('dinar', 'dinars'), ('para', 'para')),
-        'ZMW': (('kwacha', 'kwacha'), ('ngwee', 'ngwee')),
-        'ZWL': (GENERIC_DOLLARS, ('cèntim', 'cèntims')),
-        'ZWL': (GENERIC_DOLLARS, ('cèntim', 'cèntims')),
+        "EUR": (("euro", "euros"), ("cèntim", "cèntims")),
+        "ESP": (("pesseta", "pessetes"), ("cèntim", "cèntims")),
+        "USD": (GENERIC_DOLLARS, ("centau", "centaus")),
+        "PEN": (("sol", "sols"), ("cèntim", "cèntims")),
+        "CRC": (("colón", "colons"), GENERIC_CENTS),
+        "AUD": (GENERIC_DOLLARS, GENERIC_CENTS),
+        "CAD": (GENERIC_DOLLARS, GENERIC_CENTS),
+        "GBP": (("lliura", "lliures"), ("penic", "penics")),
+        "RUB": (("ruble", "rubles"), ("copec", "copecs")),
+        "SEK": (("corona", "corones"), ("öre", "öre")),
+        "NOK": (("corona", "corones"), ("øre", "øre")),
+        "PLN": (("zloty", "zlotys"), ("grosz", "groszy")),
+        "MXN": (("peso", "pesos"), GENERIC_CENTS),
+        "RON": (("leu", "lei"), ("ban", "bani")),
+        "INR": (("rupia", "rupies"), ("paisa", "paise")),
+        "HUF": (("fòrint", "fòrints"), ("fillér", "fillérs")),
+        "FRF": (("franc", "francs"), ("cèntim", "cèntims")),
+        "CNY": (("iuan", "iuans"), ("fen", "jiao")),
+        "CZK": (("corona", "corones"), ("haléř", "haléřů")),
+        "NIO": (("córdoba", "córdobas"), GENERIC_CENTS),
+        "VES": (("bolívar", "bolívars"), ("cèntim", "cèntims")),
+        "BRL": (("real", "reals"), GENERIC_CENTS),
+        "CHF": (("franc", "francs"), ("cèntim", "cèntims")),
+        "JPY": (("ien", "iens"), ("sen", "sen")),
+        "KRW": (("won", "wons"), ("jeon", "jeon")),
+        "KPW": (("won", "wons"), ("chŏn", "chŏn")),
+        "TRY": (("lira", "lires"), ("kuruş", "kuruş")),
+        "ZAR": (("rand", "rands"), ("cèntim", "cèntims")),
+        "KZT": (("tenge", "tenge"), ("tin", "tin")),
+        "UAH": (("hrívnia", "hrívnies"), ("kopiika", "kopíok")),
+        "THB": (("baht", "bahts"), ("satang", "satang")),
+        "AED": (("dirham", "dirhams"), ("fils", "fulūs")),
+        "AFN": (("afgani", "afganis"), ("puli", "puls")),
+        "ALL": (("lek", "lekë"), ("qqindarka", "qindarkë")),
+        "AMD": (("dram", "drams"), ("luma", "lumas")),
+        "ANG": (("florí", "florins"), ("cèntim", "cèntims")),
+        "AOA": (("kwanza", "kwanzes"), ("cèntim", "cèntims")),
+        "ARS": (("peso", "pesos"), GENERIC_CENTS),
+        "AWG": (("florí", "florins"), GENERIC_CENTS),
+        "AZN": (("manat", "manats"), ("qəpik", "qəpik")),
+        "BBD": (GENERIC_DOLLARS, GENERIC_CENTS),
+        "BDT": (("taka", "taka"), ("poisha", "poisha")),
+        "BGN": (("lev", "leva"), ("stotinka", "stotinki")),
+        "BHD": (("dinar", "dinars"), ("fils", "fulūs")),
+        "BIF": (("franc", "francs"), ("cèntim", "cèntims")),
+        "BMD": (GENERIC_DOLLARS, GENERIC_CENTS),
+        "BND": (GENERIC_DOLLARS, GENERIC_CENTS),
+        "BOB": (("boliviano", "bolivianos"), GENERIC_CENTS),
+        "BSD": (GENERIC_DOLLARS, GENERIC_CENTS),
+        "BTN": (("ngultrum", "ngultrums"), ("chetrum", "chetrums")),
+        "BWP": (("pula", "pula"), ("thebe", "thebe")),
+        "BYN": (("ruble", "rubles"), ("copec", "copecs")),
+        "BYR": (("ruble", "rubles"), ("copec", "copecs")),
+        "BZD": (GENERIC_DOLLARS, ("cèntim", "cèntims")),
+        "CDF": (("franc", "francs"), ("cèntim", "cèntims")),
+        "CLP": (("peso", "pesos"), GENERIC_CENTS),
+        "COP": (("peso", "pesos"), GENERIC_CENTS),
+        "CUP": (("peso", "pesos"), GENERIC_CENTS),
+        "CVE": (("escut", "escuts"), GENERIC_CENTS),
+        "CYP": (("lliura", "lliures"), ("cèntim", "cèntims")),
+        "DJF": (("franc", "francs"), ("cèntim", "cèntims")),
+        "DKK": (("corona", "corones"), ("øre", "øre")),
+        "DOP": (("peso", "pesos"), GENERIC_CENTS),
+        "DZD": (("dinar", "dinars"), ("cèntim", "cèntims")),
+        "ECS": (("sucre", "sucres"), GENERIC_CENTS),
+        "EGP": (("lliura", "lliures"), ("piastre", "piastres")),
+        "ERN": (("nakfa", "nakfes"), ("cèntim", "cèntims")),
+        "ETB": (("birr", "birr"), ("cèntim", "cèntims")),
+        "FJD": (GENERIC_DOLLARS, GENERIC_CENTS),
+        "FKP": (("lliura", "lliures"), ("penic", "penics")),
+        "GEL": (("lari", "laris"), ("tetri", "tetri")),
+        "GHS": (("cedi", "cedis"), ("pesewa", "pesewas")),
+        "GIP": (("lliura", "lliures"), ("penic", "penics")),
+        "GMD": (("dalasi", "dalasis"), ("butut", "bututs")),
+        "GNF": (("franc", "francs"), ("cèntim", "cèntims")),
+        "GTQ": (("quetzal", "quetzals"), GENERIC_CENTS),
+        "GYD": (GENERIC_DOLLARS, GENERIC_CENTS),
+        "HKD": (GENERIC_DOLLARS, GENERIC_CENTS),
+        "HNL": (("lempira", "lempires"), GENERIC_CENTS),
+        "HRK": (("kuna", "kuna"), ("lipa", "lipa")),
+        "HTG": (("gourde", "gourdes"), ("cèntim", "cèntims")),
+        "IDR": (("rúpia", "rúpies"), ("cèntim", "cèntims")),
+        "ILS": (("xéquel", "xéquels"), ("agorà", "agorot")),
+        "IQD": (("dinar", "dinars"), ("fils", "fils")),
+        "IRR": (("rial", "rials"), ("dinar", "dinars")),
+        "ISK": (("corona", "corones"), ("eyrir", "aurar")),
+        "ITL": (("lira", "lires"), ("cèntim", "cèntims")),
+        "JMD": (GENERIC_DOLLARS, ("cèntim", "cèntims")),
+        "JOD": (("dinar", "dinars"), ("piastra", "piastres")),
+        "KES": (("xiling", "xílings"), ("cèntim", "cèntims")),
+        "KGS": (("som", "som"), ("tyiyn", "tyiyn")),
+        "KHR": (("riel", "riels"), ("cèntim", "cèntims")),
+        "KMF": (("franc", "francs"), ("cèntim", "cèntims")),
+        "KWD": (("dinar", "dinars"), ("fils", "fils")),
+        "KYD": (GENERIC_DOLLARS, ("cèntim", "cèntims")),
+        "LAK": (("kip", "kips"), ("at", "at")),
+        "LBP": (("lliura", "lliures"), ("piastra", "piastres")),
+        "LKR": (("rúpia", "rúpies"), ("cèntim", "cèntims")),
+        "LRD": (GENERIC_DOLLARS, ("cèntim", "cèntims")),
+        "LSL": (("loti", "maloti"), ("sente", "lisente")),
+        "LTL": (("lita", "litai"), ("cèntim", "cèntims")),
+        "LYD": (("dinar", "dinars"), ("dírham", "dírhams")),
+        "MAD": (("dírham", "dirhams"), ("cèntim", "cèntims")),
+        "MDL": (("leu", "lei"), ("ban", "bani")),
+        "MGA": (("ariary", "ariary"), ("iraimbilanja", "iraimbilanja")),
+        "MKD": (("denar", "denari"), ("deni", "deni")),
+        "MMK": (("kyat", "kyats"), ("pya", "pyas")),
+        "MNT": (("tögrög", "tögrög"), ("möngö", "möngö")),
+        "MOP": (("pataca", "pataques"), ("avo", "avos")),
+        "MRO": (("ouguiya", "ouguiya"), ("khoums", "khoums")),
+        "MRU": (("ouguiya", "ouguiya"), ("khoums", "khoums")),
+        "MUR": (("rupia", "rúpies"), ("cèntim", "cèntims")),
+        "MVR": (("rufiyaa", "rufiyaa"), ("laari", "laari")),
+        "MWK": (("kwacha", "kwacha"), ("tambala", "tambala")),
+        "MYR": (("ringgit", "ringgits"), ("sen", "sens")),
+        "MZN": (("metical", "meticals"), GENERIC_CENTS),
+        "NAD": (GENERIC_DOLLARS, ("cèntim", "cèntims")),
+        "NGN": (("naira", "naires"), ("kobo", "kobos")),
+        "NPR": (("rupia", "rupies"), ("paisa", "paises")),
+        "NZD": (GENERIC_DOLLARS, GENERIC_CENTS),
+        "OMR": (("rial", "rials"), ("baisa", "baisa")),
+        "PAB": (GENERIC_DOLLARS, ("centésimo", "centésimos")),
+        "PGK": (("kina", "kina"), ("toea", "toea")),
+        "PHP": (("peso", "pesos"), GENERIC_CENTS),
+        "PKR": (("rupia", "rupies"), ("paisa", "paise")),
+        "PLZ": (("zloty", "zlotys"), ("grosz", "groszy")),
+        "PYG": (("guaraní", "guaranís"), ("cèntim", "cèntims")),
+        "QAR": (("rial", "rials"), ("dírham", "dírhams")),
+        "QTQ": (("quetzal", "quetzals"), GENERIC_CENTS),
+        "RSD": (("dinar", "dinars"), ("para", "para")),
+        "RUR": (("ruble", "rubles"), ("copec", "copecs")),
+        "RWF": (("franc", "francs"), ("cèntim", "cèntims")),
+        "SAR": (("riyal", "riyals"), ("hàl·lala", "hàl·lalat")),
+        "SBD": (GENERIC_DOLLARS, ("cèntim", "cèntims")),
+        "SCR": (("rupia", "rupies"), ("cèntim", "cèntims")),
+        "SDG": (("lliura", "lliures"), ("piastre", "piastres")),
+        "SGD": (GENERIC_DOLLARS, ("cèntim", "cèntims")),
+        "SHP": (("lliura", "lliures"), ("penic", "penics")),
+        "SLL": (("leonE", "leones"), ("cèntim", "cèntims")),
+        "SRD": (GENERIC_DOLLARS, ("cèntim", "cèntims")),
+        "SSP": (("lliura", "lliures"), ("piastre", "piastres")),
+        "STD": (("dobra", "dobrAs"), ("cèntim", "cèntims")),
+        "SVC": (("colón", "colons"), GENERIC_CENTS),
+        "SYP": (("lliura", "lliures"), ("piastre", "piastres")),
+        "SZL": (("lilangeni", "emalangeni"), ("cèntim", "cèntims")),
+        "TJS": (("somoni", "somoni"), ("diram", "diram")),
+        "TMT": (("manat", "manats"), ("teňňesi", "teňňesi")),
+        "TND": (("dinar", "dinars"), ("mil·lim", "mil·limat")),
+        "TOP": (("paanga", "paangas"), ("seniti", "seniti")),
+        "TTD": (GENERIC_DOLLARS, ("cèntim", "cèntims")),
+        "TWD": (("nou dòlar", "nous dòlars"), ("fen", "fen")),
+        "TZS": (("xíling", "xílings"), ("cèntim", "cèntims")),
+        "UGX": (("xíling", "xílings"), ("cèntim", "cèntims")),
+        "UYU": (("peso", "pesos"), ("centèsim", "centèsims")),
+        "UZS": (("som", "som"), ("tiyin", "tiyin")),
+        "VND": (("dong", "dongs"), ("xu", "xu")),
+        "VUV": (("vatu", "vatus"), ("cèntim", "cèntims")),
+        "WST": (("tala", "tala"), ("sene", "sene")),
+        "XAF": (("franc CFA", "francs CFA"), ("cèntim", "cèntims")),
+        "XCD": (GENERIC_DOLLARS, ("cèntim", "cèntims")),
+        "XOF": (("franc CFA", "francs CFA"), ("cèntim", "cèntims")),
+        "XPF": (("franc CFP", "francs CFP"), ("cèntim", "cèntims")),
+        "YER": (("rial", "rials"), ("fils", "fils")),
+        "YUM": (("dinar", "dinars"), ("para", "para")),
+        "ZMW": (("kwacha", "kwacha"), ("ngwee", "ngwee")),
+        "ZWL": (GENERIC_DOLLARS, ("cèntim", "cèntims")),
+        "ZWL": (GENERIC_DOLLARS, ("cèntim", "cèntims")),
     }
 
     GIGA_SUFFIX = None
@@ -218,10 +218,10 @@ class Num2Word_CA(Num2Word_EUR):
         self.negword = "menys "
         self.pointword = "punt"
         self.errmsg_nonnum = "type(%s) no és [long, int, float]"
-        self.errmsg_floatord = "El float %s no pot ser tractat com un" \
-            " ordinal."
-        self.errmsg_negord = "El número negatiu %s no pot ser tractat" \
-            " com un ordinal."
+        self.errmsg_floatord = "El float %s no pot ser tractat com un" " ordinal."
+        self.errmsg_negord = (
+            "El número negatiu %s no pot ser tractat" " com un ordinal."
+        )
         self.errmsg_toobig = "abs(%s) ha de ser inferior a %s."
         self.gender_stem = "è"
         self.exclude_title = ["i", "menys", "punt"]
@@ -409,8 +409,7 @@ class Num2Word_CA(Num2Word_EUR):
             text = "%s%s%s" % (self.ords[20], "-i-", self.ords_3[frac])
         elif value < 100:
             dec = (value // 10) * 10
-            text = "%s%s%s%s" % (self.ords[dec], "a",
-                                 "-", self.ords_3[value - dec])
+            text = "%s%s%s%s" % (self.ords[dec], "a", "-", self.ords_3[value - dec])
         elif value == 1e2:
             text = "%s%s" % (self.ords[value], self.gender_stem)
         elif value < 2e2:
@@ -418,22 +417,24 @@ class Num2Word_CA(Num2Word_EUR):
             text = "%s %s" % (self.ords[cen], self.to_ordinal(value - cen))
         elif value < 1e3:
             cen = (value // 100) * 100
-            text = "%s%s %s" % (self.ords[cen], "s",
-                                self.to_ordinal(value - cen))
+            text = "%s%s %s" % (self.ords[cen], "s", self.to_ordinal(value - cen))
         elif value == 1e3:
             text = "%s%s" % (self.ords[value], self.gender_stem)
         elif value < 1e6:
             dec = 1000 ** int(math.log(int(value), 1000))
             high_part, low_part = divmod(value, dec)
             cardinal = self.to_cardinal(high_part) if high_part != 1 else ""
-            text = "%s %s %s" % (cardinal, self.ords[dec],
-                                 self.to_ordinal(low_part))
+            text = "%s %s %s" % (cardinal, self.ords[dec], self.to_ordinal(low_part))
         elif value < 1e18:
             dec = 1000 ** int(math.log(int(value), 1000))
             high_part, low_part = divmod(value, dec)
             cardinal = self.to_cardinal(high_part) if high_part != 1 else ""
-            text = "%s%s%s %s" % (cardinal, self.ords[dec],
-                                  self.gender_stem, self.to_ordinal(low_part))
+            text = "%s%s%s %s" % (
+                cardinal,
+                self.ords[dec],
+                self.gender_stem,
+                self.to_ordinal(low_part),
+            )
         else:
             part1 = self.to_cardinal(value)
             text = "%s%s" % (part1[:-1], "onè")
@@ -446,8 +447,9 @@ class Num2Word_CA(Num2Word_EUR):
         else:
             return self.ords_2[value]
 
-    def to_currency(self, val, currency="EUR", cents=True,
-                    separator=" amb", adjective=False):
+    def to_currency(
+        self, val, currency="EUR", cents=True, separator=" amb", adjective=False
+    ):
         # Handle integers specially - just add currency name without cents
         if isinstance(val, int):
             try:
@@ -455,8 +457,12 @@ class Num2Word_CA(Num2Word_EUR):
             except (KeyError, AttributeError):
                 # Fallback to base implementation for unknown currency
                 return super(Num2Word_CA, self).to_currency(
-                    val, currency=currency, cents=cents, separator=separator,
-                    adjective=adjective)
+                    val,
+                    currency=currency,
+                    cents=cents,
+                    separator=separator,
+                    adjective=adjective,
+                )
 
             minus_str = self.negword if val < 0 else ""
             abs_val = abs(val)
@@ -466,11 +472,19 @@ class Num2Word_CA(Num2Word_EUR):
             if abs_val == 1:
                 currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
             else:
-                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+                currency_str = (
+                    cr1[1]
+                    if isinstance(cr1, tuple) and len(cr1) > 1
+                    else (cr1[0] if isinstance(cr1, tuple) else cr1)
+                )
 
-            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+            return ("%s %s %s" % (minus_str, money_str, currency_str)).strip()
 
         # For floats, use the parent class implementation
         return super(Num2Word_CA, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator,
-            adjective=adjective)
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
+        )

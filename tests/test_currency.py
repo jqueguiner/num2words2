@@ -28,10 +28,12 @@ class CurrencyTestCase(TestCase):
         self.assertEqual(parse_currency_parts(-123), (1, 23, True))
 
         # integer without cents
-        self.assertEqual(parse_currency_parts(101, is_int_with_cents=False),
-                         (101, 0, False))
-        self.assertEqual(parse_currency_parts(-123, is_int_with_cents=False),
-                         (123, 0, True))
+        self.assertEqual(
+            parse_currency_parts(101, is_int_with_cents=False), (101, 0, False)
+        )
+        self.assertEqual(
+            parse_currency_parts(-123, is_int_with_cents=False), (123, 0, True)
+        )
 
         # float
         self.assertEqual(parse_currency_parts(1.01), (1, 1, False))
@@ -51,10 +53,8 @@ class CurrencyTestCase(TestCase):
         # decimal
         self.assertEqual(parse_currency_parts(Decimal("1.01")), (1, 1, False))
         self.assertEqual(parse_currency_parts(Decimal("-1.23")), (1, 23, True))
-        self.assertEqual(parse_currency_parts(Decimal("-1.233")),
-                         (1, 23, True))
-        self.assertEqual(parse_currency_parts(Decimal("-1.989")),
-                         (1, 99, True))
+        self.assertEqual(parse_currency_parts(Decimal("-1.233")), (1, 23, True))
+        self.assertEqual(parse_currency_parts(Decimal("-1.989")), (1, 99, True))
 
         # string
         self.assertEqual(parse_currency_parts("1.01"), (1, 1, False))

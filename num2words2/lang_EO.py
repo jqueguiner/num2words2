@@ -36,7 +36,7 @@ class Num2Word_EO(Num2Word_Base):
 
         for word, n in zip(high, range(cap, 3, -6)):
             if self.GIGA_SUFFIX:
-                self.cards[10 ** n] = word + self.GIGA_SUFFIX
+                self.cards[10**n] = word + self.GIGA_SUFFIX
 
             if self.MEGA_SUFFIX:
                 self.cards[10 ** (n - 3)] = word + self.MEGA_SUFFIX
@@ -48,28 +48,73 @@ class Num2Word_EO(Num2Word_Base):
 
     def setup(self):
         lows = ["naŭ", "ok", "sep", "ses", "kvin", "kvar", "tr", "b", "m"]
-        units = ["", "un", "duo", "tre", "kvatuor",
-                 "kvin", "seks", "septen", "okto", "novem"]
-        tens = ["dek", "vigint", "trigint", "kvadragint", "kvinkvagint",
-                "seksagint", "septuagint", "oktogint", "nonagint"]
+        units = [
+            "",
+            "un",
+            "duo",
+            "tre",
+            "kvatuor",
+            "kvin",
+            "seks",
+            "septen",
+            "okto",
+            "novem",
+        ]
+        tens = [
+            "dek",
+            "vigint",
+            "trigint",
+            "kvadragint",
+            "kvinkvagint",
+            "seksagint",
+            "septuagint",
+            "oktogint",
+            "nonagint",
+        ]
 
-        self.high_numwords = ["cent"] + self.gen_high_numwords(units, tens,
-                                                               lows)
+        self.high_numwords = ["cent"] + self.gen_high_numwords(units, tens, lows)
 
         self.negword = "minus "
         self.pointword = "komo"
-        self.errmsg_nonnum = u"Sole nombroj povas esti konvertita en vortojn."
+        self.errmsg_nonnum = "Sole nombroj povas esti konvertita en vortojn."
         self.errmsg_toobig = (
-            u"Tro granda nombro por esti konvertita en vortojn (abs(%s) > %s)."
+            "Tro granda nombro por esti konvertita en vortojn (abs(%s) > %s)."
         )
         self.exclude_title = ["kaj", "komo", "minus"]
-        self.mid_numwords = [(1000, "mil"), (100, "cent"), (90, "naŭdek"),
-                             (80, "okdek"), (70, "sepdek"), (60, "sesdek"),
-                             (50, "kvindek"), (40, "kvardek"), (30, "tridek")]
-        self.low_numwords = ["dudek", "dek naŭ", "dek ok", "dek sep",
-                             "dek ses", "dek kvin", "dek kvar", "dek tri",
-                             "dek du", "dek unu", "dek", "naŭ", "ok", "sep",
-                             "ses", "kvin", "kvar", "tri", "du", "unu", "nul"]
+        self.mid_numwords = [
+            (1000, "mil"),
+            (100, "cent"),
+            (90, "naŭdek"),
+            (80, "okdek"),
+            (70, "sepdek"),
+            (60, "sesdek"),
+            (50, "kvindek"),
+            (40, "kvardek"),
+            (30, "tridek"),
+        ]
+        self.low_numwords = [
+            "dudek",
+            "dek naŭ",
+            "dek ok",
+            "dek sep",
+            "dek ses",
+            "dek kvin",
+            "dek kvar",
+            "dek tri",
+            "dek du",
+            "dek unu",
+            "dek",
+            "naŭ",
+            "ok",
+            "sep",
+            "ses",
+            "kvin",
+            "kvar",
+            "tri",
+            "du",
+            "unu",
+            "nul",
+        ]
         self.ords = {
             "unu": "unua",
             "du": "dua",
@@ -80,7 +125,7 @@ class Num2Word_EO(Num2Word_Base):
             "sep": "sepa",
             "ok": "oka",
             "naŭ": "naŭa",
-            "dek": "deka"
+            "dek": "deka",
         }
 
     def merge(self, curr, next):
@@ -101,7 +146,7 @@ class Num2Word_EO(Num2Word_Base):
         word = self.to_cardinal(value)
         for src, repl in self.ords.items():
             if word.endswith(src):
-                word = word[:-len(src)] + repl
+                word = word[: -len(src)] + repl
                 return word
 
         if word.endswith("o"):
@@ -118,11 +163,16 @@ class Num2Word_EO(Num2Word_Base):
         out += "a"
         return out
 
-    def to_currency(self, val, currency="EUR", cents=True, separator=" kaj",
-                    adjective=False):
+    def to_currency(
+        self, val, currency="EUR", cents=True, separator=" kaj", adjective=False
+    ):
         result = super(Num2Word_EO, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator,
-            adjective=adjective)
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
+        )
         return result
 
     def pluralize(self, n, forms):

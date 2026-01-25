@@ -22,13 +22,13 @@ from .base import Num2Word_Base
 
 class Num2Word_SQ(Num2Word_Base):
     CURRENCY_FORMS = {
-        'ALL': (('lek', 'lekë'), ('qindarkë', 'qindarkë')),
-        'EUR': (('euro', 'euro'), ('cent', 'centë')),
-        'USD': (('dollar', 'dollarë'), ('cent', 'centë')),
-        'GBP': (('paund', 'paund'), ('peni', 'pence')),
-        'CHF': (('frank zviceran', 'franka zvicer'), ('centim', 'centimë')),
-        'JPY': (('jen', 'jenë'), ('sen', 'senë')),
-        'RUB': (('rubël', 'rubla'), ('kopek', 'kopekë')),
+        "ALL": (("lek", "lekë"), ("qindarkë", "qindarkë")),
+        "EUR": (("euro", "euro"), ("cent", "centë")),
+        "USD": (("dollar", "dollarë"), ("cent", "centë")),
+        "GBP": (("paund", "paund"), ("peni", "pence")),
+        "CHF": (("frank zviceran", "franka zvicer"), ("centim", "centimë")),
+        "JPY": (("jen", "jenë"), ("sen", "senë")),
+        "RUB": (("rubël", "rubla"), ("kopek", "kopekë")),
     }
 
     def setup(self):
@@ -53,25 +53,25 @@ class Num2Word_SQ(Num2Word_Base):
 
         self.low_numwords = [
             "nëntëmbëdhjetë",  # 19
-            "tetëmbëdhjetë",   # 18
+            "tetëmbëdhjetë",  # 18
             "shtatëmbëdhjetë",  # 17
             "gjashtëmbëdhjetë",  # 16
-            "pesëmbëdhjetë",   # 15
+            "pesëmbëdhjetë",  # 15
             "katërmbëdhjetë",  # 14
-            "trembëdhjetë",    # 13
-            "dymbëdhjetë",     # 12
-            "njëmbëdhjetë",    # 11
-            "dhjetë",          # 10
-            "nëntë",           # 9
-            "tetë",            # 8
-            "shtatë",          # 7
-            "gjashtë",         # 6
-            "pesë",            # 5
-            "katër",           # 4
-            "tre",             # 3
-            "dy",              # 2
-            "një",             # 1
-            "zero"             # 0
+            "trembëdhjetë",  # 13
+            "dymbëdhjetë",  # 12
+            "njëmbëdhjetë",  # 11
+            "dhjetë",  # 10
+            "nëntë",  # 9
+            "tetë",  # 8
+            "shtatë",  # 7
+            "gjashtë",  # 6
+            "pesë",  # 5
+            "katër",  # 4
+            "tre",  # 3
+            "dy",  # 2
+            "një",  # 1
+            "zero",  # 0
         ]
 
         # Ordinal forms
@@ -95,7 +95,7 @@ class Num2Word_SQ(Num2Word_Base):
     def set_high_numwords(self, high):
         max = 3 + 3 * len(high)
         for word, n in zip(high, range(max, 3, -3)):
-            self.cards[10 ** n] = word
+            self.cards[10**n] = word
 
     def merge(self, curr, next):
         ctext, cnum, ntext, nnum = curr + next
@@ -134,7 +134,7 @@ class Num2Word_SQ(Num2Word_Base):
 
     def to_cardinal(self, value):
         if value == 0:
-            return 'zero'
+            return "zero"
 
         result = super(Num2Word_SQ, self).to_cardinal(value)
         return result
@@ -176,7 +176,7 @@ class Num2Word_SQ(Num2Word_Base):
     def pluralize(self, n, forms):
         """Albanian plural rules"""
         if not forms:
-            return ''
+            return ""
 
         if len(forms) == 1:
             return forms[0]
@@ -190,8 +190,9 @@ class Num2Word_SQ(Num2Word_Base):
 
         return forms[0]
 
-    def to_currency(self, val, currency='ALL', cents=True, separator=',',
-                    adjective=False):
+    def to_currency(
+        self, val, currency="ALL", cents=True, separator=",", adjective=False
+    ):
         """
         Convert a value to Albanian currency format.
         """
@@ -202,6 +203,7 @@ class Num2Word_SQ(Num2Word_Base):
         if currency in self.CURRENCY_FORMS:
             # Check if value has fractional cents
             from decimal import Decimal
+
             decimal_val = Decimal(str(val))
             has_fractional_cents = (decimal_val * 100) % 1 != 0
 
@@ -227,22 +229,29 @@ class Num2Word_SQ(Num2Word_Base):
             if cents_value > 0 and cents:
                 if whole > 0:
                     # Join the main currency part first, then add separator
-                    main_part = ' '.join(result)
+                    main_part = " ".join(result)
                     result = [main_part + separator]
                 # Handle fractional cents
                 from decimal import Decimal
+
                 if isinstance(cents_value, Decimal):
                     # Convert fractional cents (e.g., 65.3 cents)
                     result.append(self.to_cardinal_float(float(cents_value)))
-                    result.append(self.pluralize(int(cents_value), self.CURRENCY_FORMS[currency][1]))
+                    result.append(
+                        self.pluralize(
+                            int(cents_value), self.CURRENCY_FORMS[currency][1]
+                        )
+                    )
                 else:
                     result.append(self.to_cardinal(cents_value))
-                    result.append(self.pluralize(cents_value, self.CURRENCY_FORMS[currency][1]))
+                    result.append(
+                        self.pluralize(cents_value, self.CURRENCY_FORMS[currency][1])
+                    )
 
             if is_negative:
                 result.insert(0, self.negword.strip())
 
-            return ' '.join(result)
+            return " ".join(result)
         else:
             # Fallback for unknown currency
             return self.to_cardinal(val)

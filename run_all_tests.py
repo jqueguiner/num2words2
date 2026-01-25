@@ -19,13 +19,11 @@ def run_unit_tests():
     print("=" * 60)
 
     result = subprocess.run(
-        [sys.executable, "-m", "pytest", "tests/", "-q"],
-        capture_output=True,
-        text=True
+        [sys.executable, "-m", "pytest", "tests/", "-q"], capture_output=True, text=True
     )
 
     # Parse output
-    lines = result.stdout.strip().split('\n')
+    lines = result.stdout.strip().split("\n")
     summary_line = lines[-1] if lines else ""
 
     print(f"Unit Test Results: {summary_line}")
@@ -59,57 +57,63 @@ def run_e2e_tests():
     print("=" * 60)
 
     # Load test data
-    csv_path = Path("tests/e2e_test_suite.csv")
+    csv_path = Path("tests/data/e2e_test_suite.csv")
     if not csv_path.exists():
         print("E2E test suite not found!")
         return 0, 0, 0
 
-    df = pd.read_csv(csv_path)
+    # Load CSV with special handling to keep "null" as string, not NaN
+    df = pd.read_csv(csv_path, keep_default_na=False, na_values=[""])
 
     print(f"Total E2E test cases: {len(df)}")
-    print(f"Languages tested: {df['language'].nunique()}")
-    print(f"Test types: {df['conversion_type'].unique().tolist()}")
+    print(f"Languages tested: {df['lang'].nunique()}")
+    print("Test types: cardinal, ordinal, currency")
     print()
 
     # Run tests
-    test_results = {'passed': 0, 'failed': 0, 'errors': 0}
+    test_results = {"passed": 0, "failed": 0, "errors": 0}
     failures_by_type = {}
     failures_by_lang = {}
 
     for _, row in df.iterrows():
-        lang = row['language']
-        number = row['number']
-        conv_type = row['conversion_type']
-        expected = row['expected_output']
-        currency = row.get('currency', 'EUR') if pd.notna(row.get('currency')) else 'EUR'
+        lang = row["lang"]
+        number = row["number"]
+        conv_type = row["to"]  # This column contains the test type
+        expected = row["expected"]
+        currency = (
+            row.get("currency", "EUR") if pd.notna(row.get("currency")) else "EUR"
+        )
 
         try:
             # Import the language module
-            module_name = f'num2words2.lang_{lang.upper()}'
+            module_name = f"num2words2.lang_{lang.upper()}"
             module = importlib.import_module(module_name)
-            class_name = f'Num2Word_{lang.upper()}'
+            class_name = f"Num2Word_{lang.upper()}"
             converter_class = getattr(module, class_name)
             converter = converter_class()
 
             # Convert based on type
-            if conv_type == 'cardinal':
+            if conv_type == "cardinal":
                 actual = converter.to_cardinal(number)
-            elif conv_type == 'ordinal':
+            elif conv_type == "ordinal":
                 actual = converter.to_ordinal(number)
-            elif conv_type == 'ordinal_num':
+            elif conv_type == "ordinal_num":
                 actual = converter.to_ordinal_num(number)
-            elif conv_type == 'currency':
+            elif conv_type == "currency":
                 actual = converter.to_currency(number, currency=currency)
-            elif conv_type == 'year':
+            elif conv_type == "year":
                 actual = converter.to_year(number)
             else:
                 actual = str(number)
 
-            # Check result
+            # Check result (skip empty expected values)
+            if expected == "":
+                # Skip tests with missing expected values
+                continue
             if str(actual).strip() == str(expected).strip():
-                test_results['passed'] += 1
+                test_results["passed"] += 1
             else:
-                test_results['failed'] += 1
+                test_results["failed"] += 1
                 if conv_type not in failures_by_type:
                     failures_by_type[conv_type] = 0
                 failures_by_type[conv_type] += 1
@@ -119,7 +123,7 @@ def run_e2e_tests():
                 failures_by_lang[lang] += 1
 
         except Exception:
-            test_results['errors'] += 1
+            test_results["errors"] += 1
             if conv_type not in failures_by_type:
                 failures_by_type[conv_type] = 0
             failures_by_type[conv_type] += 1
@@ -131,9 +135,15 @@ def run_e2e_tests():
     # Print results
     total = len(df)
     print("E2E Test Results:")
-    print(f"  Passed: {test_results['passed']}/{total} ({test_results['passed']/total*100:.1f}%)")
-    print(f"  Failed: {test_results['failed']}/{total} ({test_results['failed']/total*100:.1f}%)")
-    print(f"  Errors: {test_results['errors']}/{total} ({test_results['errors']/total*100:.1f}%)")
+    print(
+        f"  Passed: {test_results['passed']}/{total} ({test_results['passed']/total*100:.1f}%)"
+    )
+    print(
+        f"  Failed: {test_results['failed']}/{total} ({test_results['failed']/total*100:.1f}%)"
+    )
+    print(
+        f"  Errors: {test_results['errors']}/{total} ({test_results['errors']/total*100:.1f}%)"
+    )
 
     if failures_by_type:
         print("\nFailures by type:")
@@ -142,10 +152,12 @@ def run_e2e_tests():
 
     if failures_by_lang:
         print("\nTop 10 languages with most failures:")
-        for lang, count in sorted(failures_by_lang.items(), key=lambda x: x[1], reverse=True)[:10]:
+        for lang, count in sorted(
+            failures_by_lang.items(), key=lambda x: x[1], reverse=True
+        )[:10]:
             print(f"  {lang}: {count} failures")
 
-    return test_results['passed'], test_results['failed'], test_results['errors']
+    return test_results["passed"], test_results["failed"], test_results["errors"]
 
 
 def main():
@@ -176,8 +188,12 @@ def main():
     print(f"Total Errors: {total_errors} ({total_errors/total_tests*100:.1f}%)")
 
     print("\nBreakdown:")
-    print(f"  Unit Tests: {unit_passed} passed, {unit_failed} failed, {unit_errors} errors")
-    print(f"  E2E Tests:  {e2e_passed} passed, {e2e_failed} failed, {e2e_errors} errors")
+    print(
+        f"  Unit Tests: {unit_passed} passed, {unit_failed} failed, {unit_errors} errors"
+    )
+    print(
+        f"  E2E Tests:  {e2e_passed} passed, {e2e_failed} failed, {e2e_errors} errors"
+    )
 
     # Coverage report
     print("\n" + "=" * 60)
@@ -185,12 +201,16 @@ def main():
     print("=" * 60)
 
     coverage_result = subprocess.run(
-        ["coverage", "report", "--omit=*/test_*,*/tests/*,*/site-packages/*,*/__pycache__/*,*/_version.py"],
+        [
+            "coverage",
+            "report",
+            "--omit=*/test_*,*/tests/*,*/site-packages/*,*/__pycache__/*,*/_version.py",
+        ],
         capture_output=True,
-        text=True
+        text=True,
     )
 
-    for line in coverage_result.stdout.strip().split('\n'):
+    for line in coverage_result.stdout.strip().split("\n"):
         if "TOTAL" in line:
             print(f"Overall Coverage: {line.split()[-1]}")
             break

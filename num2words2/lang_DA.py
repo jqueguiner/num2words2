@@ -25,12 +25,12 @@ class Num2Word_DA(lang_EUR.Num2Word_EUR):
     MEGA_SUFFIX = "illioner"
 
     CURRENCY_FORMS = {
-        'DKK': (('krone', 'kroner'), ('øre', 'øre')),
-        'EUR': (('euro', 'euro'), ('cent', 'cent')),
-        'USD': (('dollar', 'dollars'), ('cent', 'cent')),
-        'GBP': (('pund', 'pund'), ('penny', 'pence')),
-        'SEK': (('krone', 'kroner'), ('øre', 'øre')),
-        'NOK': (('krone', 'kroner'), ('øre', 'øre')),
+        "DKK": (("krone", "kroner"), ("øre", "øre")),
+        "EUR": (("euro", "euro"), ("cent", "cent")),
+        "USD": (("dollar", "dollars"), ("cent", "cent")),
+        "GBP": (("pund", "pund"), ("penny", "pence")),
+        "SEK": (("krone", "kroner"), ("øre", "øre")),
+        "NOK": (("krone", "kroner"), ("øre", "øre")),
     }
 
     def setup(self):
@@ -40,36 +40,63 @@ class Num2Word_DA(lang_EUR.Num2Word_EUR):
         self.pointword = "komma"
         self.exclude_title = ["og", "komma", "minus"]
 
-        self.mid_numwords = [(1000, "tusind"), (100, "hundrede"),
-                             (90, "halvfems"), (80, "firs"),
-                             (70, "halvfjerds"), (60, "treds"),
-                             (50, "halvtreds"), (40, "fyrre"), (30, "tredive")]
-        self.low_numwords = ["tyve", "nitten", "atten", "sytten",
-                             "seksten", "femten", "fjorten", "tretten",
-                             "tolv", "elleve", "ti", "ni", "otte",
-                             "syv", "seks", "fem", "fire", "tre", "to",
-                             "et", "nul"]
-        self.ords = {"nul": "nul",
-                     "et": "f\xf8rste",
-                     "to": "anden",
-                     "tre": "tredje",
-                     "fire": "fjerde",
-                     "fem": "femte",
-                     "seks": "sjette",
-                     "syv": "syvende",
-                     "otte": "ottende",
-                     "ni": "niende",
-                     "ti": "tiende",
-                     "elleve": "ellevte",
-                     "tolv": "tolvte",
-                     "tretten": "trett",
-                     "fjorten": "fjort",
-                     "femten": "femt",
-                     "seksten": "sekst",
-                     "sytten": "sytt",
-                     "atten": "att",
-                     "nitten": "nitt",
-                     "tyve": "tyv"}
+        self.mid_numwords = [
+            (1000, "tusind"),
+            (100, "hundrede"),
+            (90, "halvfems"),
+            (80, "firs"),
+            (70, "halvfjerds"),
+            (60, "treds"),
+            (50, "halvtreds"),
+            (40, "fyrre"),
+            (30, "tredive"),
+        ]
+        self.low_numwords = [
+            "tyve",
+            "nitten",
+            "atten",
+            "sytten",
+            "seksten",
+            "femten",
+            "fjorten",
+            "tretten",
+            "tolv",
+            "elleve",
+            "ti",
+            "ni",
+            "otte",
+            "syv",
+            "seks",
+            "fem",
+            "fire",
+            "tre",
+            "to",
+            "et",
+            "nul",
+        ]
+        self.ords = {
+            "nul": "nul",
+            "et": "f\xf8rste",
+            "to": "anden",
+            "tre": "tredje",
+            "fire": "fjerde",
+            "fem": "femte",
+            "seks": "sjette",
+            "syv": "syvende",
+            "otte": "ottende",
+            "ni": "niende",
+            "ti": "tiende",
+            "elleve": "ellevte",
+            "tolv": "tolvte",
+            "tretten": "trett",
+            "fjorten": "fjort",
+            "femten": "femt",
+            "seksten": "sekst",
+            "sytten": "sytt",
+            "atten": "att",
+            "nitten": "nitt",
+            "tyve": "tyv",
+        }
         self.ordflag = False
 
     def merge(self, curr, next):
@@ -83,15 +110,15 @@ class Num2Word_DA(lang_EUR.Num2Word_EUR):
             elif cnum == 100 and nnum == 1000:
                 # 100 * 1000 = "ethundrede tusind" with space
                 return ("ethundrede tusind", 100000)
-            lst[0] = 'et' + lst[0]
+            lst[0] = "et" + lst[0]
             next = tuple(lst)
 
         if cnum == 1:
-            if nnum < 10 ** 6 or self.ordflag:
+            if nnum < 10**6 or self.ordflag:
                 return next
             ctext = "en"
         if nnum > cnum:
-            if nnum >= 10 ** 6:
+            if nnum >= 10**6:
                 ctext += " "
             val = cnum * nnum
         else:
@@ -103,7 +130,7 @@ class Num2Word_DA(lang_EUR.Num2Word_EUR):
                 if nnum == 1:
                     ntext = "en"
                 ntext, ctext = ctext, ntext + "og"
-            elif cnum >= 10 ** 6:
+            elif cnum >= 10**6:
                 ctext += " "
             val = cnum + nnum
         word = ctext + ntext
@@ -116,7 +143,7 @@ class Num2Word_DA(lang_EUR.Num2Word_EUR):
         self.ordflag = False
         for key in self.ords:
             if outword.endswith(key):
-                outword = outword[:len(outword) - len(key)] + self.ords[key]
+                outword = outword[: len(outword) - len(key)] + self.ords[key]
                 break
         if value % 100 >= 30 and value % 100 <= 39 or value % 100 == 0:
             outword += "te"
@@ -133,8 +160,15 @@ class Num2Word_DA(lang_EUR.Num2Word_EUR):
             return str(value) + "en"
         return str(value) + "ende"
 
-    def to_currency(self, val, currency='DKK', cents=True, separator=',',
-                    adjective=False, longval=True):
+    def to_currency(
+        self,
+        val,
+        currency="DKK",
+        cents=True,
+        separator=",",
+        adjective=False,
+        longval=True,
+    ):
         # Handle integers specially - just add currency name without cents
         if isinstance(val, int):
             try:
@@ -142,8 +176,12 @@ class Num2Word_DA(lang_EUR.Num2Word_EUR):
             except (KeyError, AttributeError):
                 # Fallback to base implementation for unknown currency
                 return super(Num2Word_DA, self).to_currency(
-                    val, currency=currency, cents=cents, separator=separator,
-                    adjective=adjective)
+                    val,
+                    currency=currency,
+                    cents=cents,
+                    separator=separator,
+                    adjective=adjective,
+                )
 
             minus_str = self.negword if val < 0 else ""
             abs_val = abs(val)
@@ -153,18 +191,26 @@ class Num2Word_DA(lang_EUR.Num2Word_EUR):
             if abs_val == 1:
                 currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
             else:
-                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+                currency_str = (
+                    cr1[1]
+                    if isinstance(cr1, tuple) and len(cr1) > 1
+                    else (cr1[0] if isinstance(cr1, tuple) else cr1)
+                )
 
-            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+            return ("%s %s %s" % (minus_str, money_str, currency_str)).strip()
 
         # For floats, use the parent class implementation
         return super(Num2Word_DA, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator,
-            adjective=adjective)
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
+        )
 
     def to_year(self, val, longval=True):
         if val == 1:
-            return 'en'
+            return "en"
         if not (val // 100) % 10:
             return self.to_cardinal(val)
         return self.to_splitnum(val, hightxt="hundrede", longval=longval)

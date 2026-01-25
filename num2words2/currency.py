@@ -37,10 +37,7 @@ def parse_currency_parts(value, is_int_with_cents=True, keep_precision=False):
 
         if not keep_precision:
             # Round to 2 decimal places
-            value = value.quantize(
-                Decimal('.01'),
-                rounding=ROUND_HALF_UP
-            )
+            value = value.quantize(Decimal(".01"), rounding=ROUND_HALF_UP)
 
         negative = value < 0
         value = abs(value)

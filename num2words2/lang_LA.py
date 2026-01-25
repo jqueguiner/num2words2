@@ -23,15 +23,37 @@ from .base import Num2Word_Base
 # Latin language support
 class Num2Word_LA(Num2Word_Base):
     CURRENCY_FORMS = {
-        'EUR': (('euro', 'euros'), ('centesima', 'centesimae')),
-        'USD': (('dollar', 'dollars'), ('cent', 'cents'))
+        "EUR": (("euro", "euros"), ("centesima", "centesimae")),
+        "USD": (("dollar", "dollars"), ("cent", "cents")),
     }
 
     def setup(self):
         self.negword = "minus "
         self.pointword = "point"
-        self.ones = ['', 'unus', 'duo', 'tres', 'quattuor', 'quinque', 'sex', 'septem', 'octo', 'novem']
-        self.tens = ['', 'decem', 'viginti', 'triginta', 'quadraginta', 'quinquaginta', 'sexaginta', 'septuaginta', 'octoginta', 'nonaginta']
+        self.ones = [
+            "",
+            "unus",
+            "duo",
+            "tres",
+            "quattuor",
+            "quinque",
+            "sex",
+            "septem",
+            "octo",
+            "novem",
+        ]
+        self.tens = [
+            "",
+            "decem",
+            "viginti",
+            "triginta",
+            "quadraginta",
+            "quinquaginta",
+            "sexaginta",
+            "septuaginta",
+            "octoginta",
+            "nonaginta",
+        ]
         self.hundred = "centum"
         self.thousand = "mille"
         self.million = "decies centena milia"
@@ -40,14 +62,14 @@ class Num2Word_LA(Num2Word_Base):
         """Convert a number to its word representation in Latin."""
         n = str(number).strip()
 
-        if n.startswith('-'):
+        if n.startswith("-"):
             n = n[1:]
             ret = self.negword
         else:
             ret = ""
 
-        if '.' in n:
-            left, right = n.split('.', 1)
+        if "." in n:
+            left, right = n.split(".", 1)
             ret += self._int_to_word(int(left)) + " " + self.pointword + " "
             for digit in right:
                 ret += self._int_to_word(int(digit)) + " "
@@ -109,18 +131,22 @@ class Num2Word_LA(Num2Word_Base):
         """Convert to year in Latin."""
         return self.to_cardinal(val)
 
-    def to_currency(self, val, currency='EUR', cents=True, separator=' ', adjective=False):
+    def to_currency(
+        self, val, currency="EUR", cents=True, separator=" ", adjective=False
+    ):
         """Convert to currency in Latin."""
         is_negative = False
         if val < 0:
             is_negative = True
             val = abs(val)
 
-        parts = str(val).split('.')
+        parts = str(val).split(".")
         left = int(parts[0]) if parts[0] else 0
-        right = int(parts[1][:2].ljust(2, '0')) if len(parts) > 1 and parts[1] else 0
+        right = int(parts[1][:2].ljust(2, "0")) if len(parts) > 1 and parts[1] else 0
 
-        cr1, cr2 = self.CURRENCY_FORMS.get(currency, list(self.CURRENCY_FORMS.values())[0])
+        cr1, cr2 = self.CURRENCY_FORMS.get(
+            currency, list(self.CURRENCY_FORMS.values())[0]
+        )
 
         left_str = self._int_to_word(left)
         result = left_str + " " + (cr1[1] if left != 1 else cr1[0])

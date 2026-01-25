@@ -23,15 +23,15 @@ from .currency import parse_currency_parts
 
 class Num2Word_KO(Num2Word_Base):
     CURRENCY_FORMS = {
-        'KRW': ('원',),  # KRW doesn't use fractional units
-        'USD': ('달러', '센트'),
-        'JPY': ('엔',)  # JPY doesn't use fractional units
+        "KRW": ("원",),  # KRW doesn't use fractional units
+        "USD": ("달러", "센트"),
+        "JPY": ("엔",),  # JPY doesn't use fractional units
     }
 
     def set_high_numwords(self, high):
         max = 4 * len(high)
         for word, n in zip(high, range(max, 0, -4)):
-            self.cards[10 ** n] = word
+            self.cards[10**n] = word
 
     def setup(self):
         super(Num2Word_KO, self).setup()
@@ -40,44 +40,58 @@ class Num2Word_KO(Num2Word_Base):
         self.pointword = "점"
 
         self.high_numwords = [
-            '무량대수',
-            '불가사의',
-            '나유타',
-            '아승기',
-            '항하사',
-            '극',
-            '재',
-            '정',
-            '간',
-            '구',
-            '양',
-            '자',
-            '해',
-            '경',
-            '조',
-            '억',
-            '만']
+            "무량대수",
+            "불가사의",
+            "나유타",
+            "아승기",
+            "항하사",
+            "극",
+            "재",
+            "정",
+            "간",
+            "구",
+            "양",
+            "자",
+            "해",
+            "경",
+            "조",
+            "억",
+            "만",
+        ]
         self.mid_numwords = [(1000, "천"), (100, "백")]
-        self.low_numwords = ["십", "구", "팔", "칠", "육", "오", "사", "삼", "이",
-                             "일", "영"]
-        self.ords = {"일": "한",
-                     "이": "두",
-                     "삼": "세",
-                     "사": "네",
-                     "오": "다섯",
-                     "육": "여섯",
-                     "칠": "일곱",
-                     "팔": "여덟",
-                     "구": "아홉",
-                     "십": "열",
-                     "이십": "스물",
-                     "삼십": "서른",
-                     "사십": "마흔",
-                     "오십": "쉰",
-                     "육십": "예순",
-                     "칠십": "일흔",
-                     "팔십": "여든",
-                     "구십": "아흔"}
+        self.low_numwords = [
+            "십",
+            "구",
+            "팔",
+            "칠",
+            "육",
+            "오",
+            "사",
+            "삼",
+            "이",
+            "일",
+            "영",
+        ]
+        self.ords = {
+            "일": "한",
+            "이": "두",
+            "삼": "세",
+            "사": "네",
+            "오": "다섯",
+            "육": "여섯",
+            "칠": "일곱",
+            "팔": "여덟",
+            "구": "아홉",
+            "십": "열",
+            "이십": "스물",
+            "삼십": "서른",
+            "사십": "마흔",
+            "오십": "쉰",
+            "육십": "예순",
+            "칠십": "일흔",
+            "팔십": "여든",
+            "구십": "아흔",
+        }
 
     def merge(self, lpair, rpair):
         ltext, lnum = lpair
@@ -105,7 +119,7 @@ class Num2Word_KO(Num2Word_Base):
                 ten_one[0] = ten_one[0].replace("스무", "스물")
             except KeyError:
                 pass
-            lastwords[-1] = ''.join(ten_one)
+            lastwords[-1] = "".join(ten_one)
         else:
             lastwords[-1] = self.ords[lastwords[-1]]
         outwords[-1] = "백 ".join(lastwords)
@@ -115,19 +129,22 @@ class Num2Word_KO(Num2Word_Base):
         self.verify_ordinal(value)
         return "%s 번째" % (value)
 
-    def to_currency(self, val, currency='KRW', cents=True, separator=' ',
-                    adjective=False):
+    def to_currency(
+        self, val, currency="KRW", cents=True, separator=" ", adjective=False
+    ):
         """Convert a number to currency words."""
         # Track if input was originally an integer
         is_integer_input = isinstance(val, int)
 
         # Check if value has fractional cents
         from decimal import Decimal
+
         decimal_val = Decimal(str(val))
         has_fractional_cents = (decimal_val * 100) % 1 != 0
 
-        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
-                                                        keep_precision=has_fractional_cents)
+        left, right, is_negative = parse_currency_parts(
+            val, is_int_with_cents=False, keep_precision=has_fractional_cents
+        )
 
         try:
             curr_forms = self.CURRENCY_FORMS[currency]
@@ -135,8 +152,9 @@ class Num2Word_KO(Num2Word_Base):
             minor = curr_forms[1] if len(curr_forms) > 1 else None
         except KeyError:
             raise NotImplementedError(
-                'Currency "%s" not implemented for "%s"' % (
-                    currency, self.__class__.__name__))
+                'Currency "%s" not implemented for "%s"'
+                % (currency, self.__class__.__name__)
+            )
 
         minus_str = self.negword if is_negative else ""
         money_str = self.to_cardinal(left)
@@ -158,18 +176,24 @@ class Num2Word_KO(Num2Word_Base):
             # Convert fractional cents (e.g., 65.3 cents)
             cents_str = self.to_cardinal_float(float(right))
         elif cents:
-            cents_str = self.to_cardinal(int(right)) if right > 0 else self.to_cardinal(0)
+            cents_str = (
+                self.to_cardinal(int(right)) if right > 0 else self.to_cardinal(0)
+            )
         else:
             cents_str = str(int(right))
 
         return "%s%s%s%s%s%s" % (
-            minus_str, money_str, major,
-            separator, cents_str, minor)
+            minus_str,
+            money_str,
+            major,
+            separator,
+            cents_str,
+            minor,
+        )
 
     def to_year(self, val, suffix=None, longval=True):
         if val < 0:
             val = abs(val)
-            suffix = '기원전' if not suffix else suffix
+            suffix = "기원전" if not suffix else suffix
         valtext = self.to_cardinal(val)
-        return (valtext if not suffix
-                else "%s %s" % (suffix, valtext))
+        return valtext if not suffix else "%s %s" % (suffix, valtext)

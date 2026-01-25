@@ -28,9 +28,9 @@ class Num2Word_HI(Num2Word_Base):
     """
 
     CURRENCY_FORMS = {
-        'INR': (('रुपया', 'रुपये'), ('पैसा', 'पैसे')),
-        'USD': (('डॉलर', 'डॉलर'), ('सेंट', 'सेंट')),
-        'EUR': (('यूरो', 'यूरो'), ('सेंट', 'सेंट')),
+        "INR": (("रुपया", "रुपये"), ("पैसा", "पैसे")),
+        "USD": (("डॉलर", "डॉलर"), ("सेंट", "सेंट")),
+        "EUR": (("यूरो", "यूरो"), ("सेंट", "सेंट")),
     }
 
     _irregular_ordinals = {
@@ -177,7 +177,11 @@ class Num2Word_HI(Num2Word_Base):
         ltext, lnum = lpair
         rtext, rnum = rpair
         # Remove "एक" prefix for certain major units (but keep for हज़ार)
-        if lnum == 1 and rnum in [100, 100000, 10000000]:  # सौ, लाख, करोड़ (but not हज़ार)
+        if lnum == 1 and rnum in [
+            100,
+            100000,
+            10000000,
+        ]:  # सौ, लाख, करोड़ (but not हज़ार)
             return rtext, rnum
         elif lnum == 1 and rnum < 100:
             return rtext, rnum
@@ -193,8 +197,9 @@ class Num2Word_HI(Num2Word_Base):
             return forms[0]
         return forms[1] if len(forms) > 1 else forms[0]
 
-    def to_currency(self, val, currency='INR', cents=True, separator=',',
-                    adjective=False):
+    def to_currency(
+        self, val, currency="INR", cents=True, separator=",", adjective=False
+    ):
         # Handle integers specially - just add currency name without cents
         if isinstance(val, int):
             try:
@@ -202,8 +207,12 @@ class Num2Word_HI(Num2Word_Base):
             except (KeyError, AttributeError):
                 # Fallback to base implementation for unknown currency
                 return super(Num2Word_HI, self).to_currency(
-                    val, currency=currency, cents=cents, separator=separator,
-                    adjective=adjective)
+                    val,
+                    currency=currency,
+                    cents=cents,
+                    separator=separator,
+                    adjective=adjective,
+                )
 
             minus_str = self.negword if val < 0 else ""
             abs_val = abs(val)
@@ -213,14 +222,22 @@ class Num2Word_HI(Num2Word_Base):
             if abs_val == 1:
                 currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
             else:
-                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+                currency_str = (
+                    cr1[1]
+                    if isinstance(cr1, tuple) and len(cr1) > 1
+                    else (cr1[0] if isinstance(cr1, tuple) else cr1)
+                )
 
-            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+            return ("%s %s %s" % (minus_str, money_str, currency_str)).strip()
 
         # For floats, use the parent class implementation
         return super(Num2Word_HI, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator,
-            adjective=adjective)
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
+        )
 
     def to_ordinal(self, value):
         if value in self._irregular_ordinals:
@@ -232,12 +249,10 @@ class Num2Word_HI(Num2Word_Base):
         return cardinal + self._regular_ordinal_suffix
 
     def _convert_to_hindi_numerals(self, value):
-        return "".join(map(self._digits_to_hindi_digits.__getitem__,
-                           str(value)))
+        return "".join(map(self._digits_to_hindi_digits.__getitem__, str(value)))
 
     def to_ordinal_num(self, value):
         if value in self._irregular_ordinals_nums:
             return self._irregular_ordinals_nums[value]
 
-        return self._convert_to_hindi_numerals(value) \
-            + self._regular_ordinal_suffix
+        return self._convert_to_hindi_numerals(value) + self._regular_ordinal_suffix

@@ -24,15 +24,15 @@ class Num2Word_EN(lang_EUR.Num2Word_EUR):
     def __init__(self):
         super(Num2Word_EN, self).__init__()
         # Override specific currency forms for proper English pluralization
-        self.CURRENCY_FORMS['EUR'] = (('euro', 'euros'), ('cent', 'cents'))
-        self.CURRENCY_FORMS['USD'] = (('dollar', 'dollars'), ('cent', 'cents'))
-        self.CURRENCY_FORMS['GBP'] = (('pound', 'pounds'), ('penny', 'pence'))
-        self.CURRENCY_FORMS['NGN'] = (('naira', 'naira'), ('kobo', 'kobo'))
+        self.CURRENCY_FORMS["EUR"] = (("euro", "euros"), ("cent", "cents"))
+        self.CURRENCY_FORMS["USD"] = (("dollar", "dollars"), ("cent", "cents"))
+        self.CURRENCY_FORMS["GBP"] = (("pound", "pounds"), ("penny", "pence"))
+        self.CURRENCY_FORMS["NGN"] = (("naira", "naira"), ("kobo", "kobo"))
 
     def set_high_numwords(self, high):
         max = 3 + 3 * len(high)
         for word, n in zip(high, range(max, 3, -3)):
-            self.cards[10 ** n] = word + "illion"
+            self.cards[10**n] = word + "illion"
 
     def setup(self):
         super(Num2Word_EN, self).setup()
@@ -41,27 +41,66 @@ class Num2Word_EN(lang_EUR.Num2Word_EUR):
         self.pointword = "point"
         self.exclude_title = ["and", "point", "minus"]
 
-        self.mid_numwords = [(1000, "thousand"), (100, "hundred"),
-                             (90, "ninety"), (80, "eighty"), (70, "seventy"),
-                             (60, "sixty"), (50, "fifty"), (40, "forty"),
-                             (30, "thirty")]
-        self.low_numwords = ["twenty", "nineteen", "eighteen", "seventeen",
-                             "sixteen", "fifteen", "fourteen", "thirteen",
-                             "twelve", "eleven", "ten", "nine", "eight",
-                             "seven", "six", "five", "four", "three", "two",
-                             "one", "zero"]
-        self.ords = {"one": "first",
-                     "two": "second",
-                     "three": "third",
-                     "four": "fourth",
-                     "five": "fifth",
-                     "six": "sixth",
-                     "seven": "seventh",
-                     "eight": "eighth",
-                     "nine": "ninth",
-                     "ten": "tenth",
-                     "eleven": "eleventh",
-                     "twelve": "twelfth"}
+        self.mid_numwords = [
+            (1000, "thousand"),
+            (100, "hundred"),
+            (90, "ninety"),
+            (80, "eighty"),
+            (70, "seventy"),
+            (60, "sixty"),
+            (50, "fifty"),
+            (40, "forty"),
+            (30, "thirty"),
+        ]
+        self.low_numwords = [
+            "twenty",
+            "nineteen",
+            "eighteen",
+            "seventeen",
+            "sixteen",
+            "fifteen",
+            "fourteen",
+            "thirteen",
+            "twelve",
+            "eleven",
+            "ten",
+            "nine",
+            "eight",
+            "seven",
+            "six",
+            "five",
+            "four",
+            "three",
+            "two",
+            "one",
+            "zero",
+        ]
+        self.ords = {
+            "one": "first",
+            "two": "second",
+            "three": "third",
+            "four": "fourth",
+            "five": "fifth",
+            "six": "sixth",
+            "seven": "seventh",
+            "eight": "eighth",
+            "nine": "ninth",
+            "ten": "tenth",
+            "eleven": "eleventh",
+            "twelve": "twelfth",
+            "twenty": "twentieth",
+            "thirty": "thirtieth",
+            "forty": "fortieth",
+            "fifty": "fiftieth",
+            "sixty": "sixtieth",
+            "seventy": "seventieth",
+            "eighty": "eightieth",
+            "ninety": "ninetieth",
+            "hundred": "hundredth",
+            "thousand": "thousandth",
+            "million": "millionth",
+            "billion": "billionth",
+        }
 
     def merge(self, lpair, rpair):
         ltext, lnum = lpair
@@ -98,12 +137,10 @@ class Num2Word_EN(lang_EUR.Num2Word_EUR):
     def to_year(self, val, suffix=None, longval=True):
         if val < 0:
             val = abs(val)
-            suffix = 'BC' if not suffix else suffix
+            suffix = "BC" if not suffix else suffix
         high, low = (val // 100, val % 100)
         # If year is 00XX, X00X, or beyond 9999, go cardinal.
-        if (high == 0
-                or (high % 10 == 0 and low < 10)
-                or high >= 100):
+        if high == 0 or (high % 10 == 0 and low < 10) or high >= 100:
             valtext = self.to_cardinal(val)
         else:
             hightext = self.to_cardinal(high)
@@ -114,5 +151,4 @@ class Num2Word_EN(lang_EUR.Num2Word_EUR):
             else:
                 lowtext = self.to_cardinal(low)
             valtext = "%s %s" % (hightext, lowtext)
-        return (valtext if not suffix
-                else "%s %s" % (valtext, suffix))
+        return valtext if not suffix else "%s %s" % (valtext, suffix)

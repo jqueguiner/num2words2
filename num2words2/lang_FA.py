@@ -24,7 +24,15 @@ from math import floor
 from .base import Num2Word_Base
 
 farsiOnes = [
-    "", "یک", "دو", "سه", "چهار", "پنج", "شش", "هفت", "هشت",
+    "",
+    "یک",
+    "دو",
+    "سه",
+    "چهار",
+    "پنج",
+    "شش",
+    "هفت",
+    "هشت",
     "نه",
     "ده",
     "یازده",
@@ -65,30 +73,30 @@ farsiHundreds = [
 ]
 
 farsiBig = [
-    '',
-    ' هزار',
-    ' میلیون',
+    "",
+    " هزار",
+    " میلیون",
     " میلیارد",
-    ' تریلیون',
+    " تریلیون",
     " تریلیارد",
 ]
 
 farsiFrac = ["", "دهم", "صدم"]
 farsiFracBig = ["", "هزارم", "میلیونیم", "میلیاردیم"]
 
-farsiSeperator = ' و '
+farsiSeperator = " و "
 
 
 class Num2Word_FA(Num2Word_Base):
     # Those are unused
     errmsg_toobig = "Too large"
-    MAXNUM = 10 ** 36
+    MAXNUM = 10**36
 
     CURRENCY_FORMS = {
-        'IRR': (('ریال', 'ریال'), ('', '')),
-        'IRT': (('تومان', 'تومان'), ('', '')),  # Iranian Toman
-        'EUR': (('یورو', 'یورو'), ('سنت', 'سنت')),
-        'USD': (('دلار', 'دلار'), ('سنت', 'سنت')),
+        "IRR": (("ریال", "ریال"), ("", "")),
+        "IRT": (("تومان", "تومان"), ("", "")),  # Iranian Toman
+        "EUR": (("یورو", "یورو"), ("سنت", "سنت")),
+        "USD": (("دلار", "دلار"), ("سنت", "سنت")),
     }
 
     def __init__(self):
@@ -126,15 +134,15 @@ class Num2Word_FA(Num2Word_Base):
 
     def cardinalPos(self, number):
         x = number
-        res = ''
+        res = ""
         for b in farsiBig:
             x, y = divmod(x, 1000)
             if y == 0:
                 continue
             yx = self.cardinal3(y) + b
-            if b == ' هزار' and y == 1:
-                yx = 'هزار'
-            if res == '':
+            if b == " هزار" and y == 1:
+                yx = "هزار"
+            if res == "":
                 res = yx
             else:
                 res = yx + farsiSeperator + res
@@ -155,17 +163,23 @@ class Num2Word_FA(Num2Word_Base):
             return forms[0]  # Always return first form for Persian
         return forms
 
-    def to_currency(self, val, currency='IRT', cents=True, separator=' و ', adjective=False):
+    def to_currency(
+        self, val, currency="IRT", cents=True, separator=" و ", adjective=False
+    ):
         # Use parent class implementation with our currency forms
         return super(Num2Word_FA, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator, adjective=adjective
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
         )
 
     def to_ordinal(self, number):
         r = self.to_cardinal(number)
-        if r[-1] == 'ه' and r[-2] == 'س':
-            return r[:-1] + 'وم'
-        return r + 'م'
+        if r[-1] == "ه" and r[-2] == "س":
+            return r[:-1] + "وم"
+        return r + "م"
 
     def to_year(self, value):
         return self.to_cardinal(value)

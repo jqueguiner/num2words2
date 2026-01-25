@@ -21,23 +21,42 @@ from .lang_ES import Num2Word_ES
 
 
 class Num2Word_ES_VE(Num2Word_ES):
+    def __init__(self):
+        super(Num2Word_ES_VE, self).__init__()
+        # Copy parent currency forms and update for Venezuela
+        self.CURRENCY_FORMS = self.CURRENCY_FORMS.copy()
+        self.CURRENCY_FORMS.update(
+            {
+                "VES": (("bolívar", "bolívares"), ("centavo", "centavos")),
+                "VEB": (
+                    ("bolívar", "bolívares"),
+                    ("centavo", "centavos"),
+                ),  # Old currency
+                "USD": (("dólar", "dólares"), ("centavo", "centavos")),
+            }
+        )
 
-    CURRENCY_FORMS = {
-        'VES': (('bolívar', 'bolívares'), ('centavo', 'centavos')),
-        'VEB': (('bolívar', 'bolívares'), ('centavo', 'centavos')),  # Old currency
-        'EUR': (('euro', 'euros'), ('céntimo', 'céntimos')),
-        'USD': (('dólar', 'dólares'), ('centavo', 'centavos')),
-    }
-
-    def to_currency(self, val, currency='VES', cents=True, separator=' y', adjective=False, old=False):
+    def to_currency(
+        self,
+        val,
+        currency="VES",
+        cents=True,
+        separator=" y",
+        adjective=False,
+        old=False,
+    ):
         # Handle the old parameter for backward compatibility
         if old:
             # For old Venezuelan Bolívar (VEB)
-            currency = 'VEB' if currency == 'VES' else currency
+            currency = "VEB" if currency == "VES" else currency
 
         # Use parent class implementation with our currency forms
         result = super(Num2Word_ES_VE, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator, adjective=adjective
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
         )
         # Handle exception, in spanish is "un euro" and not "uno euro"
         return result.replace("uno", "un")

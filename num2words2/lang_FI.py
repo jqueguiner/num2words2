@@ -21,8 +21,8 @@ from collections import OrderedDict
 
 from . import lang_EUR
 
-GENERIC_CENTS = ('sentti', 'senttiä')
-GENERIC_CENTAVOS = ('centavo', 'centavoa')
+GENERIC_CENTS = ("sentti", "senttiä")
+GENERIC_CENTAVOS = ("centavo", "centavoa")
 
 # grammatical cases
 NOM = 10  # nominative: the dictionary form
@@ -38,319 +38,305 @@ ADE = 17  # adessive: at/on
 ABL = 18  # ablative: from (after being at/on, not in)
 ALL = 19  # allative: to
 # essive
-ESS = 20     # essive: as (in the role of)
+ESS = 20  # essive: as (in the role of)
 TRANSL = 21  # translative: to (the role of; being sth)
 # rare
 INSTRUC = 22  # instructive: with (plural is the same as singular)
-ABE = 23      # abessive: without
-COM = 24      # comitative: together with (plural = singular)
+ABE = 23  # abessive: without
+COM = 24  # comitative: together with (plural = singular)
 
 NAME_TO_CASE = {
-    'nominative': NOM,
-    'genitive': GEN,
-    'accusative': ACC,
-    'partitive': PTV,
-    'inessive': INE,
-    'elative': ELA,
-    'illative': ILL,
-    'adessive': ADE,
-    'ablative': ABL,
-    'allative': ALL,
-    'essive': ESS,
-    'translative': TRANSL,
-    'instructive': INSTRUC,
-    'abessive': ABE,
-    'comitative': COM,
+    "nominative": NOM,
+    "genitive": GEN,
+    "accusative": ACC,
+    "partitive": PTV,
+    "inessive": INE,
+    "elative": ELA,
+    "illative": ILL,
+    "adessive": ADE,
+    "ablative": ABL,
+    "allative": ALL,
+    "essive": ESS,
+    "translative": TRANSL,
+    "instructive": INSTRUC,
+    "abessive": ABE,
+    "comitative": COM,
 }
 
 # https://en.wikibooks.org/wiki/Finnish/Grammar-Vowel_harmony
 BACK_TO_FRONT = {
-    'a': 'ä',
-    'o': 'ö',
-    'u': 'y',
+    "a": "ä",
+    "o": "ö",
+    "u": "y",
 }
 
 # https://en.wiktionary.org/wiki/Appendix:Finnish_nominal_inflection
 # CASE: (SINGULAR_SUFFIX+, PLURAL_SUFFIX+)
 KOTUS_TYPE = {
-
     # Kotus type 5/risti, no gradation
     5: {
         # grammatical
-        NOM: ('i', 'it'),
-        GEN: ('in', 'ien'),
-        PTV: ('ia', 'eja'),
+        NOM: ("i", "it"),
+        GEN: ("in", "ien"),
+        PTV: ("ia", "eja"),
         # locative, internal
-        INE: ('issa', 'eissa'),
-        ELA: ('ista', 'eista'),
-        ILL: ('iin', 'eihin'),
+        INE: ("issa", "eissa"),
+        ELA: ("ista", "eista"),
+        ILL: ("iin", "eihin"),
         # locative, external
-        ADE: ('illa', 'eilla'),
-        ABL: ('ilta', 'eilta'),
-        ALL: ('ille', 'eille'),
+        ADE: ("illa", "eilla"),
+        ABL: ("ilta", "eilta"),
+        ALL: ("ille", "eille"),
         # essive
-        ESS: ('ina', 'eina'),
-        TRANSL: ('iksi', 'eiksi'),
+        ESS: ("ina", "eina"),
+        TRANSL: ("iksi", "eiksi"),
         # rare
-        INSTRUC: ('ein', 'ein'),
-        ABE: ('itta', 'eitta'),
-        COM: ('eine', 'eine'),  # works better
+        INSTRUC: ("ein", "ein"),
+        ABE: ("itta", "eitta"),
+        COM: ("eine", "eine"),  # works better
     },
-
     # Kotus type 7/ovi, no gradation
     7: {
         # grammatical
-        NOM: ('i', 'et'),
-        GEN: ('en', 'ien'),
-        PTV: ('ea', 'ia'),
+        NOM: ("i", "et"),
+        GEN: ("en", "ien"),
+        PTV: ("ea", "ia"),
         # locative, internal
-        INE: ('essa', 'issa'),
-        ELA: ('esta', 'ista'),
-        ILL: ('een', 'iin'),
+        INE: ("essa", "issa"),
+        ELA: ("esta", "ista"),
+        ILL: ("een", "iin"),
         # locative, external
-        ADE: ('ella', 'illa'),
-        ABL: ('elta', 'ilta'),
-        ALL: ('elle', 'ille'),
+        ADE: ("ella", "illa"),
+        ABL: ("elta", "ilta"),
+        ALL: ("elle", "ille"),
         # essive
-        ESS: ('ena', 'ina'),
-        TRANSL: ('eksi', 'iksi'),
+        ESS: ("ena", "ina"),
+        TRANSL: ("eksi", "iksi"),
         # rare
-        INSTRUC: ('in', 'in'),
-        ABE: ('etta', 'itta'),
-        COM: ('ine', 'ine'),  # works better
+        INSTRUC: ("in", "in"),
+        ABE: ("etta", "itta"),
+        COM: ("ine", "ine"),  # works better
     },
-
     # Kotus type 8/nalle, no gradation
     8: {
         # grammatical
-        NOM: ('e', 'et'),
-        GEN: ('en', ('ejen', 'ein')),
-        PTV: ('ea', 'eja'),
+        NOM: ("e", "et"),
+        GEN: ("en", ("ejen", "ein")),
+        PTV: ("ea", "eja"),
         # locative, internal
-        INE: ('essa', 'eissa'),
-        ELA: ('esta', 'eista'),
-        ILL: ('een', 'eihin'),
+        INE: ("essa", "eissa"),
+        ELA: ("esta", "eista"),
+        ILL: ("een", "eihin"),
         # locative, external
-        ADE: ('ella', 'eilla'),
-        ABL: ('elta', 'eilta'),
-        ALL: ('elle', 'eille'),
+        ADE: ("ella", "eilla"),
+        ABL: ("elta", "eilta"),
+        ALL: ("elle", "eille"),
         # essive
-        ESS: ('ena', 'eina'),
-        TRANSL: ('eksi', 'eiksi'),
+        ESS: ("ena", "eina"),
+        TRANSL: ("eksi", "eiksi"),
         # rare
-        INSTRUC: ('ein', 'ein'),
-        ABE: ('etta', 'eitta'),
-        COM: ('eine', 'eine'),  # works better
+        INSTRUC: ("ein", "ein"),
+        ABE: ("etta", "eitta"),
+        COM: ("eine", "eine"),  # works better
     },
-
     # Kotus type 9/kala, t-d gradation (sata)
     109: {
         # grammatical
-        NOM: ('ta', 'dat'),
-        GEN: ('dan', ('tojen', 'tain')),
-        PTV: ('taa', 'toja'),
+        NOM: ("ta", "dat"),
+        GEN: ("dan", ("tojen", "tain")),
+        PTV: ("taa", "toja"),
         # locative, internal
-        INE: ('dassa', 'doissa'),
-        ELA: ('dasta', 'doista'),
-        ILL: ('taan', 'toihin'),
+        INE: ("dassa", "doissa"),
+        ELA: ("dasta", "doista"),
+        ILL: ("taan", "toihin"),
         # locative, external
-        ADE: ('dalla', 'doilla'),
-        ABL: ('dalta', 'doilta'),
-        ALL: ('dalle', 'doille'),
+        ADE: ("dalla", "doilla"),
+        ABL: ("dalta", "doilta"),
+        ALL: ("dalle", "doille"),
         # essive
-        ESS: ('tana', 'toina'),
-        TRANSL: ('daksi', 'doiksi'),
+        ESS: ("tana", "toina"),
+        TRANSL: ("daksi", "doiksi"),
         # rare
-        INSTRUC: ('doin', 'doin'),
-        ABE: ('datta', 'doitta'),
-        COM: ('toine', 'toine'),  # works better
+        INSTRUC: ("doin", "doin"),
+        ABE: ("datta", "doitta"),
+        COM: ("toine", "toine"),  # works better
     },
-
     # Kotus type 10/koira, no gradation
     10: {
         # grammatical
-        NOM: ('a', 'at'),
-        GEN: ('an', ('ien', 'ain')),
-        PTV: ('aa', 'ia'),
+        NOM: ("a", "at"),
+        GEN: ("an", ("ien", "ain")),
+        PTV: ("aa", "ia"),
         # locative, internal
-        INE: ('assa', 'issa'),
-        ELA: ('asta', 'ista'),
-        ILL: ('aan', 'iin'),
+        INE: ("assa", "issa"),
+        ELA: ("asta", "ista"),
+        ILL: ("aan", "iin"),
         # locative, external
-        ADE: ('alla', 'illa'),
-        ABL: ('alta', 'ilta'),
-        ALL: ('alle', 'ille'),
+        ADE: ("alla", "illa"),
+        ABL: ("alta", "ilta"),
+        ALL: ("alle", "ille"),
         # essive
-        ESS: ('ana', 'ina'),
-        TRANSL: ('aksi', 'iksi'),
+        ESS: ("ana", "ina"),
+        TRANSL: ("aksi", "iksi"),
         # rare
-        INSTRUC: ('in', 'in'),
-        ABE: ('atta', 'itta'),
-        COM: ('ine', 'ine'),  # works better
+        INSTRUC: ("in", "in"),
+        ABE: ("atta", "itta"),
+        COM: ("ine", "ine"),  # works better
     },
-
     # Kotus type 27/käsi, t-d gradation
     27: {
         # grammatical
-        NOM: ('si', 'det'),
-        GEN: ('den', ('sien', 'tten')),
-        PTV: ('tta', 'sia'),
+        NOM: ("si", "det"),
+        GEN: ("den", ("sien", "tten")),
+        PTV: ("tta", "sia"),
         # locative, internal
-        INE: ('dessa', 'sissa'),
-        ELA: ('desta', 'sista'),
-        ILL: ('teen', 'siin'),
+        INE: ("dessa", "sissa"),
+        ELA: ("desta", "sista"),
+        ILL: ("teen", "siin"),
         # locative, external
-        ADE: ('della', 'silla'),
-        ABL: ('delta', 'silta'),
-        ALL: ('delle', 'sille'),
+        ADE: ("della", "silla"),
+        ABL: ("delta", "silta"),
+        ALL: ("delle", "sille"),
         # essive
-        ESS: ('tena', 'sina'),
-        TRANSL: ('deksi', 'siksi'),
+        ESS: ("tena", "sina"),
+        TRANSL: ("deksi", "siksi"),
         # rare
-        INSTRUC: ('sin', 'sin'),
-        ABE: ('detta', 'sitta'),
-        COM: ('sine', 'sine'),  # works better
+        INSTRUC: ("sin", "sin"),
+        ABE: ("detta", "sitta"),
+        COM: ("sine", "sine"),  # works better
     },
-
     # Kotus type 31/kaksi, t-d gradation
     31: {
         # grammatical
-        NOM: ('ksi', 'hdet'),
-        GEN: ('hden', 'ksien'),
-        PTV: ('hta', 'ksia'),
+        NOM: ("ksi", "hdet"),
+        GEN: ("hden", "ksien"),
+        PTV: ("hta", "ksia"),
         # locative, internal
-        INE: ('hdessa', 'ksissa'),
-        ELA: ('hdesta', 'ksista'),
-        ILL: ('hteen', 'ksiin'),
+        INE: ("hdessa", "ksissa"),
+        ELA: ("hdesta", "ksista"),
+        ILL: ("hteen", "ksiin"),
         # locative, external
-        ADE: ('hdella', 'ksilla'),
-        ABL: ('hdelta', 'ksilta'),
-        ALL: ('hdelle', 'ksille'),
+        ADE: ("hdella", "ksilla"),
+        ABL: ("hdelta", "ksilta"),
+        ALL: ("hdelle", "ksille"),
         # essive
-        ESS: ('htena', 'ksina'),
-        TRANSL: ('hdeksi', 'ksiksi'),
+        ESS: ("htena", "ksina"),
+        TRANSL: ("hdeksi", "ksiksi"),
         # rare
-        INSTRUC: ('ksin', 'ksin'),
-        ABE: ('hdetta', 'ksitta'),
-        COM: ('ksine', 'ksine'),  # works better
+        INSTRUC: ("ksin", "ksin"),
+        ABE: ("hdetta", "ksitta"),
+        COM: ("ksine", "ksine"),  # works better
     },
-
     # Kotus type 32/sisar, no gradation
     32: {
         # grammatical
-        NOM: ('', 'et'),
-        GEN: ('en', ('ien', 'ten')),
-        PTV: ('ta', 'ia'),
+        NOM: ("", "et"),
+        GEN: ("en", ("ien", "ten")),
+        PTV: ("ta", "ia"),
         # locative, internal
-        INE: ('essa', 'issa'),
-        ELA: ('esta', 'ista'),
-        ILL: ('een', 'iin'),
+        INE: ("essa", "issa"),
+        ELA: ("esta", "ista"),
+        ILL: ("een", "iin"),
         # locative, external
-        ADE: ('ella', 'illa'),
-        ABL: ('elta', 'ilta'),
-        ALL: ('elle', 'ille'),
+        ADE: ("ella", "illa"),
+        ABL: ("elta", "ilta"),
+        ALL: ("elle", "ille"),
         # essive
-        ESS: ('ena', 'ina'),
-        TRANSL: ('eksi', 'iksi'),
+        ESS: ("ena", "ina"),
+        TRANSL: ("eksi", "iksi"),
         # rare
-        INSTRUC: ('in', 'in'),
-        ABE: ('etta', 'itta'),
-        COM: ('ine', 'ine'),  # works better
+        INSTRUC: ("in", "in"),
+        ABE: ("etta", "itta"),
+        COM: ("ine", "ine"),  # works better
     },
-
     # Kotus type 38/nainen, no gradation
     38: {
         # grammatical
-        NOM: ('nen', 'set'),
-        GEN: ('sen', ('sten', 'sien')),
-        PTV: ('sta', 'sia'),
+        NOM: ("nen", "set"),
+        GEN: ("sen", ("sten", "sien")),
+        PTV: ("sta", "sia"),
         # locative, internal
-        INE: ('sessa', 'sissa'),
-        ELA: ('sesta', 'sista'),
-        ILL: ('seen', 'siin'),
+        INE: ("sessa", "sissa"),
+        ELA: ("sesta", "sista"),
+        ILL: ("seen", "siin"),
         # locative, external
-        ADE: ('sella', 'silla'),
-        ABL: ('selta', 'silta'),
-        ALL: ('selle', 'sille'),
+        ADE: ("sella", "silla"),
+        ABL: ("selta", "silta"),
+        ALL: ("selle", "sille"),
         # essive
-        ESS: ('sena', 'sina'),
-        TRANSL: ('seksi', 'siksi'),
+        ESS: ("sena", "sina"),
+        TRANSL: ("seksi", "siksi"),
         # rare
-        INSTRUC: ('sin', 'sin'),
-        ABE: ('setta', 'sitta'),
-        COM: ('sine', 'sine'),  # works better
+        INSTRUC: ("sin", "sin"),
+        ABE: ("setta", "sitta"),
+        COM: ("sine", "sine"),  # works better
     },
-
     # Kotus type 45/kahdeksas, nt-nn gradation
     45: {
         # grammatical
-        NOM: ('s', 'nnet'),
-        GEN: ('nnen', 'nsien'),
-        PTV: ('tta', 'nsia'),
+        NOM: ("s", "nnet"),
+        GEN: ("nnen", "nsien"),
+        PTV: ("tta", "nsia"),
         # locative, internal
-        INE: ('nnessa', 'nsissa'),
-        ELA: ('nnesta', 'nsista'),
-        ILL: ('nteen', 'nsiin'),
+        INE: ("nnessa", "nsissa"),
+        ELA: ("nnesta", "nsista"),
+        ILL: ("nteen", "nsiin"),
         # locative, external
-        ADE: ('nnella', 'nsilla'),
-        ABL: ('nnelta', 'nsilta'),
-        ALL: ('nnelle', 'nsille'),
+        ADE: ("nnella", "nsilla"),
+        ABL: ("nnelta", "nsilta"),
+        ALL: ("nnelle", "nsille"),
         # essive
-        ESS: ('ntena', 'nsina'),
-        TRANSL: ('nneksi', 'nsiksi'),
+        ESS: ("ntena", "nsina"),
+        TRANSL: ("nneksi", "nsiksi"),
         # rare
-        INSTRUC: ('nsin', 'nsin'),
-        ABE: ('nnetta', 'nsitta'),
-        COM: ('nsine', 'nsine'),  # works better
+        INSTRUC: ("nsin", "nsin"),
+        ABE: ("nnetta", "nsitta"),
+        COM: ("nsine", "nsine"),  # works better
     },
-
     # Kotus type 46/tuhat, nt-nn gradation
     46: {
         # grammatical
-        NOM: ('t', 'nnet'),
-        GEN: ('nnen', ('nsien', 'nten')),
-        PTV: ('tta', 'nsia'),
+        NOM: ("t", "nnet"),
+        GEN: ("nnen", ("nsien", "nten")),
+        PTV: ("tta", "nsia"),
         # locative, internal
-        INE: ('nnessa', 'nsissa'),
-        ELA: ('nnesta', 'nsista'),
-        ILL: ('nteen', 'nsiin'),
+        INE: ("nnessa", "nsissa"),
+        ELA: ("nnesta", "nsista"),
+        ILL: ("nteen", "nsiin"),
         # locative, external
-        ADE: ('nnella', 'nsilla'),
-        ABL: ('nnelta', 'nsilta'),
-        ALL: ('nnelle', 'nsille'),
+        ADE: ("nnella", "nsilla"),
+        ABL: ("nnelta", "nsilta"),
+        ALL: ("nnelle", "nsille"),
         # essive
-        ESS: ('ntena', 'nsina'),
-        TRANSL: ('nneksi', 'nsiksi'),
+        ESS: ("ntena", "nsina"),
+        TRANSL: ("nneksi", "nsiksi"),
         # rare
-        INSTRUC: ('nsin', 'nsin'),
-        ABE: ('nnetta', 'nsitta'),
-        COM: ('nsine', 'nsine'),  # works better
+        INSTRUC: ("nsin", "nsin"),
+        ABE: ("nnetta", "nsitta"),
+        COM: ("nsine", "nsine"),  # works better
     },
 }
 
 # kolme
-KOTUS_TYPE[108] = {
-    c: (KOTUS_TYPE[8][c][0], KOTUS_TYPE[7][c][1])
-    for c in KOTUS_TYPE[8]
-}
-KOTUS_TYPE[108][INSTRUC] = ('en', 'in')
-KOTUS_TYPE[108][ABE] = ('etta', 'itta')
-KOTUS_TYPE[108][COM] = ('ine', 'ine')
+KOTUS_TYPE[108] = {c: (KOTUS_TYPE[8][c][0], KOTUS_TYPE[7][c][1]) for c in KOTUS_TYPE[8]}
+KOTUS_TYPE[108][INSTRUC] = ("en", "in")
+KOTUS_TYPE[108][ABE] = ("etta", "itta")
+KOTUS_TYPE[108][COM] = ("ine", "ine")
 
 # seitsemän, kahdeksan, yhdeksän
 KOTUS_TYPE[110] = KOTUS_TYPE[10].copy()
-KOTUS_TYPE[110][NOM] = ('an', 'at')
+KOTUS_TYPE[110][NOM] = ("an", "at")
 
 # kymmenen
 KOTUS_TYPE[132] = KOTUS_TYPE[32].copy()
-KOTUS_TYPE[132][NOM] = ('en', 'et')
+KOTUS_TYPE[132][NOM] = ("en", "et")
 
 
 def inflect(parts, options):
     if not isinstance(parts, list):
         parts = [parts]
 
-    out = ''
+    out = ""
     for part in parts:
         # part is plain text, concat and continue
         if not isinstance(part, tuple):
@@ -401,56 +387,55 @@ class Options(object):
 
 class Num2Word_FI(lang_EUR.Num2Word_EUR):
     CURRENCY_FORMS = {
-        'BRL': (('real', 'realia'), GENERIC_CENTAVOS),
-        'CHF': (('frangi', 'frangia'), ('rappen', 'rappenia')),
-        'CNY': (('juan', 'juania'), ('fen', 'feniä')),
-        'EUR': (('euro', 'euroa'), GENERIC_CENTS),
-        'FIM': (('markka', 'markkaa'), ('penni', 'penniä')),  # historical
-        'INR': (('rupia', 'rupiaa'), ('paisa', 'paisaa')),
-        'JPY': (('jeni', 'jeniä'), ('sen', 'seniä')),  # rare subunit
-        'KRW': (('won', 'wonia'), ('jeon', 'jeonia')),  # rare subunit
-        'KPW': (('won', 'wonia'), ('chon', 'chonia')),  # rare subunit
-        'MXN': (('peso', 'pesoa'), GENERIC_CENTAVOS),
-        'RUB': (('rupla', 'ruplaa'), ('kopeekka', 'kopeekkaa')),
-        'TRY': (('liira', 'liiraa'), ('kuruş', 'kuruşia')),
-        'ZAR': (('randi', 'randia'), GENERIC_CENTS),
+        "BRL": (("real", "realia"), GENERIC_CENTAVOS),
+        "CHF": (("frangi", "frangia"), ("rappen", "rappenia")),
+        "CNY": (("juan", "juania"), ("fen", "feniä")),
+        "EUR": (("euro", "euroa"), GENERIC_CENTS),
+        "FIM": (("markka", "markkaa"), ("penni", "penniä")),  # historical
+        "INR": (("rupia", "rupiaa"), ("paisa", "paisaa")),
+        "JPY": (("jeni", "jeniä"), ("sen", "seniä")),  # rare subunit
+        "KRW": (("won", "wonia"), ("jeon", "jeonia")),  # rare subunit
+        "KPW": (("won", "wonia"), ("chon", "chonia")),  # rare subunit
+        "MXN": (("peso", "pesoa"), GENERIC_CENTAVOS),
+        "RUB": (("rupla", "ruplaa"), ("kopeekka", "kopeekkaa")),
+        "TRY": (("liira", "liiraa"), ("kuruş", "kuruşia")),
+        "ZAR": (("randi", "randia"), GENERIC_CENTS),
     }
 
     # crowns
-    for curr_code in 'DKK', 'ISK', 'NOK', 'SEK':
-        CURRENCY_FORMS[curr_code] = (('kruunu', 'kruunua'), ('äyri', 'äyriä'))
+    for curr_code in "DKK", "ISK", "NOK", "SEK":
+        CURRENCY_FORMS[curr_code] = (("kruunu", "kruunua"), ("äyri", "äyriä"))
 
     # dollars
-    for curr_code in 'AUD', 'CAD', 'HKD', 'NZD', 'SGD', 'USD':
-        CURRENCY_FORMS[curr_code] = (
-            ('dollari', 'dollaria'), GENERIC_CENTS)
+    for curr_code in "AUD", "CAD", "HKD", "NZD", "SGD", "USD":
+        CURRENCY_FORMS[curr_code] = (("dollari", "dollaria"), GENERIC_CENTS)
 
     # pounds
-    for curr_code in ('GBP',):
-        CURRENCY_FORMS[curr_code] = (('punta', 'puntaa'), ('penny', 'pennyä'))
+    for curr_code in ("GBP",):
+        CURRENCY_FORMS[curr_code] = (("punta", "puntaa"), ("penny", "pennyä"))
 
     CURRENCY_ADJECTIVES = {
-        'AUD': 'Australian',
-        'BRL': 'Brasilian',
-        'CAD': 'Kanadan',
-        'CHF': 'Sveitsin',
-        'DKK': 'Tanskan',
-        'FIM': 'Suomen',  # historical
-        'GBP': 'Englannin',
-        'HKD': 'Hongkongin',
-        'INR': 'Intian',
-        'ISK': 'Islannin',
-        'KRW': 'Etelä-Korean',
-        'KPW': 'Pohjois-Korean',
-        'MXN': 'Meksikon',
-        'NOK': 'Norjan',
-        'NZD': 'Uuden-Seelannin',
-        'RUB': 'Venäjän',
-        'SEK': 'Ruotsin',
-        'SGD': 'Singaporen',
-        'TRY': 'Turkin',
-        'USD': 'Yhdysvaltain',
-        'ZAR': 'Etelä-Afrikan',
+        "AUD": "Australian",
+        "BRL": "Brasilian",
+        "CAD": "Kanadan",
+        "CHF": "Sveitsin",
+        "DKK": "Tanskan",
+        "FIM": "Suomen",  # historical
+        "GBP": "Englannin",
+        "HKD": "Hongkongin",
+        "INR": "Intian",
+        "ISK": "Islannin",
+        "KRW": "Etelä-Korean",
+        "KPW": "Pohjois-Korean",
+        "MXN": "Meksikon",
+        "NOK": "Norjan",
+        "NZD": "Uuden-Seelannin",
+        "RUB": "Venäjän",
+        "SEK": "Ruotsin",
+        "SGD": "Singaporen",
+        "TRY": "Turkin",
+        "USD": "Yhdysvaltain",
+        "ZAR": "Etelä-Afrikan",
     }
 
     def __init__(self):
@@ -485,16 +470,16 @@ class Num2Word_FI(lang_EUR.Num2Word_EUR):
                 numword = numword.replace("sex", "se")
             # 1e6**7 is septiljoona but 1e6**17 is septendekiljoona
             elif numword.startswith("sept") and numword != "sept":
-                numword = "septen" + numword[len("sept"):]
+                numword = "septen" + numword[len("sept") :]
             # 1e6**8 is oktiljoona but 1e6**18 is duodevigintiljoona
             # (2 from 20)
             elif numword.startswith("octo"):
                 numword = high[i + -10]
-                numword = "duode" + numword[len("octo"):]
+                numword = "duode" + numword[len("octo") :]
             # 1e6**9 is noniljoona but 1e6**19 is undevigintiljoona (1 from 20)
             elif numword.startswith("nove"):
                 numword = high[i + -10]
-                numword = "unde" + numword[len("nove") + 1:]
+                numword = "unde" + numword[len("nove") + 1 :]
 
             # apply general replacements to all numwords
             for repl in replacements:
@@ -505,10 +490,10 @@ class Num2Word_FI(lang_EUR.Num2Word_EUR):
         for word, n in zip(translated, range(max, 0, -6)):
             if n == 6:
                 # irregularity considering short scale and long scale
-                self.cards[10 ** 9] = ("miljard", 5)
-                self.ords[10 ** 9] = ("miljardi", 45)
-            self.cards[10 ** n] = (word + "iljoon", 10)
-            self.ords[10 ** n] = (word + "iljoona", 45)
+                self.cards[10**9] = ("miljard", 5)
+                self.ords[10**9] = ("miljardi", 45)
+            self.cards[10**n] = (word + "iljoon", 10)
+            self.ords[10**n] = (word + "iljoona", 45)
 
     def set_mid_numwords(self, cards, ords):
         for key, val in cards:
@@ -635,7 +620,7 @@ class Num2Word_FI(lang_EUR.Num2Word_EUR):
             ltext = inflect(ltext, options)
             return (fmt % (ltext, rtext), lnum * rnum)
 
-    def to_cardinal(self, value, case='nominative', plural=False, prefer=None):
+    def to_cardinal(self, value, case="nominative", plural=False, prefer=None):
         case = NAME_TO_CASE[case]
         options = Options(False, case, plural, prefer)
         try:
@@ -644,7 +629,8 @@ class Num2Word_FI(lang_EUR.Num2Word_EUR):
             if case != NOM:
                 raise NotImplementedError(
                     "Cases other than nominative are not implemented for "
-                    "cardinal floating point numbers.")
+                    "cardinal floating point numbers."
+                )
             return self.to_cardinal_float(value)
 
         out = ""
@@ -659,7 +645,7 @@ class Num2Word_FI(lang_EUR.Num2Word_EUR):
         words, num = self.clean(val, options)
         return self.title(out + words)
 
-    def to_ordinal(self, value, case='nominative', plural=False, prefer=None):
+    def to_ordinal(self, value, case="nominative", plural=False, prefer=None):
         case = NAME_TO_CASE[case]
         options = Options(True, case, plural, prefer)
 
@@ -671,9 +657,9 @@ class Num2Word_FI(lang_EUR.Num2Word_EUR):
         words, num = self.clean(val, options)
         return self.title(words)
 
-    def to_ordinal_num(self, value, case='nominative', plural=False):
+    def to_ordinal_num(self, value, case="nominative", plural=False):
         """Convert to abbreviated ordinal form (1., 2., 3. etc)"""
-        return str(value) + '.'
+        return str(value) + "."
 
     def to_year(self, val, suffix=None, longval=True):
         suffix = suffix or ""
@@ -682,8 +668,9 @@ class Num2Word_FI(lang_EUR.Num2Word_EUR):
             suffix = suffix or " ennen ajanlaskun alkua"
         return self.to_cardinal(val).replace(" ", "") + suffix
 
-    def to_currency(self, val, currency="EUR", cents=True, separator=" ja",
-                    adjective=False):
+    def to_currency(
+        self, val, currency="EUR", cents=True, separator=" ja", adjective=False
+    ):
         # Handle integers specially - just add currency name without cents
         if isinstance(val, int):
             try:
@@ -691,8 +678,12 @@ class Num2Word_FI(lang_EUR.Num2Word_EUR):
             except (KeyError, AttributeError):
                 # Fallback to base implementation for unknown currency
                 return super(Num2Word_FI, self).to_currency(
-                    val, currency=currency, cents=cents, separator=separator,
-                    adjective=adjective)
+                    val,
+                    currency=currency,
+                    cents=cents,
+                    separator=separator,
+                    adjective=adjective,
+                )
 
             minus_str = self.negword if val < 0 else ""
             abs_val = abs(val)
@@ -702,14 +693,22 @@ class Num2Word_FI(lang_EUR.Num2Word_EUR):
             if abs_val == 1:
                 currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
             else:
-                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+                currency_str = (
+                    cr1[1]
+                    if isinstance(cr1, tuple) and len(cr1) > 1
+                    else (cr1[0] if isinstance(cr1, tuple) else cr1)
+                )
 
-            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+            return ("%s %s %s" % (minus_str, money_str, currency_str)).strip()
 
         # For floats, use the parent class implementation
         return super(Num2Word_FI, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator,
-            adjective=adjective)
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
+        )
 
     def splitnum(self, value, options):
         elems = self.ords if options.ordinal else self.cards

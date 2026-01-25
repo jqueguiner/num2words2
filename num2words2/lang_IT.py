@@ -24,16 +24,49 @@ from .lang_EUR import Num2Word_EUR
 ZERO = "zero"
 
 CARDINAL_WORDS = [
-    ZERO, "uno", "due", "tre", "quattro", "cinque", "sei", "sette", "otto",
-    "nove", "dieci", "undici", "dodici", "tredici", "quattordici", "quindici",
-    "sedici", "diciassette", "diciotto", "diciannove"
+    ZERO,
+    "uno",
+    "due",
+    "tre",
+    "quattro",
+    "cinque",
+    "sei",
+    "sette",
+    "otto",
+    "nove",
+    "dieci",
+    "undici",
+    "dodici",
+    "tredici",
+    "quattordici",
+    "quindici",
+    "sedici",
+    "diciassette",
+    "diciotto",
+    "diciannove",
 ]
 
 ORDINAL_WORDS = [
-    ZERO, "primo", "secondo", "terzo", "quarto", "quinto", "sesto", "settimo",
-    "ottavo", "nono", "decimo", "undicesimo", "dodicesimo", "tredicesimo",
-    "quattordicesimo", "quindicesimo", "sedicesimo", "diciassettesimo",
-    "diciottesimo", "diciannovesimo"
+    ZERO,
+    "primo",
+    "secondo",
+    "terzo",
+    "quarto",
+    "quinto",
+    "sesto",
+    "settimo",
+    "ottavo",
+    "nono",
+    "decimo",
+    "undicesimo",
+    "dodicesimo",
+    "tredicesimo",
+    "quattordicesimo",
+    "quindicesimo",
+    "sedicesimo",
+    "diciassettesimo",
+    "diciottesimo",
+    "diciannovesimo",
 ]
 
 # The script can extrapolate the missing numbers from the base forms.
@@ -41,15 +74,25 @@ STR_TENS = {2: "venti", 3: "trenta", 4: "quaranta", 6: "sessanta"}
 
 # These prefixes are used for extremely big numbers.
 EXPONENT_PREFIXES = [
-    ZERO, "m", "b", "tr", "quadr", "quint", "sest", "sett", "ott", "nov", "dec"
+    ZERO,
+    "m",
+    "b",
+    "tr",
+    "quadr",
+    "quint",
+    "sest",
+    "sett",
+    "ott",
+    "nov",
+    "dec",
 ]
 
 EXPONENT = EXPONENT_PREFIXES  # Alias for backward compatibility
 
 
-GENERIC_DOLLARS = ('dollaro', 'dollari')
-GENERIC_CENTS = ('centesimo', 'centesimi')
-CURRENCIES_UNA = ('GBP')
+GENERIC_DOLLARS = ("dollaro", "dollari")
+GENERIC_CENTS = ("centesimo", "centesimi")
+CURRENCIES_UNA = "GBP"
 
 
 # Helper functions
@@ -63,25 +106,29 @@ def accentuate(string):
     # not crucial (duh), so...
     return " ".join(
         # Deletes half-sentence accents and accentuates the last "tre"
-        [w.replace("tré", "tre")[:-3] + "tré"
-         # We shouldn't accentuate a single "tre": is has to be a composite
-         # word.                ~~~~~~~~~~
-         if w[-3:] == "tre" and len(w) > 3
-         # Deletes half-sentence accents anyway
-         #     ~~~~~~~~~~~~~~~~~~~~~~
-         else w.replace("tré", "tre")
-         for w in string.split()
-         ])
+        [
+            (
+                w.replace("tré", "tre")[:-3] + "tré"
+                # We shouldn't accentuate a single "tre": is has to be a composite
+                # word.                ~~~~~~~~~~
+                if w[-3:] == "tre" and len(w) > 3
+                # Deletes half-sentence accents anyway
+                #     ~~~~~~~~~~~~~~~~~~~~~~
+                else w.replace("tré", "tre")
+            )
+            for w in string.split()
+        ]
+    )
 
 
 def phonetic_contraction(string):
-    return (string
-            .replace("oo", "o")  # ex. "centootto"
-            .replace("ao", "o")  # ex. "settantaotto"
-            .replace("io", "o")  # ex. "ventiotto"
-            .replace("au", "u")  # ex. "trentauno"
-            .replace("iu", "u")  # ex. "ventiunesimo"
-            )
+    return (
+        string.replace("oo", "o")  # ex. "centootto"
+        .replace("ao", "o")  # ex. "settantaotto"
+        .replace("io", "o")  # ex. "ventiotto"
+        .replace("au", "u")  # ex. "trentauno"
+        .replace("iu", "u")  # ex. "ventiunesimo"
+    )
 
 
 def exponent_length_to_string(exponent_length):
@@ -99,13 +146,14 @@ def exponent_length_to_string(exponent_length):
 # Main class
 # ==========
 
+
 class Num2Word_IT(Num2Word_EUR):
     CURRENCY_FORMS = {
-        'EUR': (('euro', 'euro'), GENERIC_CENTS),
-        'USD': (GENERIC_DOLLARS, GENERIC_CENTS),
-        'GBP': (('sterlina', 'sterline'), ('penny', 'penny')),
-        'CNY': (('yuan', 'yuan'), ('fen', 'fen')),
-        'CHF': (('franco', 'franchi'), GENERIC_CENTS),
+        "EUR": (("euro", "euro"), GENERIC_CENTS),
+        "USD": (GENERIC_DOLLARS, GENERIC_CENTS),
+        "GBP": (("sterlina", "sterline"), ("penny", "penny")),
+        "CNY": (("yuan", "yuan"), ("fen", "fen")),
+        "CHF": (("franco", "franchi"), GENERIC_CENTS),
     }
     MINUS_PREFIX_WORD = "meno "
     FLOAT_INFIX_WORD = " virgola "
@@ -122,7 +170,7 @@ class Num2Word_IT(Num2Word_EUR):
             prefix = self.to_ordinal(int(float_number))
         else:
             prefix = self.to_cardinal(int(float_number))
-        float_part = str(float_number).split('.')[1]
+        float_part = str(float_number).split(".")[1]
         postfix = " ".join(
             # Drops the trailing zero and comma
             [self.to_cardinal(int(c)) for c in float_part]
@@ -158,7 +206,7 @@ class Num2Word_IT(Num2Word_EUR):
         return prefix + postfix
 
     def big_number_to_cardinal(self, number):
-        digits = [c for c in str(number)]
+        digits = [c for c in str(int(number))]
         length = len(digits)
         if length >= 66:
             raise NotImplementedError("The given number is too large.")
@@ -209,15 +257,18 @@ class Num2Word_IT(Num2Word_EUR):
         return string if number < 0 else accentuate(string)
 
     def to_ordinal(self, number):
+        if number < 0:
+            return Num2Word_IT.MINUS_PREFIX_WORD + self.to_ordinal(-number)
+
+        if isinstance(number, float) and not number.is_integer():
+            return self.float_to_words(number, ordinal=True)
+
+        number = int(number)
         tens = number % 100
         # Italian grammar is poorly defined here ¯\_(ツ)_/¯:
         #   centodecimo VS centodieciesimo VS centesimo decimo?
         is_outside_teens = not 10 < tens < 20
-        if number < 0:
-            return Num2Word_IT.MINUS_PREFIX_WORD + self.to_ordinal(-number)
-        elif number % 1 != 0:
-            return self.float_to_words(number, ordinal=True)
-        elif number < 20:
+        if number < 20:
             return ORDINAL_WORDS[int(number)]
         elif is_outside_teens and tens % 10 == 3:
             # Gets rid of the accent
@@ -230,8 +281,13 @@ class Num2Word_IT(Num2Word_EUR):
                 string += "l"
             return string + "esimo"
 
-    def to_currency(self, val, currency='EUR', cents=True, separator=' e',
-                    adjective=False):
+    def to_ordinal_num(self, value):
+        self.verify_ordinal(value)
+        return str(int(value))
+
+    def to_currency(
+        self, val, currency="EUR", cents=True, separator=" e", adjective=False
+    ):
         # Handle integers specially - just add currency name without cents
         if isinstance(val, int):
             try:
@@ -239,8 +295,12 @@ class Num2Word_IT(Num2Word_EUR):
             except (KeyError, AttributeError):
                 # Fallback to base implementation for unknown currency
                 return super(Num2Word_IT, self).to_currency(
-                    val, currency=currency, cents=cents, separator=separator,
-                    adjective=adjective)
+                    val,
+                    currency=currency,
+                    cents=cents,
+                    separator=separator,
+                    adjective=adjective,
+                )
 
             minus_str = "meno" if val < 0 else ""
             abs_val = abs(val)
@@ -250,7 +310,11 @@ class Num2Word_IT(Num2Word_EUR):
             if abs_val == 1:
                 currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
             else:
-                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+                currency_str = (
+                    cr1[1]
+                    if isinstance(cr1, tuple) and len(cr1) > 1
+                    else (cr1[0] if isinstance(cr1, tuple) else cr1)
+                )
 
             # Build result with proper spacing
             if minus_str:
@@ -261,5 +325,9 @@ class Num2Word_IT(Num2Word_EUR):
 
         # For floats, use the parent class implementation
         return super(Num2Word_IT, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator,
-            adjective=adjective)
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
+        )

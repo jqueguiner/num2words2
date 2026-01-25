@@ -23,16 +23,27 @@ from .base import Num2Word_Base
 # Norwegian Nynorsk language support
 class Num2Word_NN(Num2Word_Base):
     CURRENCY_FORMS = {
-        'NOK': (('krone', 'kroner'), ('øre', 'øre')),
-        'USD': (('dollar', 'dollars'), ('cent', 'cents')),
-        'EUR': (('euro', 'euros'), ('cent', 'cents'))
+        "NOK": (("krone", "kroner"), ("øre", "øre")),
+        "USD": (("dollar", "dollars"), ("cent", "cents")),
+        "EUR": (("euro", "euros"), ("cent", "cents")),
     }
 
     def setup(self):
         self.negword = "minus "
         self.pointword = "point"
-        self.ones = ['', 'ein', 'to', 'tre', 'fire', 'fem', 'seks', 'sju', 'åtte', 'ni']
-        self.tens = ['', 'ti', 'tjue', 'tretti', 'førti', 'femti', 'seksti', 'sytti', 'åtti', 'nitti']
+        self.ones = ["", "ein", "to", "tre", "fire", "fem", "seks", "sju", "åtte", "ni"]
+        self.tens = [
+            "",
+            "ti",
+            "tjue",
+            "tretti",
+            "førti",
+            "femti",
+            "seksti",
+            "sytti",
+            "åtti",
+            "nitti",
+        ]
         self.hundred = "hundre"
         self.thousand = "tusen"
         self.million = "million"
@@ -41,14 +52,14 @@ class Num2Word_NN(Num2Word_Base):
         """Convert a number to its word representation in Norwegian Nynorsk."""
         n = str(number).strip()
 
-        if n.startswith('-'):
+        if n.startswith("-"):
             n = n[1:]
             ret = self.negword
         else:
             ret = ""
 
-        if '.' in n:
-            left, right = n.split('.', 1)
+        if "." in n:
+            left, right = n.split(".", 1)
             ret += self._int_to_word(int(left)) + " " + self.pointword + " "
             for digit in right:
                 ret += self._int_to_word(int(digit)) + " "
@@ -110,18 +121,22 @@ class Num2Word_NN(Num2Word_Base):
         """Convert to year in Norwegian Nynorsk."""
         return self.to_cardinal(val)
 
-    def to_currency(self, val, currency='NOK', cents=True, separator=' ', adjective=False):
+    def to_currency(
+        self, val, currency="NOK", cents=True, separator=" ", adjective=False
+    ):
         """Convert to currency in Norwegian Nynorsk."""
         is_negative = False
         if val < 0:
             is_negative = True
             val = abs(val)
 
-        parts = str(val).split('.')
+        parts = str(val).split(".")
         left = int(parts[0]) if parts[0] else 0
-        right = int(parts[1][:2].ljust(2, '0')) if len(parts) > 1 and parts[1] else 0
+        right = int(parts[1][:2].ljust(2, "0")) if len(parts) > 1 and parts[1] else 0
 
-        cr1, cr2 = self.CURRENCY_FORMS.get(currency, list(self.CURRENCY_FORMS.values())[0])
+        cr1, cr2 = self.CURRENCY_FORMS.get(
+            currency, list(self.CURRENCY_FORMS.values())[0]
+        )
 
         left_str = self._int_to_word(left)
         result = left_str + " " + (cr1[1] if left != 1 else cr1[0])

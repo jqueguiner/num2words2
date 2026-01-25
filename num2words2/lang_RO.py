@@ -28,9 +28,9 @@ class Num2Word_RO(lang_EUR.Num2Word_EUR):
     GIGA_SUFFIX_I = "iliarde"
 
     CURRENCY_FORMS = {
-        'RON': (('leu', 'lei', 'de lei'), ('ban', 'bani', 'de bani')),
-        'EUR': (('euro', 'euro', 'de euro'), ('cent', 'cenţi', 'de cenţi')),
-        'USD': (('dolar', 'dolari', 'de dolari'), ('cent', 'cenţi', 'de cenţi')),
+        "RON": (("leu", "lei", "de lei"), ("ban", "bani", "de bani")),
+        "EUR": (("euro", "euro", "de euro"), ("cent", "cenţi", "de cenţi")),
+        "USD": (("dolar", "dolari", "de dolari"), ("cent", "cenţi", "de cenţi")),
     }
 
     def setup(self):
@@ -39,38 +39,81 @@ class Num2Word_RO(lang_EUR.Num2Word_EUR):
         self.negword = "minus "
         self.pointword = "virgulă"
         self.exclude_title = ["și", "virgulă", "minus"]
-        self.errmsg_toobig = (
-            "Numărul e prea mare pentru a \
+        self.errmsg_toobig = "Numărul e prea mare pentru a \
 fi convertit în cuvinte (abs(%s) > %s)."
-        )
-        self.mid_numwords = [(1000, "mie/i"), (100, "sută/e"),
-                             (90, "nouăzeci"), (80, "optzeci"),
-                             (70, "șaptezeci"), (60, "șaizeci"),
-                             (50, "cincizeci"), (40, "patruzeci"),
-                             (30, "treizeci")]
-        self.low_numwords = ["douăzeci", "nouăsprezece", "optsprezece",
-                             "șaptesprezece", "șaisprezece", "cincisprezece",
-                             "paisprezece", "treisprezece", "doisprezece",
-                             "unsprezece", "zece", "nouă", "opt", "șapte",
-                             "șase", "cinci", "patru", "trei", "doi",
-                             "unu", "zero"]
-        self.gen_numwords = ["", "o", "două", "trei", "patru", "cinci",
-                             "șase", "șapte", "opt", "nouă"]
-        self.gen_numwords_n = ["", "un", "două", "trei", "patru", "cinci",
-                               "șase", "șapte", "opt", "nouă"]
+        self.mid_numwords = [
+            (1000, "mie/i"),
+            (100, "sută/e"),
+            (90, "nouăzeci"),
+            (80, "optzeci"),
+            (70, "șaptezeci"),
+            (60, "șaizeci"),
+            (50, "cincizeci"),
+            (40, "patruzeci"),
+            (30, "treizeci"),
+        ]
+        self.low_numwords = [
+            "douăzeci",
+            "nouăsprezece",
+            "optsprezece",
+            "șaptesprezece",
+            "șaisprezece",
+            "cincisprezece",
+            "paisprezece",
+            "treisprezece",
+            "doisprezece",
+            "unsprezece",
+            "zece",
+            "nouă",
+            "opt",
+            "șapte",
+            "șase",
+            "cinci",
+            "patru",
+            "trei",
+            "doi",
+            "unu",
+            "zero",
+        ]
+        self.gen_numwords = [
+            "",
+            "o",
+            "două",
+            "trei",
+            "patru",
+            "cinci",
+            "șase",
+            "șapte",
+            "opt",
+            "nouă",
+        ]
+        self.gen_numwords_n = [
+            "",
+            "un",
+            "două",
+            "trei",
+            "patru",
+            "cinci",
+            "șase",
+            "șapte",
+            "opt",
+            "nouă",
+        ]
         self.numwords_inflections = {
             100: self.gen_numwords,
             1000: self.gen_numwords,
             1000000: self.gen_numwords_n,
-            1000000000: self.gen_numwords_n
+            1000000000: self.gen_numwords_n,
         }
-        self.ords = {"unu": "primul",
-                     "doi": "al doilea",
-                     "three": "al treilea",
-                     "cinci": "al cincilea",
-                     "opt": "al optulea",
-                     "nouă": "al nouălea",
-                     "doisprezece": "al doisprezecelea"}
+        self.ords = {
+            "unu": "primul",
+            "doi": "al doilea",
+            "three": "al treilea",
+            "cinci": "al cincilea",
+            "opt": "al optulea",
+            "nouă": "al nouălea",
+            "doisprezece": "al doisprezecelea",
+        }
 
     def merge(self, lpair, rpair):
         ltext, lnum = lpair
@@ -92,8 +135,7 @@ fi convertit în cuvinte (abs(%s) > %s)."
                     return ("%s și %s" % (ltext, rtext), lnum + rnum)
             else:
                 rtext_i = self.inflect(lnum * rnum, rtext, lnum)
-                ltext_i = ltext if lnum % 10 != 2 \
-                    else ltext.replace("doi", "două")
+                ltext_i = ltext if lnum % 10 != 2 else ltext.replace("doi", "două")
                 return ("%s %s" % (ltext_i, rtext_i), lnum * rnum)
         else:
             if rnum in self.numwords_inflections:
@@ -130,11 +172,7 @@ fi convertit în cuvinte (abs(%s) > %s)."
         text = text.split("/")
         result = text[0]
         if len(text) > 1:
-            forms = [
-                text[0],
-                text[0][:-1] + text[1],
-                "de " + text[0][:-1] + text[1]
-            ]
+            forms = [text[0], text[0][:-1] + text[1], "de " + text[0][:-1] + text[1]]
             result = self.pluralize(side_effect, forms)
         # mega inflections are different
         if side_effect > 1 and result.endswith(self.MEGA_SUFFIX):
@@ -143,8 +181,9 @@ fi convertit în cuvinte (abs(%s) > %s)."
             result = result.replace("iliare", self.GIGA_SUFFIX_I)
         return result
 
-    def to_currency(self, val, currency="RON", cents=False, separator=" și",
-                    adjective=False):
+    def to_currency(
+        self, val, currency="RON", cents=False, separator=" și", adjective=False
+    ):
         # romanian currency has a particularity for numeral: one
         self.gen_numwords[1] = "una"
         result = super(Num2Word_RO, self).to_currency(
@@ -152,32 +191,26 @@ fi convertit în cuvinte (abs(%s) > %s)."
             currency,
             True,
             separator,
-            adjective
+            adjective,
         )
         self.gen_numwords[1] = "o"  # revert numeral
-        return result.replace(
-            "unu leu", "un leu"
-        ).replace(
-            "unu ban", "un ban"
-        ).replace(
-            # if the romanian low text is 0, it is not usually printed
-            separator + " zero bani", ""
+        return (
+            result.replace("unu leu", "un leu")
+            .replace("unu ban", "un ban")
+            .replace(
+                # if the romanian low text is 0, it is not usually printed
+                separator + " zero bani",
+                "",
+            )
         )
 
     def to_year(self, val, suffix=None, longval=True):
-        result = super(Num2Word_RO, self).to_year(
-            val,
-            longval=longval
-        )
+        result = super(Num2Word_RO, self).to_year(val, longval=longval)
         # for years we want the era negation e.g. B.C., in our case
         # it's î.Hr. or î.e.n
         if result.startswith(self.negword):
             result = result.replace(self.negword, "")
             suffix = "î.Hr." if not suffix else suffix
         if suffix:
-            result = "".join([
-                result,
-                " ",
-                suffix
-            ])
+            result = "".join([result, " ", suffix])
         return result

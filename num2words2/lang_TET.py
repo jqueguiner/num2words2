@@ -22,18 +22,17 @@ from num2words2.currency import parse_currency_parts
 
 from .lang_EUR import Num2Word_EUR
 
-DOLLAR = ('dolar', 'dolar')
-CENTS = ('sentavu', 'sentavu')
+DOLLAR = ("dolar", "dolar")
+CENTS = ("sentavu", "sentavu")
 
 
 class Num2Word_TET(Num2Word_EUR):
-
     CURRENCY_FORMS = {
-        'AUD': (DOLLAR, CENTS),
-        'CAD': (DOLLAR, CENTS),
-        'EUR': (('euro', 'euros'), CENTS),
-        'GBP': (('pound sterling', 'pound sterling'), ('pence', 'pence')),
-        'USD': (DOLLAR, CENTS),
+        "AUD": (DOLLAR, CENTS),
+        "CAD": (DOLLAR, CENTS),
+        "EUR": (("euro", "euros"), CENTS),
+        "GBP": (("pound sterling", "pound sterling"), ("pence", "pence")),
+        "USD": (DOLLAR, CENTS),
     }
 
     GIGA_SUFFIX = None
@@ -49,15 +48,29 @@ class Num2Word_TET(Num2Word_EUR):
         self.count = 0
 
         self.mid_numwords = [
-            (1000, "rihun"), (100, "atus"), (90, "sia nulu"),
-            (80, "ualu nulu"), (70, "hitu nulu"), (60, "neen nulu"),
-            (50, "lima nulu"), (40, "haat nulu"), (30, "tolu nulu"),
-            (20, "rua nulu")
+            (1000, "rihun"),
+            (100, "atus"),
+            (90, "sia nulu"),
+            (80, "ualu nulu"),
+            (70, "hitu nulu"),
+            (60, "neen nulu"),
+            (50, "lima nulu"),
+            (40, "haat nulu"),
+            (30, "tolu nulu"),
+            (20, "rua nulu"),
         ]
         self.low_numwords = [
             "sanulu",
-            "sia", "ualu", "hitu", "neen", "lima", "haat", "tolu", "rua",
-            "ida", "mamuk"
+            "sia",
+            "ualu",
+            "hitu",
+            "neen",
+            "lima",
+            "haat",
+            "tolu",
+            "rua",
+            "ida",
+            "mamuk",
         ]
         self.hundreds = {
             1: "atus",
@@ -82,14 +95,11 @@ class Num2Word_TET(Num2Word_EUR):
                 value_str = str(cnum + nnum)
                 if int(value_str) > 100:
                     zero_list = value_str[1:-1]
-                    all_zero = all(element == '0' for element in zero_list)
+                    all_zero = all(element == "0" for element in zero_list)
                     if all_zero:
                         if self.count >= 1:
                             self.count += 0
-                            return (
-                                "ho %s %s" % (ctext, ntext),
-                                cnum + nnum
-                            )
+                            return ("ho %s %s" % (ctext, ntext), cnum + nnum)
                         self.count += 1
                         return ("%s %s" % (ctext, ntext), cnum + nnum)
 
@@ -100,11 +110,11 @@ class Num2Word_TET(Num2Word_EUR):
         return (ntext + " " + ctext, cnum * nnum)
 
     def ho_result(self, result, value):
-        index = result.find('ho')
-        count_ho = result.count('ho')
+        index = result.find("ho")
+        count_ho = result.count("ho")
 
         if index != -1 and count_ho >= 1:
-            index_rihun = result.find('rihun')
+            index_rihun = result.find("rihun")
             value_str = len(str(value))
             if index_rihun != -1 and value_str > 7:
                 result = result.replace("rihun ho", "ho rihun")
@@ -112,8 +122,9 @@ class Num2Word_TET(Num2Word_EUR):
             MEGA_SUFFIX = "iliaun"
             for low in lows:
                 result = result.replace(
-                    low + MEGA_SUFFIX + " ho", "ho " + low + MEGA_SUFFIX)
-            remove_first_ho = result.startswith('ho')
+                    low + MEGA_SUFFIX + " ho", "ho " + low + MEGA_SUFFIX
+                )
+            remove_first_ho = result.startswith("ho")
             if remove_first_ho:
                 result = result[3:]
         return result
@@ -122,10 +133,10 @@ class Num2Word_TET(Num2Word_EUR):
         value_str = str(value)
         result = self.ho_result(result, value)
         end_value = value_str[:-4]
-        end_true = end_value.endswith('0')
+        end_true = end_value.endswith("0")
         if end_true is False:
             if value > 100:
-                if value_str[-1] != '0' and value_str[-2] == '0':
+                if value_str[-1] != "0" and value_str[-2] == "0":
                     result = result.replace("ho", "")
                     result = result.replace("  ", " ")
 
@@ -165,38 +176,38 @@ class Num2Word_TET(Num2Word_EUR):
         words = self.remove_ho(words, value)
 
         if num in [90, 80, 70, 60, 50, 40, 30, 20, 10, 9, 8, 7, 5, 3, 2]:
-            words = 'da' + words + 'k'
+            words = "da" + words + "k"
         if num in [6, 4]:
-            words = 'da' + words
+            words = "da" + words
         if num == 1:
-            words = 'dahuluk'
+            words = "dahuluk"
         if num in [900, 800, 700, 500, 300, 200, 100]:
-            words = 'dah' + words + 'k'
+            words = "dah" + words + "k"
         if num in [600, 400]:
-            words = 'dah' + words
+            words = "dah" + words
 
         words_split = words.split()
         if len(words_split) >= 3 and num < 100:
-            first_word = 'da' + words_split[0]
+            first_word = "da" + words_split[0]
             second_word = " ".join(words_split[1:])
-            if 'haat' in second_word or 'neen' in second_word:
+            if "haat" in second_word or "neen" in second_word:
                 words = first_word + " " + second_word
             else:
-                words = first_word + " " + second_word + 'k'
+                words = first_word + " " + second_word + "k"
 
-        word_first = 'dah' + words_split[0]
-        if word_first == 'dahatus' and len(words_split) >= 3:
+        word_first = "dah" + words_split[0]
+        if word_first == "dahatus" and len(words_split) >= 3:
             word_second = " ".join(words_split[1:])
-            if 'haat' in word_second or 'neen' in word_second:
+            if "haat" in word_second or "neen" in word_second:
                 words = word_first + " " + word_second
             else:
-                words = word_first + " " + word_second + 'k'
+                words = word_first + " " + word_second + "k"
 
         if len(str(num)) > 3:
-            if 'haat' in words_split[-1:] or 'neen' in words_split[-1:]:
-                words = 'da' + words
+            if "haat" in words_split[-1:] or "neen" in words_split[-1:]:
+                words = "da" + words
             else:
-                words = 'da' + words + 'k'
+                words = "da" + words + "k"
 
         result = self.title(out + words)
 
@@ -208,10 +219,10 @@ class Num2Word_TET(Num2Word_EUR):
 
     def to_year(self, val, longval=True):
         if val < 0:
-            return self.to_cardinal(abs(val)) + ' antes Kristu'
+            return self.to_cardinal(abs(val)) + " antes Kristu"
         return self.to_cardinal(val)
 
-    def to_currency(self, val, currency='USD', cents=True):
+    def to_currency(self, val, currency="USD", cents=True):
         """
         Args:
             val: Numeric value
@@ -236,8 +247,9 @@ class Num2Word_TET(Num2Word_EUR):
 
         except KeyError:
             raise NotImplementedError(
-                'Currency code "%s" not implemented for "%s"' %
-                (currency, self.__class__.__name__))
+                'Currency code "%s" not implemented for "%s"'
+                % (currency, self.__class__.__name__)
+            )
 
         minus_str = "%s " % self.negword.strip() if is_negative else ""
         money_str = self._money_verbose(left, currency)
@@ -245,41 +257,40 @@ class Num2Word_TET(Num2Word_EUR):
         # For integers, never show cents
         if is_integer_input:
             curr_name = self.pluralize(left, cr1)
-            return u'%s%s %s' % (
-                minus_str,
-                curr_name,
-                money_str
-            )
+            return "%s%s %s" % (minus_str, curr_name, money_str)
 
         if has_fractional_cents and right > 0:
             # Handle fractional cents using to_cardinal_float
             fractional_cents = right / 100.0
-            cents_str = self.to_cardinal_float(fractional_cents) if hasattr(self, 'to_cardinal_float') else self.to_cardinal(fractional_cents)
+            cents_str = (
+                self.to_cardinal_float(fractional_cents)
+                if hasattr(self, "to_cardinal_float")
+                else self.to_cardinal(fractional_cents)
+            )
         else:
-            cents_str = self._cents_verbose(right, currency) \
-                if cents else self._cents_terse(right, currency)
+            cents_str = (
+                self._cents_verbose(right, currency)
+                if cents
+                else self._cents_terse(right, currency)
+            )
 
         if right == 0:
-            return u'%s%s %s' % (
-                minus_str,
-                self.pluralize(left, cr1),
-                money_str
-            )
+            return "%s%s %s" % (minus_str, self.pluralize(left, cr1), money_str)
         else:
             if has_fractional_cents:
                 # For fractional cents, use different formatting
-                return u'%s%s %s %s %s' % (
+                return "%s%s %s %s %s" % (
                     minus_str,
                     self.pluralize(left, cr1),
                     money_str,
                     cents_str,
-                    self.pluralize(1, cr2)  # Use singular for fractional
+                    self.pluralize(1, cr2),  # Use singular for fractional
                 )
             else:
-                return u'%s%s %s %s %s' % (
+                return "%s%s %s %s %s" % (
                     minus_str,
                     self.pluralize(left, cr1),
                     money_str,
                     self.pluralize(right, cr2),
-                    cents_str
+                    cents_str,
                 )

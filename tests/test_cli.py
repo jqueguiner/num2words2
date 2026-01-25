@@ -27,10 +27,10 @@ import num2words2 as num2words
 
 
 class CliCaller(object):
-
     def __init__(self):
-        self.cmd = os.path.realpath(os.path.join(os.path.dirname(__file__),
-                                    "..", "bin", "num2words2"))
+        self.cmd = os.path.realpath(
+            os.path.join(os.path.dirname(__file__), "..", "bin", "num2words2")
+        )
         self.cmd_list = ["python", self.cmd]
 
     def run_cmd(self, *args):
@@ -51,63 +51,55 @@ class CliTestCase(unittest.TestCase):
         """
         output = self.cli.run_cmd()
         self.assertEqual(output.return_code, 1)
-        self.assertTrue(output.err.startswith('Usage:'))
+        self.assertTrue(output.err.startswith("Usage:"))
 
     def test_cli_list_langs(self):
-        """You should be able to list all available languages
-        """
-        output = self.cli.run_cmd('--list-languages')
+        """You should be able to list all available languages"""
+        output = self.cli.run_cmd("--list-languages")
         self.assertEqual(
             sorted(list(num2words.CONVERTER_CLASSES.keys())),
-            [out for out in output.out.strip().splitlines() if out]
+            [out for out in output.out.strip().splitlines() if out],
         )
-        output = self.cli.run_cmd('-L')
+        output = self.cli.run_cmd("-L")
         self.assertEqual(
             sorted(list(num2words.CONVERTER_CLASSES.keys())),
-            [out for out in output.out.strip().splitlines() if out]
+            [out for out in output.out.strip().splitlines() if out],
         )
 
     def test_cli_list_converters(self):
-        """You should be able to list all available converters
-        """
-        output = self.cli.run_cmd('--list-converters')
+        """You should be able to list all available converters"""
+        output = self.cli.run_cmd("--list-converters")
         self.assertEqual(
             sorted(list(num2words.CONVERTER_TYPES)),
-            [out for out in output.out.strip().splitlines() if out]
+            [out for out in output.out.strip().splitlines() if out],
         )
-        output = self.cli.run_cmd('-C')
+        output = self.cli.run_cmd("-C")
         self.assertEqual(
             sorted(list(num2words.CONVERTER_TYPES)),
-            [out for out in output.out.strip().splitlines() if out]
+            [out for out in output.out.strip().splitlines() if out],
         )
 
     def test_cli_default_lang(self):
-        """Default to english
-        """
+        """Default to english"""
         output = self.cli.run_cmd(150)
         self.assertEqual(output.return_code, 0)
-        self.assertEqual(
-            output.out.strip(),
-            "one hundred and fifty"
-        )
+        self.assertEqual(output.out.strip(), "one hundred and fifty")
 
     def test_cli_with_lang(self):
-        """You should be able to specify a language
-        """
-        output = self.cli.run_cmd(150, '--lang', 'es')
+        """You should be able to specify a language"""
+        output = self.cli.run_cmd(150, "--lang", "es")
         self.assertEqual(output.return_code, 0)
-        self.assertEqual(
-            output.out.strip(),
-            "ciento cincuenta"
-        )
+        self.assertEqual(output.out.strip(), "ciento cincuenta")
 
     def test_cli_with_lang_to(self):
-        """You should be able to specify a language and currency
-        """
-        output = self.cli.run_cmd(150.55, '--lang', 'es', '--to', 'currency')
+        """You should be able to specify a language and currency"""
+        output = self.cli.run_cmd(150.55, "--lang", "es", "--to", "currency")
         self.assertEqual(output.return_code, 0)
         self.assertEqual(
-            (output.out.decode('utf-8') if hasattr(output.out, 'decode') else
-             output.out).strip(),
-            "ciento cincuenta euros con cincuenta y cinco céntimos"
+            (
+                output.out.decode("utf-8")
+                if hasattr(output.out, "decode")
+                else output.out
+            ).strip(),
+            "ciento cincuenta euros con cincuenta y cinco céntimos",
         )

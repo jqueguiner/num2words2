@@ -43,8 +43,10 @@ class Num2Word_Base(object):
         self.setup()
 
         # uses cards
-        if any(hasattr(self, field) for field in
-               ['high_numwords', 'mid_numwords', 'low_numwords']):
+        if any(
+            hasattr(self, field)
+            for field in ["high_numwords", "mid_numwords", "low_numwords"]
+        ):
             self.cards = OrderedDict()
             self.set_numwords()
             self.MAXVAL = 1000 * list(self.cards.keys())[0]
@@ -92,10 +94,10 @@ class Num2Word_Base(object):
 
     def parse_minus(self, num_str):
         """Detach minus and return it as symbol with new num_str."""
-        if num_str.startswith('-'):
+        if num_str.startswith("-"):
             # Extra spacing to compensate if there is no minus.
-            return '%s ' % self.negword.strip(), num_str[1:]
-        return '', num_str
+            return "%s " % self.negword.strip(), num_str[1:]
+        return "", num_str
 
     def str_to_number(self, value):
         return Decimal(value)
@@ -145,7 +147,7 @@ class Num2Word_Base(object):
         pre, post = self.float2tuple(float(value))
 
         post = str(post)
-        post = '0' * (self.precision - len(post)) + post
+        post = "0" * (self.precision - len(post)) + post
 
         out = [self.to_cardinal(pre)]
         if value < 0 and pre == 0:
@@ -216,8 +218,16 @@ class Num2Word_Base(object):
         return "".join(text)
 
     # //CHECK: generalise? Any others like pounds/shillings/pence?
-    def to_splitnum(self, val, hightxt="", lowtxt="", jointxt="",
-                    divisor=100, longval=True, cents=True):
+    def to_splitnum(
+        self,
+        val,
+        hightxt="",
+        lowtxt="",
+        jointxt="",
+        divisor=100,
+        longval=True,
+        cents=True,
+    ):
         out = []
 
         if isinstance(val, float):
@@ -269,8 +279,9 @@ class Num2Word_Base(object):
     def _cents_terse(self, number, currency):
         return "%02d" % number
 
-    def to_currency(self, val, currency='EUR', cents=True, separator=',',
-                    adjective=False):
+    def to_currency(
+        self, val, currency="EUR", cents=True, separator=",", adjective=False
+    ):
         """
         Args:
             val: Numeric value
@@ -284,42 +295,44 @@ class Num2Word_Base(object):
         Handles whole numbers and decimal numbers differently
         """
         # Handle integers separately - no cents shown
+        # Only pure integers, NOT floats that happen to be whole numbers
         if isinstance(val, int):
             try:
                 cr1, cr2 = self.CURRENCY_FORMS[currency]
             except KeyError:
                 raise NotImplementedError(
-                    'Currency code "%s" not implemented for "%s"' %
-                    (currency, self.__class__.__name__))
+                    'Currency code "%s" not implemented for "%s"'
+                    % (currency, self.__class__.__name__)
+                )
 
             if adjective and currency in self.CURRENCY_ADJECTIVES:
                 cr1 = prefix_currency(self.CURRENCY_ADJECTIVES[currency], cr1)
 
-            minus_str = "%s " % self.negword.strip() if val < 0 else ""
-            money_str = self._money_verbose(abs(val), currency)
+            val_int = int(val) if isinstance(val, float) else val
+            minus_str = "%s " % self.negword.strip() if val_int < 0 else ""
+            money_str = self._money_verbose(abs(val_int), currency)
 
-            return u'%s%s %s' % (
-                minus_str,
-                money_str,
-                self.pluralize(abs(val), cr1)
-            )
+            return "%s%s %s" % (minus_str, money_str, self.pluralize(abs(val_int), cr1))
 
         # For floats, show full currency with cents
         # Check if value has more than 2 decimal places
         from decimal import Decimal
+
         decimal_val = Decimal(str(val))
         has_fractional_cents = (decimal_val * 100) % 1 != 0
 
-        left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
-                                                        keep_precision=has_fractional_cents)
+        left, right, is_negative = parse_currency_parts(
+            val, is_int_with_cents=False, keep_precision=has_fractional_cents
+        )
 
         try:
             cr1, cr2 = self.CURRENCY_FORMS[currency]
 
         except KeyError:
             raise NotImplementedError(
-                'Currency code "%s" not implemented for "%s"' %
-                (currency, self.__class__.__name__))
+                'Currency code "%s" not implemented for "%s"'
+                % (currency, self.__class__.__name__)
+            )
 
         if adjective and currency in self.CURRENCY_ADJECTIVES:
             cr1 = prefix_currency(self.CURRENCY_ADJECTIVES[currency], cr1)
@@ -328,12 +341,16 @@ class Num2Word_Base(object):
         money_str = self._money_verbose(left, currency)
 
         # Explicitly check if input has decimal point or non-zero cents
-        has_decimal = isinstance(val, float) or str(val).find('.') != -1
+        has_decimal = isinstance(val, float) or str(val).find(".") != -1
 
         # Only include cents if:
         # 1. Input has decimal point OR
         # 2. Cents are non-zero
-        if has_decimal or (isinstance(right, Decimal) and right > 0) or (isinstance(right, int) and right > 0):
+        if (
+            has_decimal
+            or (isinstance(right, Decimal) and right > 0)
+            or (isinstance(right, int) and right > 0)
+        ):
             # Handle fractional cents
             if isinstance(right, Decimal):
                 # Split into whole cents and fraction
@@ -343,35 +360,34 @@ class Num2Word_Base(object):
                 if fractional_part > 0:
                     # Convert fractional cents (e.g., 65.3 cents)
                     cents_str = self.to_cardinal(float(right))
-                    return u'%s%s %s%s %s %s' % (
+                    return "%s%s %s%s %s %s" % (
                         minus_str,
                         money_str,
                         self.pluralize(left, cr1),
                         separator,
                         cents_str,
-                        cr2[1] if isinstance(cr2, tuple) and len(cr2) > 1 else cr2
+                        cr2[1] if isinstance(cr2, tuple) and len(cr2) > 1 else cr2,
                     )
                 else:
                     # No fractional part, use normal processing
                     right = whole_cents
 
-            cents_str = self._cents_verbose(right, currency) \
-                if cents else self._cents_terse(right, currency)
+            cents_str = (
+                self._cents_verbose(right, currency)
+                if cents
+                else self._cents_terse(right, currency)
+            )
 
-            return u'%s%s %s%s %s %s' % (
+            return "%s%s %s%s %s %s" % (
                 minus_str,
                 money_str,
                 self.pluralize(left, cr1),
                 separator,
                 cents_str,
-                self.pluralize(right, cr2)
+                self.pluralize(right, cr2),
             )
         else:
-            return u'%s%s %s' % (
-                minus_str,
-                money_str,
-                self.pluralize(left, cr1)
-            )
+            return "%s%s %s" % (minus_str, money_str, self.pluralize(left, cr1))
 
     def setup(self):
         pass

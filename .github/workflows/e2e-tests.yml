@@ -6,16 +6,12 @@ on:
     paths:
       - 'num2words2/**'
       - 'tests/**'
-      - 'tests/run_e2e_tests.py'
-      - 'tests/e2e_test_suite.csv'
       - '.github/workflows/e2e-tests.yml'
   pull_request:
     branches: [ master, main ]
     paths:
       - 'num2words2/**'
       - 'tests/**'
-      - 'tests/run_e2e_tests.py'
-      - 'tests/e2e_test_suite.csv'
   schedule:
     # Run daily at 2 AM UTC
     - cron: '0 2 * * *'
@@ -58,25 +54,26 @@ jobs:
 
     - name: Quick E2E Test (PR/Push)
       if: github.event_name != 'schedule' && github.event_name != 'workflow_dispatch'
+      env:
+        PYTHONPATH: ${{ github.workspace }}${{ runner.os == 'Windows' && ';' || ':' }}${{ env.PYTHONPATH }}
       run: |
-        python tests/run_e2e_tests.py --quick --detailed
+        python tests/test_e2e_with_sentence_function.py
       continue-on-error: ${{ matrix.python-version == 'pypy-3.9' || matrix.python-version == 'pypy-3.10' }}
 
     - name: Full E2E Test (Scheduled)
       if: github.event_name == 'schedule'
+      env:
+        PYTHONPATH: ${{ github.workspace }}${{ runner.os == 'Windows' && ';' || ':' }}${{ env.PYTHONPATH }}
       run: |
-        python tests/run_e2e_tests.py --detailed --limit 10000
+        python tests/test_e2e_with_sentence_function.py
       continue-on-error: ${{ matrix.python-version == 'pypy-3.9' || matrix.python-version == 'pypy-3.10' }}
 
     - name: Custom E2E Test (Manual)
       if: github.event_name == 'workflow_dispatch'
+      env:
+        PYTHONPATH: ${{ github.workspace }}${{ runner.os == 'Windows' && ';' || ':' }}${{ env.PYTHONPATH }}
       run: |
-        if [ -z "${{ github.event.inputs.test_limit }}" ]; then
-          python tests/run_e2e_tests.py --detailed
-        else
-          python tests/run_e2e_tests.py --detailed --limit ${{ github.event.inputs.test_limit }}
-        fi
-      shell: bash
+        python tests/test_e2e_with_sentence_function.py
       continue-on-error: ${{ matrix.python-version == 'pypy-3.9' || matrix.python-version == 'pypy-3.10' }}
 
     - name: Upload test results

@@ -22,9 +22,9 @@ from .lang_EUR import Num2Word_EUR
 
 class Num2Word_EL(Num2Word_EUR):
     CURRENCY_FORMS = {
-        'EUR': (('ευρώ', 'ευρώ'), ('λεπτό', 'λεπτά')),
-        'USD': (('δολάριο', 'δολάρια'), ('σεντ', 'σεντς')),
-        'GBP': (('λίρα', 'λίρες'), ('πέννα', 'πένες')),
+        "EUR": (("ευρώ", "ευρώ"), ("λεπτό", "λεπτά")),
+        "USD": (("δολάριο", "δολάρια"), ("σεντ", "σεντς")),
+        "GBP": (("λίρα", "λίρες"), ("πέννα", "πένες")),
     }
 
     def setup(self):
@@ -32,9 +32,7 @@ class Num2Word_EL(Num2Word_EUR):
 
         self.negword = "μείον "
         self.pointword = "κόμμα"
-        self.errmsg_nonnum = (
-            "Μόνο αριθμοί μπορούν να μετατραπούν σε λέξεις."
-        )
+        self.errmsg_nonnum = "Μόνο αριθμοί μπορούν να μετατραπούν σε λέξεις."
         self.errmsg_toobig = (
             "Αριθμός πολύ μεγάλος για να μετατραπεί σε λέξεις (abs(%s) > %s)."
         )
@@ -42,23 +40,48 @@ class Num2Word_EL(Num2Word_EUR):
 
         # Override the EU settings with Greek
         self.GIGA_SUFFIX = ""  # Don't use the EU pattern
-        self.MEGA_SUFFIX = ""   # Don't use the EU pattern
+        self.MEGA_SUFFIX = ""  # Don't use the EU pattern
 
         # Mid numbers: thousands and hundreds with tens
-        self.mid_numwords = [(1000000000000, "τρισεκατομμύριο"),
-                             (1000000000, "δισεκατομμύριο"),
-                             (1000000, "εκατομμύριο"),
-                             (1000, "χίλια"), (100, "εκατό"),
-                             (90, "ενενήντα"), (80, "ογδόντα"), (70, "εβδομήντα"),
-                             (60, "εξήντα"), (50, "πενήντα"), (40, "σαράντα"),
-                             (30, "τριάντα")]
+        self.mid_numwords = [
+            (1000000000000, "τρισεκατομμύριο"),
+            (1000000000, "δισεκατομμύριο"),
+            (1000000, "εκατομμύριο"),
+            (1000, "χίλια"),
+            (100, "εκατό"),
+            (90, "ενενήντα"),
+            (80, "ογδόντα"),
+            (70, "εβδομήντα"),
+            (60, "εξήντα"),
+            (50, "πενήντα"),
+            (40, "σαράντα"),
+            (30, "τριάντα"),
+        ]
 
         # Low numbers 0-29
-        self.low_numwords = ["είκοσι", "δεκαεννέα", "δεκαοκτώ", "δεκαεπτά",
-                             "δεκαέξι", "δεκαπέντε", "δεκατέσσερα", "δεκατρία",
-                             "δώδεκα", "έντεκα", "δέκα", "εννέα", "οκτώ",
-                             "επτά", "έξι", "πέντε", "τέσσερα", "τρία", "δύο",
-                             "ένα", "μηδέν"]
+        self.low_numwords = [
+            "είκοσι",
+            "δεκαεννέα",
+            "δεκαοκτώ",
+            "δεκαεπτά",
+            "δεκαέξι",
+            "δεκαπέντε",
+            "δεκατέσσερα",
+            "δεκατρία",
+            "δώδεκα",
+            "έντεκα",
+            "δέκα",
+            "εννέα",
+            "οκτώ",
+            "επτά",
+            "έξι",
+            "πέντε",
+            "τέσσερα",
+            "τρία",
+            "δύο",
+            "ένα",
+            "μηδέν",
+        ]
 
         # Ordinal numbers mapping
         self.ordinals = {
@@ -77,7 +100,7 @@ class Num2Word_EL(Num2Word_EUR):
             "είκοσι": "εικοστός",
             "εκατό": "εκατοστός",
             "χίλια": "χιλιοστός",
-            "εκατομμύριο": "εκατομμυριοστός"
+            "εκατομμύριο": "εκατομμυριοστός",
         }
 
     def merge(self, curr, next):
@@ -262,17 +285,18 @@ class Num2Word_EL(Num2Word_EUR):
         return str(value) + "ος"
 
     def _money_verbose(self, number, currency):
-        if currency == 'GBP' and number == 1:
+        if currency == "GBP" and number == 1:
             return "μία"  # Feminine form for λίρα
         return self.to_cardinal(number)
 
     def _cents_verbose(self, number, currency):
-        if currency == 'GBP' and number == 1:
+        if currency == "GBP" and number == 1:
             return "μία"  # Feminine form for πέννα
         return self.to_cardinal(number)
 
-    def to_currency(self, val, currency='EUR', cents=True, separator=' και',
-                    adjective=False):
+    def to_currency(
+        self, val, currency="EUR", cents=True, separator=" και", adjective=False
+    ):
         from decimal import Decimal
 
         from .currency import parse_currency_parts, prefix_currency
@@ -281,19 +305,23 @@ class Num2Word_EL(Num2Word_EUR):
         decimal_val = Decimal(str(val))
         has_fractional_cents = (decimal_val * 100) % 1 != 0
 
-        # Fix the currency parsing issue - integers should be treated as whole units
-        if isinstance(val, int):
-            left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False)
+        # Fix the currency parsing issue - integers and whole floats should be treated as whole units
+        if isinstance(val, int) or (isinstance(val, float) and val == int(val)):
+            left, right, is_negative = parse_currency_parts(
+                int(val) if isinstance(val, float) else val, is_int_with_cents=False
+            )
         else:
-            left, right, is_negative = parse_currency_parts(val, is_int_with_cents=False,
-                                                            keep_precision=has_fractional_cents)
+            left, right, is_negative = parse_currency_parts(
+                val, is_int_with_cents=False, keep_precision=has_fractional_cents
+            )
 
         try:
             cr1, cr2 = self.CURRENCY_FORMS[currency]
         except KeyError:
             raise NotImplementedError(
-                'Currency code "%s" not implemented for "%s"' %
-                (currency, self.__class__.__name__))
+                'Currency code "%s" not implemented for "%s"'
+                % (currency, self.__class__.__name__)
+            )
 
         if adjective and currency in self.CURRENCY_ADJECTIVES:
             cr1 = prefix_currency(self.CURRENCY_ADJECTIVES[currency], cr1)
@@ -302,34 +330,43 @@ class Num2Word_EL(Num2Word_EUR):
         money_str = self._money_verbose(left, currency)
 
         # Explicitly check if input has decimal point or non-zero cents
-        has_decimal = isinstance(val, float) or str(val).find('.') != -1
+        # But exclude whole number floats like 100.0
+        is_whole_float = isinstance(val, float) and val == int(val)
+        has_decimal = (isinstance(val, float) and not is_whole_float) or str(val).find(
+            "."
+        ) != -1
 
         # Only include cents if:
-        # 1. Input has decimal point OR
+        # 1. Input has decimal point (and not a whole number) OR
         # 2. Cents are non-zero
-        if has_decimal or right > 0:
+        if (has_decimal and not is_whole_float) or right > 0:
             # Handle fractional cents
             if isinstance(right, Decimal) and has_fractional_cents:
                 # Convert fractional cents (e.g., 65.3 cents)
-                cents_str = self.to_cardinal_float(float(right)) if cents else str(float(right))
+                cents_str = (
+                    self.to_cardinal_float(float(right)) if cents else str(float(right))
+                )
             else:
-                cents_str = self._cents_verbose(int(right) if isinstance(right, Decimal) else right, currency) \
-                    if cents else self._cents_terse(int(right) if isinstance(right, Decimal) else right, currency)
+                cents_str = (
+                    self._cents_verbose(
+                        int(right) if isinstance(right, Decimal) else right, currency
+                    )
+                    if cents
+                    else self._cents_terse(
+                        int(right) if isinstance(right, Decimal) else right, currency
+                    )
+                )
 
-            return u'%s%s %s%s %s %s' % (
+            return "%s%s %s%s %s %s" % (
                 minus_str,
                 money_str,
                 self.pluralize(left, cr1),
                 separator,
                 cents_str,
-                self.pluralize(right, cr2)
+                self.pluralize(right, cr2),
             )
         else:
-            return u'%s%s %s' % (
-                minus_str,
-                money_str,
-                self.pluralize(left, cr1)
-            )
+            return "%s%s %s" % (minus_str, money_str, self.pluralize(left, cr1))
 
     def pluralize(self, n, forms):
         if n == 1:

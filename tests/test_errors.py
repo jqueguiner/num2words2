@@ -23,11 +23,10 @@ from num2words2 import num2words
 
 
 class Num2WordsErrorsTest(TestCase):
-
     def test_NotImplementedError(self):
         with self.assertRaises(NotImplementedError):
             num2words(100, lang="unknown_lang")
 
     def test_types_NotImplementedError(self):
         with self.assertRaises(NotImplementedError):
-            num2words(100, lang="en", to='babidibibidiboo!')
+            num2words(100, lang="en", to="babidibibidiboo!")

@@ -41,10 +41,10 @@ class Num2Word_TG(lang_EUR.Num2Word_EUR):
 
         for word, n in zip(high, range(cap, 5, -3)):
             if n == 9:
-                self.cards[10 ** n] = word + self.GIGA_SUFFIX
+                self.cards[10**n] = word + self.GIGA_SUFFIX
 
             else:
-                self.cards[10 ** n] = word + self.MEGA_SUFFIX
+                self.cards[10**n] = word + self.MEGA_SUFFIX
 
     def setup(self):
         super(Num2Word_TG, self).setup()

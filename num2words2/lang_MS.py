@@ -25,90 +25,76 @@ from .currency import parse_currency_parts
 
 class Num2Word_MS(Num2Word_Base):
     CURRENCY_FORMS = {
-        'MYR': (
-            ('ringgit', 'ringgit'), ('sen', 'sen')
-        ),
-        'SGD': (
-            ('dolar', 'dolar'), ('sen', 'sen')
-        ),
-        'USD': (
-            ('dolar', 'dolar'), ('sen', 'sen')
-        ),
-        'EUR': (
-            ('euro', 'euro'), ('sen', 'sen')
-        ),
-        'GBP': (
-            ('paun', 'paun'), ('peni', 'peni')
-        ),
-        'IDR': (
-            ('rupiah', 'rupiah'), ('sen', 'sen')
-        ),
-        'BND': (
-            ('dolar', 'dolar'), ('sen', 'sen')
-        ),
+        "MYR": (("ringgit", "ringgit"), ("sen", "sen")),
+        "SGD": (("dolar", "dolar"), ("sen", "sen")),
+        "USD": (("dolar", "dolar"), ("sen", "sen")),
+        "EUR": (("euro", "euro"), ("sen", "sen")),
+        "GBP": (("paun", "paun"), ("peni", "peni")),
+        "IDR": (("rupiah", "rupiah"), ("sen", "sen")),
+        "BND": (("dolar", "dolar"), ("sen", "sen")),
     }
 
     def __init__(self):
         super(Num2Word_MS, self).__init__()
 
         self.ones = [
-            '',
-            'satu',
-            'dua',
-            'tiga',
-            'empat',
-            'lima',
-            'enam',
-            'tujuh',
-            'lapan',
-            'sembilan'
+            "",
+            "satu",
+            "dua",
+            "tiga",
+            "empat",
+            "lima",
+            "enam",
+            "tujuh",
+            "lapan",
+            "sembilan",
         ]
 
         self.tens = [
-            '',
-            'sepuluh',
-            'dua puluh',
-            'tiga puluh',
-            'empat puluh',
-            'lima puluh',
-            'enam puluh',
-            'tujuh puluh',
-            'lapan puluh',
-            'sembilan puluh'
+            "",
+            "sepuluh",
+            "dua puluh",
+            "tiga puluh",
+            "empat puluh",
+            "lima puluh",
+            "enam puluh",
+            "tujuh puluh",
+            "lapan puluh",
+            "sembilan puluh",
         ]
 
         self.teens = {
-            11: 'sebelas',
-            12: 'dua belas',
-            13: 'tiga belas',
-            14: 'empat belas',
-            15: 'lima belas',
-            16: 'enam belas',
-            17: 'tujuh belas',
-            18: 'lapan belas',
-            19: 'sembilan belas'
+            11: "sebelas",
+            12: "dua belas",
+            13: "tiga belas",
+            14: "empat belas",
+            15: "lima belas",
+            16: "enam belas",
+            17: "tujuh belas",
+            18: "lapan belas",
+            19: "sembilan belas",
         }
 
         self.scale = {
-            100: 'ratus',
-            1000: 'ribu',
-            1000000: 'juta',
-            1000000000: 'bilion',
-            1000000000000: 'trilion'
+            100: "ratus",
+            1000: "ribu",
+            1000000: "juta",
+            1000000000: "bilion",
+            1000000000000: "trilion",
         }
 
         self.ordinals = [
-            '',
-            'pertama',
-            'kedua',
-            'ketiga',
-            'keempat',
-            'kelima',
-            'keenam',
-            'ketujuh',
-            'kelapan',
-            'kesembilan',
-            'kesepuluh'
+            "",
+            "pertama",
+            "kedua",
+            "ketiga",
+            "keempat",
+            "kelima",
+            "keenam",
+            "ketujuh",
+            "kelapan",
+            "kesembilan",
+            "kesepuluh",
         ]
 
         self.negword = "negatif "
@@ -122,7 +108,7 @@ class Num2Word_MS(Num2Word_Base):
         Converts a number to words in Malay.
         """
         if n == 0:
-            return 'kosong'
+            return "kosong"
 
         parts = []
 
@@ -130,45 +116,45 @@ class Num2Word_MS(Num2Word_Base):
         if n >= 1000000000000:
             trillions = n // 1000000000000
             if trillions == 1:
-                parts.append('satu trilion')
+                parts.append("satu trilion")
             else:
-                parts.append(self._int_to_word(trillions) + ' trilion')
+                parts.append(self._int_to_word(trillions) + " trilion")
             n %= 1000000000000
 
         # Handle billions
         if n >= 1000000000:
             billions = n // 1000000000
             if billions == 1:
-                parts.append('satu bilion')
+                parts.append("satu bilion")
             else:
-                parts.append(self._int_to_word(billions) + ' bilion')
+                parts.append(self._int_to_word(billions) + " bilion")
             n %= 1000000000
 
         # Handle millions
         if n >= 1000000:
             millions = n // 1000000
             if millions == 1:
-                parts.append('satu juta')
+                parts.append("satu juta")
             else:
-                parts.append(self._int_to_word(millions) + ' juta')
+                parts.append(self._int_to_word(millions) + " juta")
             n %= 1000000
 
         # Handle thousands
         if n >= 1000:
             thousands = n // 1000
             if thousands == 1:
-                parts.append('seribu')
+                parts.append("seribu")
             else:
-                parts.append(self._int_to_word(thousands) + ' ribu')
+                parts.append(self._int_to_word(thousands) + " ribu")
             n %= 1000
 
         # Handle hundreds
         if n >= 100:
             hundreds = n // 100
             if hundreds == 1:
-                parts.append('seratus')
+                parts.append("seratus")
             else:
-                parts.append(self.ones[hundreds] + ' ratus')
+                parts.append(self.ones[hundreds] + " ratus")
             n %= 100
 
         # Handle special case for teens (11-19)
@@ -178,7 +164,7 @@ class Num2Word_MS(Num2Word_Base):
             # Handle tens
             if n >= 10:
                 if n == 10:
-                    parts.append('sepuluh')
+                    parts.append("sepuluh")
                 else:
                     tens_val = n // 10
                     parts.append(self.tens[tens_val])
@@ -188,11 +174,11 @@ class Num2Word_MS(Num2Word_Base):
             if n > 0:
                 parts.append(self.ones[n])
 
-        return ' '.join(parts)
+        return " ".join(parts)
 
     def _int_to_cardinal(self, n):
         if n == 0:
-            return 'kosong'
+            return "kosong"
 
         if n < 0:
             return self.negword + self._int_to_word(-n)
@@ -202,14 +188,14 @@ class Num2Word_MS(Num2Word_Base):
     def _int_to_ordinal(self, n):
         """Convert to ordinal number."""
         if n == 0:
-            return 'kosong'
+            return "kosong"
 
         # Special cases for first ten ordinals
         if n <= 10:
             return self.ordinals[n]
 
         # For other numbers, use "ke-" prefix
-        return 'ke-' + self._int_to_cardinal(n)
+        return "ke-" + self._int_to_cardinal(n)
 
     def to_cardinal(self, n):
         try:
@@ -235,11 +221,11 @@ class Num2Word_MS(Num2Word_Base):
                 n = int(n)
 
             # In Malay, ordinal numbers use "ke-" prefix
-            return 'ke-' + str(n)
+            return "ke-" + str(n)
         except BaseException:
-            return 'ke-' + str(n)
+            return "ke-" + str(n)
 
-    def to_currency(self, n, currency='MYR'):
+    def to_currency(self, n, currency="MYR"):
         try:
             # Check if value has fractional cents
             decimal_val = Decimal(str(n))
@@ -249,8 +235,9 @@ class Num2Word_MS(Num2Word_Base):
 
             if currency not in self.CURRENCY_FORMS:
                 raise NotImplementedError(
-                    'Currency code "%s" not implemented for "%s"' %
-                    (currency, self.__class__.__name__))
+                    'Currency code "%s" not implemented for "%s"'
+                    % (currency, self.__class__.__name__)
+                )
 
             cr_major, cr_minor = self.CURRENCY_FORMS[currency]
 
@@ -274,11 +261,11 @@ class Num2Word_MS(Num2Word_Base):
                 result.append(right_words)
                 result.append(cr_minor[0])
 
-            return ' '.join(result)
+            return " ".join(result)
         except NotImplementedError:
             raise
         except BaseException:
-            return str(n) + ' ' + currency
+            return str(n) + " " + currency
 
     def to_year(self, n):
         """Convert to year representation."""

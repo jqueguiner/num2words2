@@ -37,11 +37,10 @@ PLURALS = {
 
 
 class Num2Word_IS(lang_EUR.Num2Word_EUR):
-
     CURRENCY_FORMS = {
-        'ISK': (('króna', 'krónur'), ('eyrir', 'aurar')),
-        'EUR': (('evra', 'evrur'), ('sent', 'sent')),
-        'USD': (('dalur', 'dalir'), ('sent', 'sent')),
+        "ISK": (("króna", "krónur"), ("eyrir", "aurar")),
+        "EUR": (("evra", "evrur"), ("sent", "sent")),
+        "USD": (("dalur", "dalir"), ("sent", "sent")),
     }
 
     GIGA_SUFFIX = "illjarður"
@@ -57,27 +56,54 @@ class Num2Word_IS(lang_EUR.Num2Word_EUR):
         # All words should be excluded, title case is not used in Icelandic
         self.exclude_title = ["og", "komma", "mínus"]
 
-        self.mid_numwords = [(1000, "þúsund"), (100, "hundrað"),
-                             (90, "níutíu"), (80, "áttatíu"), (70, "sjötíu"),
-                             (60, "sextíu"), (50, "fimmtíu"), (40, "fjörutíu"),
-                             (30, "þrjátíu")]
-        self.low_numwords = ["tuttugu", "nítján", "átján", "sautján",
-                             "sextán", "fimmtán", "fjórtán", "þrettán",
-                             "tólf", "ellefu", "tíu", "níu", "átta",
-                             "sjö", "sex", "fimm", "fjórir", "þrír",
-                             "tveir", "einn", "núll"]
-        self.ords = {"einn": "fyrsti",
-                     "tveir": "annar",
-                     "þrír": "þriðji",
-                     "fjórir": "fjórði",
-                     "fimm": "fimmti",
-                     "sex": "sjötti",
-                     "sjö": "sjöundi",
-                     "átta": "áttundi",
-                     "níu": "níundi",
-                     "tíu": "tíundi",
-                     "ellefu": "ellefti",
-                     "tólf": "tólfti"}
+        self.mid_numwords = [
+            (1000, "þúsund"),
+            (100, "hundrað"),
+            (90, "níutíu"),
+            (80, "áttatíu"),
+            (70, "sjötíu"),
+            (60, "sextíu"),
+            (50, "fimmtíu"),
+            (40, "fjörutíu"),
+            (30, "þrjátíu"),
+        ]
+        self.low_numwords = [
+            "tuttugu",
+            "nítján",
+            "átján",
+            "sautján",
+            "sextán",
+            "fimmtán",
+            "fjórtán",
+            "þrettán",
+            "tólf",
+            "ellefu",
+            "tíu",
+            "níu",
+            "átta",
+            "sjö",
+            "sex",
+            "fimm",
+            "fjórir",
+            "þrír",
+            "tveir",
+            "einn",
+            "núll",
+        ]
+        self.ords = {
+            "einn": "fyrsti",
+            "tveir": "annar",
+            "þrír": "þriðji",
+            "fjórir": "fjórði",
+            "fimm": "fimmti",
+            "sex": "sjötti",
+            "sjö": "sjöundi",
+            "átta": "áttundi",
+            "níu": "níundi",
+            "tíu": "tíundi",
+            "ellefu": "ellefti",
+            "tólf": "tólfti",
+        }
 
     def pluralize(self, n, noun):
         form = 0 if (n % 10 == 1 and n % 100 != 11) else 1
@@ -139,7 +165,9 @@ class Num2Word_IS(lang_EUR.Num2Word_EUR):
         if number == 20:
             return "tuttugasti"
         elif 20 < number < 30:
-            return "tuttugasti og " + self.ords.get(self.to_cardinal(number % 10), self.to_cardinal(number % 10))
+            return "tuttugasti og " + self.ords.get(
+                self.to_cardinal(number % 10), self.to_cardinal(number % 10)
+            )
         elif number == 30:
             return "þrítugasti"
         elif number == 40:
@@ -178,8 +206,9 @@ class Num2Word_IS(lang_EUR.Num2Word_EUR):
             return forms[0]
         return forms[1] if len(forms) > 1 else forms[0]
 
-    def to_currency(self, val, currency='ISK', cents=True, separator=',',
-                    adjective=False):
+    def to_currency(
+        self, val, currency="ISK", cents=True, separator=",", adjective=False
+    ):
         # Handle integers specially - just add currency name without cents
         if isinstance(val, int):
             try:
@@ -187,8 +216,12 @@ class Num2Word_IS(lang_EUR.Num2Word_EUR):
             except (KeyError, AttributeError):
                 # Fallback to base implementation for unknown currency
                 return super(Num2Word_IS, self).to_currency(
-                    val, currency=currency, cents=cents, separator=separator,
-                    adjective=adjective)
+                    val,
+                    currency=currency,
+                    cents=cents,
+                    separator=separator,
+                    adjective=adjective,
+                )
 
             minus_str = self.negword if val < 0 else ""
             abs_val = abs(val)
@@ -198,11 +231,19 @@ class Num2Word_IS(lang_EUR.Num2Word_EUR):
             if abs_val == 1:
                 currency_str = cr1[0] if isinstance(cr1, tuple) else cr1
             else:
-                currency_str = cr1[1] if isinstance(cr1, tuple) and len(cr1) > 1 else (cr1[0] if isinstance(cr1, tuple) else cr1)
+                currency_str = (
+                    cr1[1]
+                    if isinstance(cr1, tuple) and len(cr1) > 1
+                    else (cr1[0] if isinstance(cr1, tuple) else cr1)
+                )
 
-            return (u'%s %s %s' % (minus_str, money_str, currency_str)).strip()
+            return ("%s %s %s" % (minus_str, money_str, currency_str)).strip()
 
         # For floats, use the parent class implementation
         return super(Num2Word_IS, self).to_currency(
-            val, currency=currency, cents=cents, separator=separator,
-            adjective=adjective)
+            val,
+            currency=currency,
+            cents=cents,
+            separator=separator,
+            adjective=adjective,
+        )

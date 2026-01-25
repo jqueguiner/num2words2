@@ -8,9 +8,9 @@ class Num2Word_MY(Num2Word_Base):
     """Myanmar/Burmese language number to words conversion."""
 
     CURRENCY_FORMS = {
-        'MMK': (('ကျပ်', 'ကျပ်'), ('ပြား', 'ပြား')),
-        'USD': (('ဒေါ်လာ', 'ဒေါ်လာ'), ('ဆင့်', 'ဆင့်')),
-        'EUR': (('ယူရို', 'ယူရို'), ('ဆင့်', 'ဆင့်')),
+        "MMK": (("ကျပ်", "ကျပ်"), ("ပြား", "ပြား")),
+        "USD": (("ဒေါ်လာ", "ဒေါ်လာ"), ("ဆင့်", "ဆင့်")),
+        "EUR": (("ယူရို", "ယူရို"), ("ဆင့်", "ဆင့်")),
     }
 
     def setup(self):
@@ -19,30 +19,30 @@ class Num2Word_MY(Num2Word_Base):
 
         # Myanmar numbers 0-9
         self.ones = [
-            'သုည',      # 0
-            'တစ်',       # 1
-            'နှစ်',       # 2
-            'သုံး',       # 3
-            'လေး',       # 4
-            'ငါး',        # 5
-            'ခြောက်',     # 6
-            'ခုနစ်',      # 7
-            'ရှစ်',       # 8
-            'ကိုး',       # 9
+            "သုည",  # 0
+            "တစ်",  # 1
+            "နှစ်",  # 2
+            "သုံး",  # 3
+            "လေး",  # 4
+            "ငါး",  # 5
+            "ခြောက်",  # 6
+            "ခုနစ်",  # 7
+            "ရှစ်",  # 8
+            "ကိုး",  # 9
         ]
 
     def to_cardinal(self, number):
         """Convert a number to its word representation in Myanmar."""
         n = str(number).strip()
 
-        if n.startswith('-'):
+        if n.startswith("-"):
             n = n[1:]
             ret = self.negword
         else:
             ret = ""
 
-        if '.' in n:
-            left, right = n.split('.', 1)
+        if "." in n:
+            left, right = n.split(".", 1)
             ret += self._int_to_word(int(left)) + " " + self.pointword + " "
             for digit in right:
                 ret += self._int_to_word(int(digit)) + " "
@@ -129,18 +129,20 @@ class Num2Word_MY(Num2Word_Base):
         """Convert to year in Myanmar."""
         return self.to_cardinal(val) + " ခုနှစ်"
 
-    def to_currency(self, val, currency='MMK', cents=True, separator=' ', adjective=False):
+    def to_currency(
+        self, val, currency="MMK", cents=True, separator=" ", adjective=False
+    ):
         """Convert to currency in Myanmar."""
         is_negative = False
         if val < 0:
             is_negative = True
             val = abs(val)
 
-        parts = str(val).split('.')
+        parts = str(val).split(".")
         left = int(parts[0]) if parts[0] else 0
-        right = int(parts[1][:2].ljust(2, '0')) if len(parts) > 1 and parts[1] else 0
+        right = int(parts[1][:2].ljust(2, "0")) if len(parts) > 1 and parts[1] else 0
 
-        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS['MMK'])
+        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS["MMK"])
 
         left_str = self._int_to_word(left)
         result = left_str + " " + cr1[0]

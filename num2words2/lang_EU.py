@@ -23,9 +23,9 @@ from .base import Num2Word_Base
 # Basque language support
 class Num2Word_EU(Num2Word_Base):
     CURRENCY_FORMS = {
-        'EUR': (('euro', 'euro'), ('zentimo', 'zentimo')),
-        'USD': (('dolar', 'dolar'), ('zentabo', 'zentabo')),
-        'GBP': (('libera', 'libera'), ('penike', 'penike')),
+        "EUR": (("euro", "euro"), ("zentimo", "zentimo")),
+        "USD": (("dolar", "dolar"), ("zentabo", "zentabo")),
+        "GBP": (("libera", "libera"), ("penike", "penike")),
     }
 
     def setup(self):
@@ -36,14 +36,14 @@ class Num2Word_EU(Num2Word_Base):
         """Convert a number to its word representation in Basque."""
         n = str(number).strip()
 
-        if n.startswith('-'):
+        if n.startswith("-"):
             n = n[1:]
             ret = self.negword
         else:
             ret = ""
 
-        if '.' in n:
-            left, right = n.split('.', 1)
+        if "." in n:
+            left, right = n.split(".", 1)
             ret += self._int_to_word(int(left)) + " " + self.pointword + " "
             ret += " ".join(self._int_to_word(int(d)) for d in right)
             return ret
@@ -55,9 +55,30 @@ class Num2Word_EU(Num2Word_Base):
         if number == 0:
             return "zero"
 
-        ones = ["", "bat", "bi", "hiru", "lau", "bost", "sei", "zazpi", "zortzi", "bederatzi"]
-        tens = ["", "hamar", "hogei", "hogeita hamar", "berrogei", "berrogeita hamar",
-                "hirurogei", "hirurogeita hamar", "laurogei", "laurogeita hamar"]
+        ones = [
+            "",
+            "bat",
+            "bi",
+            "hiru",
+            "lau",
+            "bost",
+            "sei",
+            "zazpi",
+            "zortzi",
+            "bederatzi",
+        ]
+        tens = [
+            "",
+            "hamar",
+            "hogei",
+            "hogeita hamar",
+            "berrogei",
+            "berrogeita hamar",
+            "hirurogei",
+            "hirurogeita hamar",
+            "laurogei",
+            "laurogeita hamar",
+        ]
 
         if number < 10:
             return ones[number]
@@ -113,7 +134,7 @@ class Num2Word_EU(Num2Word_Base):
     def to_ordinal(self, number):
         """Convert to ordinal."""
         cardinal = self.to_cardinal(number)
-        if cardinal.endswith('t'):
+        if cardinal.endswith("t"):
             return cardinal + "garren"
         else:
             return cardinal + "garren"
@@ -126,7 +147,9 @@ class Num2Word_EU(Num2Word_Base):
         """Convert to year."""
         return self.to_cardinal(val) + ". urtea"
 
-    def to_currency(self, val, currency='EUR', cents=True, separator=' eta ', adjective=False):
+    def to_currency(
+        self, val, currency="EUR", cents=True, separator=" eta ", adjective=False
+    ):
         """Convert to currency."""
         try:
             left, right, is_negative = self.parse_currency(val)
@@ -138,7 +161,7 @@ class Num2Word_EU(Num2Word_Base):
 
             left, right = self._split_currency(val)
 
-        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS['EUR'])
+        cr1, cr2 = self.CURRENCY_FORMS.get(currency, self.CURRENCY_FORMS["EUR"])
 
         left_str = self._int_to_word(int(left))
         cents_str = self._int_to_word(int(right)) if cents and right else ""
@@ -152,7 +175,7 @@ class Num2Word_EU(Num2Word_Base):
 
     def _split_currency(self, n):
         """Split currency into whole and fraction parts."""
-        parts = str(n).split('.')
+        parts = str(n).split(".")
         left = int(parts[0]) if parts[0] else 0
-        right = int(parts[1][:2].ljust(2, '0')) if len(parts) > 1 and parts[1] else 0
+        right = int(parts[1][:2].ljust(2, "0")) if len(parts) > 1 and parts[1] else 0
         return left, right

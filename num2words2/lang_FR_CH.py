@@ -23,10 +23,17 @@ class Num2Word_FR_CH(Num2Word_FR):
     def setup(self):
         Num2Word_FR.setup(self)
 
-        self.mid_numwords = [(1000, "mille"), (100, "cent"), (90, "nonante"),
-                             (80, "huitante"), (70, "septante"),
-                             (60, "soixante"), (50, "cinquante"),
-                             (40, "quarante"), (30, "trente")]
+        self.mid_numwords = [
+            (1000, "mille"),
+            (100, "cent"),
+            (90, "nonante"),
+            (80, "huitante"),
+            (70, "septante"),
+            (60, "soixante"),
+            (50, "cinquante"),
+            (40, "quarante"),
+            (30, "trente"),
+        ]
 
     def merge(self, curr, next):
         ctext, cnum, ntext, nnum = curr + next
@@ -35,8 +42,7 @@ class Num2Word_FR_CH(Num2Word_FR):
             if nnum < 1000000:
                 return next
 
-        if cnum < 1000 and nnum != 1000 and\
-                ntext[-1] != "s" and not nnum % 100:
+        if cnum < 1000 and nnum != 1000 and ntext[-1] != "s" and not nnum % 100:
             ntext += "s"
 
         if nnum < cnum < 100:
