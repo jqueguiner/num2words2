@@ -5,7 +5,19 @@ Test the num2words_sentence function against the e2e CSV test file.
 """
 
 import csv
+import io
+import os
 import sys
+
+# Force UTF-8 encoding for stdout on Windows
+if sys.platform == "win32":
+    # Set console code page to UTF-8 on Windows
+    if hasattr(sys.stdout, "buffer"):
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+    if hasattr(sys.stderr, "buffer"):
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8")
+    # Also set environment variable for Python
+    os.environ["PYTHONIOENCODING"] = "utf-8"
 
 from num2words2 import num2words_sentence
 
@@ -86,15 +98,15 @@ def run_csv_file(csv_path):
                 if expected_norm == actual_norm:
                     results["passed"] += 1
                     results["by_language"][lang_code]["passed"] += 1
-                    status = "✅ EXACT"
+                    status = "[PASS] EXACT"
                 elif similarity >= 0.95:
                     results["passed"] += 1
                     results["by_language"][lang_code]["passed"] += 1
-                    status = f"✅ CLOSE ({similarity:.1%})"
+                    status = f"[PASS] CLOSE ({similarity:.1%})"
                 elif similarity >= 0.8:
                     results["failed"] += 1
                     results["by_language"][lang_code]["failed"] += 1
-                    status = f"⚠️  PARTIAL ({similarity:.1%})"
+                    status = f"[WARN] PARTIAL ({similarity:.1%})"
                     failures.append(
                         {
                             "row": row_num,
@@ -108,7 +120,7 @@ def run_csv_file(csv_path):
                 else:
                     results["failed"] += 1
                     results["by_language"][lang_code]["failed"] += 1
-                    status = f"❌ FAIL ({similarity:.1%})"
+                    status = f"[FAIL] FAIL ({similarity:.1%})"
                     failures.append(
                         {
                             "row": row_num,
@@ -131,7 +143,7 @@ def run_csv_file(csv_path):
             except Exception as e:
                 results["failed"] += 1
                 results["by_language"][lang_code]["failed"] += 1
-                print(f"Row {row_num:3} [{lang_code}]: ❌ ERROR - {e}")
+                print(f"Row {row_num:3} [{lang_code}]: [ERROR] - {e}")
                 failures.append(
                     {
                         "row": row_num,
@@ -159,7 +171,11 @@ def run_csv_file(csv_path):
                 (stats["passed"] / stats["total"] * 100) if stats["total"] > 0 else 0
             )
             status = (
-                "✅" if lang_pass_rate >= 90 else "⚠️" if lang_pass_rate >= 70 else "❌"
+                "[GOOD]"
+                if lang_pass_rate >= 90
+                else "[WARN]"
+                if lang_pass_rate >= 70
+                else "[FAIL]"
             )
             print(
                 f"{status} {stats['name']:10} ({lang:5}): {stats['passed']}/{stats['total']} ({lang_pass_rate:.1f}%)"
@@ -198,13 +214,13 @@ def main():
     if results["total"] > 0:
         pass_rate = (results["passed"] / results["total"]) * 100
         if pass_rate >= 95:
-            print("\n🎉 Excellent! Over 95% pass rate!")
+            print("\n[EXCELLENT] Over 95% pass rate!")
             sys.exit(0)
         elif pass_rate >= 80:
-            print("\n✅ Good! Over 80% pass rate.")
+            print("\n[SUCCESS] Good! Over 80% pass rate.")
             sys.exit(0)
         else:
-            print("\n⚠️  Needs improvement. Less than 80% pass rate.")
+            print("\n[WARNING] Needs improvement. Less than 80% pass rate.")
             sys.exit(1)
 
 
