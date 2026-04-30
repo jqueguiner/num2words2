@@ -27,10 +27,18 @@ class Num2Word_DE(Num2Word_EUR):
         "EUR": (("Euro", "Euro"), ("Cent", "Cent")),
         "GBP": (("Pfund", "Pfund"), ("Penny", "Pence")),
         "USD": (("Dollar", "Dollar"), ("Cent", "Cent")),
+        "CAD": (("Dollar", "Dollar"), ("Cent", "Cent")),
+        "AUD": (("Dollar", "Dollar"), ("Cent", "Cent")),
+        "NZD": (("Dollar", "Dollar"), ("Cent", "Cent")),
+        "HKD": (("Dollar", "Dollar"), ("Cent", "Cent")),
         "CNY": (("Yuan", "Yuan"), ("Jiao", "Fen")),
         "DEM": (("Mark", "Mark"), ("Pfennig", "Pfennig")),
         "CHF": (("Schweizer Franken", "Schweizer Franken"), ("Rappen", "Rappen")),
         "JPY": (("Yen", "Yen"), ("Sen", "Sen")),
+        "INR": (("Rupie", "Rupien"), ("Paisa", "Paisa")),
+        "RUB": (("Rubel", "Rubel"), ("Kopeke", "Kopeken")),
+        "KRW": (("Won", "Won"), ("Jeon", "Jeon")),
+        "MXN": (("Peso", "Pesos"), ("Centavo", "Centavos")),
     }
 
     GIGA_SUFFIX = "illiarde"
