@@ -8,7 +8,6 @@ from unittest import TestCase
 
 from num2words2 import num2words
 
-
 # Expected zero, one, ten for each new language code.
 EXPECTED_BASICS = {
     "ban": ("nol", "siki", "dasa"),
@@ -40,7 +39,7 @@ EXPECTED_BASICS = {
 ALIASES = {
     "nb": "no",   # Norwegian Bokmål → Norwegian
     "jv": "jw",   # Modern Javanese code → existing converter
-    "miz": "lus", # Mizo alternate code → Mizo
+    "miz": "lus",  # Mizo alternate code → Mizo
 }
 
 
