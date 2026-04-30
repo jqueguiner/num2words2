@@ -151,9 +151,18 @@ class Num2Word_IT(Num2Word_EUR):
     CURRENCY_FORMS = {
         "EUR": (("euro", "euro"), GENERIC_CENTS),
         "USD": (GENERIC_DOLLARS, GENERIC_CENTS),
+        "CAD": (GENERIC_DOLLARS, GENERIC_CENTS),
+        "AUD": (GENERIC_DOLLARS, GENERIC_CENTS),
+        "NZD": (GENERIC_DOLLARS, GENERIC_CENTS),
+        "HKD": (GENERIC_DOLLARS, GENERIC_CENTS),
         "GBP": (("sterlina", "sterline"), ("penny", "penny")),
         "CNY": (("yuan", "yuan"), ("fen", "fen")),
         "CHF": (("franco", "franchi"), GENERIC_CENTS),
+        "JPY": (("yen", "yen"), ("sen", "sen")),
+        "INR": (("rupia", "rupie"), ("paisa", "paise")),
+        "RUB": (("rublo", "rubli"), ("copeco", "copechi")),
+        "KRW": (("won", "won"), ("jeon", "jeon")),
+        "MXN": (("peso", "pesos"), GENERIC_CENTS),
     }
     MINUS_PREFIX_WORD = "meno "
     FLOAT_INFIX_WORD = " virgola "
