@@ -192,3 +192,14 @@ def test_en_mixed_text_and_numerals():
     # Pure numeric strings still work.
     assert num2words("5", lang="en") == "five"
     assert num2words("5.5", lang="en") == "five point five"
+
+
+def test_en_year_rejects_non_integer_float():
+    # Regression for num2words2#67 (ports savoirfairelinux/num2words#316).
+    import pytest
+    from num2words2 import num2words
+    with pytest.raises(TypeError):
+        num2words(1980.6, lang="en", to="year")
+    # Integer floats are accepted (1980.0 == 1980).
+    assert num2words(1980.0, lang="en", to="year") == "nineteen eighty"
+    assert num2words(1980, lang="en", to="year") == "nineteen eighty"
