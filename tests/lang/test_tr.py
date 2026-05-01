@@ -403,3 +403,13 @@ class Num2WordsTRTest(TestCase):
         # Test point word if exists
         if hasattr(converter, "pointword"):
             self.assertIsNotNone(converter.pointword)
+
+
+def test_tr_bir_inserted_between_hundred_and_thousand_in_6_digit_numbers():
+    # Regression for num2words2#64 (ports savoirfairelinux/num2words#621/#564).
+    from num2words2 import num2words
+    assert num2words(401607, lang="tr") == "dörtyüzbirbinaltıyüzyedi"
+    assert num2words(301661, lang="tr") == "üçyüzbirbinaltıyüzaltmışbir"
+    assert num2words(201605, lang="tr") == "ikiyüzbirbinaltıyüzbeş"
+    # 1×1000 still suppresses 'bir' (canonical Turkish)
+    assert num2words(1100, lang="tr") == "binyüz"
