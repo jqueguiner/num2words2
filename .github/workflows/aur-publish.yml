@@ -63,13 +63,31 @@ jobs:
               packaging/aur/python-num2words2/.SRCINFO > out/.SRCINFO
 
       - name: Push to AUR
-        uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
-        with:
-          pkgname: python-num2words2
-          pkgbuild: out/PKGBUILD
-          assets: out/.SRCINFO
-          commit_username: ${{ secrets.AUR_USERNAME }}
-          commit_email: ${{ secrets.AUR_EMAIL }}
-          ssh_private_key: ${{ secrets.AUR_SSH_KEY }}
-          commit_message: "Bump to ${{ github.ref_name }}"
-          ssh_keyscan_types: rsa,ecdsa,ed25519
+        env:
+          AUR_USERNAME: ${{ secrets.AUR_USERNAME }}
+          AUR_EMAIL: ${{ secrets.AUR_EMAIL }}
+          AUR_SSH_KEY: ${{ secrets.AUR_SSH_KEY }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          # Direct git commands — replaces KSXGitHub/github-actions-deploy-aur
+          # which has a 'bash --command: invalid option' bug.
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s' "$AUR_SSH_KEY" > ~/.ssh/aur_key
+          chmod 600 ~/.ssh/aur_key
+          ssh-keyscan -t rsa,ecdsa,ed25519 aur.archlinux.org >> ~/.ssh/known_hosts 2>/dev/null
+          export GIT_SSH_COMMAND="ssh -i ~/.ssh/aur_key -o StrictHostKeyChecking=yes"
+
+          git clone ssh://aur@aur.archlinux.org/python-num2words2.git aur-clone
+          cp out/PKGBUILD out/.SRCINFO aur-clone/
+          cd aur-clone
+          git config user.name  "$AUR_USERNAME"
+          git config user.email "$AUR_EMAIL"
+          git add PKGBUILD .SRCINFO
+          if git diff --cached --quiet; then
+            echo "AUR PKGBUILD already at $TAG, nothing to push"
+          else
+            git commit -m "Bump to $TAG"
+            git push origin master
+          fi
