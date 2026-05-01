@@ -235,6 +235,15 @@ CONVERTER_CLASSES = {
     "dv": lang_DV.Num2Word_DV(),
     "el": lang_EL.Num2Word_EL(),
     "en": lang_EN.Num2Word_EN(),
+    # Aviation/ICAO digit-by-digit reading. The canonical key follows
+    # BCP 47 private-use shape (mapped via the dispatcher's hyphen-to-
+    # underscore normalisation): the BCP 47 tag 'en-x-aero-icao' resolves
+    # to the 'en_x_aero_icao' key below. The shorter 'en_Aero_ICAO' is
+    # the recommended in-code form. 'en_AERO' (and lowercase variants)
+    # are kept as aliases for back-compat with v1.0.14.
+    "en_Aero_ICAO": lang_EN_AERO.Num2Word_EN_AERO(),
+    "en_aero_icao": lang_EN_AERO.Num2Word_EN_AERO(),
+    "en_x_aero_icao": lang_EN_AERO.Num2Word_EN_AERO(),
     "en_AERO": lang_EN_AERO.Num2Word_EN_AERO(),
     "en_IN": lang_EN_IN.Num2Word_EN_IN(),
     "en_NE": lang_EN_NE.Num2Word_EN_NE(),
