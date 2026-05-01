@@ -423,11 +423,16 @@ class Num2Word_TR(Num2Word_Base):
         self.to_splitnum(abs_value)
         wrd = ""
         wrd += self.pointword
-        if len(self.integers_to_read[1]) >= 1:
-            wrd += self.CARDINAL_TENS.get(self.integers_to_read[1][0], "")
-
-        if len(self.integers_to_read[1]) == 2:
-            wrd += self.CARDINAL_ONES.get(self.integers_to_read[1][1], "")
+        fractional = self.integers_to_read[1]
+        if len(fractional) == 2 and fractional[0] == "0" and fractional[1] != "0":
+            # Without this, 0.03 would drop its leading zero and read as 0.3.
+            wrd += self.ZERO
+            wrd += self.CARDINAL_ONES.get(fractional[1], "")
+        else:
+            if len(fractional) >= 1:
+                wrd += self.CARDINAL_TENS.get(fractional[0], "")
+            if len(fractional) == 2:
+                wrd += self.CARDINAL_ONES.get(fractional[1], "")
 
         if self.integers_to_read[0] == "0":
             wrd = self.ZERO + wrd
