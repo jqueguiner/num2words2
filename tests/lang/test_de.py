@@ -166,3 +166,13 @@ def test_de_dm_eine_mark_for_feminine_unit():
     assert num2words(21, lang="de", to="currency", currency="DEM") == "einundzwanzig Mark"
     # Plain 1 EUR (masculine/neuter) unchanged
     assert num2words(1, lang="de", to="currency", currency="EUR") == "eins Euro"
+
+
+def test_de_ordinal_compound_no_spaces():
+    # Regression for num2words2#59 (ports savoirfairelinux/num2words#357).
+    from num2words2 import num2words
+    assert num2words(1000001, lang="de", to="ordinal") == "einmillionerste"
+    assert num2words(21000001, lang="de", to="ordinal") == "einundzwanzigmillionenerste"
+    # Existing simple cases still pass
+    assert num2words(1000000, lang="de", to="ordinal") == "millionste"
+    assert num2words(1000, lang="de", to="ordinal") == "tausendste"
