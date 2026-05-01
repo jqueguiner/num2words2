@@ -92,76 +92,65 @@ jobs:
         name: python-package-distributions
         path: dist/
 
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history needed to find previous tag
+
     - name: Generate Release Notes
       id: release_notes
+      env:
+        GH_TOKEN: ${{ github.token }}
+        TAG: ${{ github.ref_name }}
       run: |
-        cat > release_notes.md << 'EOF'
-        ## What's New
+        # Find the previous tag (excluding the current one) to scope the changelog.
+        PREV_TAG=$(git tag --sort=-creatordate | grep -v "^${TAG}$" | head -1 || true)
+        echo "Current tag: ${TAG}"
+        echo "Previous tag: ${PREV_TAG:-<none>}"
 
-        ### Added Languages (45 new)
-        - Assamese (AS)
-        - Bashkir (BA)
-        - Tibetan (BO)
-        - Breton (BR)
-        - Bosnian (BS)
-        - Basque (EU)
-        - Faroese (FO)
-        - Galician (GL)
-        - Gujarati (GU)
-        - Hawaiian (HAW)
-        - Haitian Creole (HT)
-        - Javanese (JW)
-        - Georgian (KA)
-        - Kazakh (KK)
-        - Khmer (KM)
-        - Latin (LA)
-        - Luxembourgish (LB)
-        - Lingala (LN)
-        - Lao (LO)
-        - Malagasy (MG)
-        - Māori (MI)
-        - Macedonian (MK)
-        - Malayalam (ML)
-        - Marathi (MR)
-        - Maltese (MT)
-        - Burmese (MY)
-        - Nepali (NE)
-        - Norwegian Nynorsk (NN)
-        - Occitan (OC)
-        - Punjabi (PA)
-        - Pashto (PS)
-        - Sanskrit (SA)
-        - Sindhi (SD)
-        - Sinhala (SI)
-        - Somali (SO)
-        - Sundanese (SU)
-        - Turkmen (TK)
-        - Filipino/Tagalog (TL)
-        - Tatar (TT)
-        - Urdu (UR)
-        - Uzbek (UZ)
-        - Wolof (WO)
-        - Yiddish (YI)
-        - Yoruba (YO)
+        # Build the supported language list from the package itself.
+        python -m pip install --quiet -e .
+        LANG_COUNT=$(python -c "import num2words2; print(len(num2words2.CONVERTER_CLASSES))")
+        LANG_CODES=$(python -c "import num2words2; print(', '.join(sorted(num2words2.CONVERTER_CLASSES)))")
 
-        ### Total Languages Supported
-        Now supporting 119+ language codes!
+        {
+          echo "## What's Changed"
+          echo
+          if [ -n "${PREV_TAG}" ]; then
+            git log --pretty=format:'- %s (%h)' "${PREV_TAG}..${TAG}" | grep -v "^$" || echo "_No commits since ${PREV_TAG}._"
+            echo
+            echo
+            echo "**Full Changelog**: https://github.com/${GITHUB_REPOSITORY}/compare/${PREV_TAG}...${TAG}"
+          else
+            git log --pretty=format:'- %s (%h)' "${TAG}" | head -50
+          fi
 
-        ### Installation
-        ```bash
-        pip install num2words2
-        ```
+          echo
+          echo "## Languages Supported"
+          echo
+          echo "${LANG_COUNT} language codes registered:"
+          echo
+          echo "\`\`\`"
+          echo "${LANG_CODES}" | fold -s -w 80
+          echo "\`\`\`"
 
-        ### Usage
-        ```python
-        from num2words2 import num2words
+          echo
+          echo "## Installation"
+          echo
+          echo '```bash'
+          echo "pip install num2words2==${TAG#v}"
+          echo '```'
 
-        # New languages
-        print(num2words(42, lang='as'))   # Assamese
-        print(num2words(42, lang='sw'))   # Swahili
-        print(num2words(42, lang='yo'))   # Yoruba
-        ```
-        EOF
+          echo
+          echo "## Usage"
+          echo
+          echo '```python'
+          echo 'from num2words2 import num2words'
+          echo "print(num2words(42, lang='en'))"
+          echo '```'
+        } > release_notes.md
+
+        echo "--- release notes ---"
+        cat release_notes.md
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
