@@ -105,6 +105,13 @@ class Num2Word_CS(Num2Word_Base):
             abs_n = n[1:] if is_negative else n
             left, right = abs_n.split(".")
 
+            # Strip trailing zeros from the fractional part so that the
+            # string '1.50' and the float 1.50 yield the same output
+            # ('jedna čárka pět'). Issue #75 ports
+            # savoirfairelinux/num2words#458. An all-zero fractional becomes
+            # a single '0' so '1.00' still reads as 'jedna čárka nula'.
+            right = right.rstrip("0") or "0"
+
             # Say each decimal digit individually
             decimal_parts = []
             for digit in right:

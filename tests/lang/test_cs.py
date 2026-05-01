@@ -114,3 +114,11 @@ class Num2WordsCSTest(TestCase):
         self.assertEqual(num2words(-0.4, lang="cs"), "mínus nula čárka čtyři")
         self.assertEqual(num2words(-0.5, lang="cs"), "mínus nula čárka pět")
         self.assertEqual(num2words(-1.4, lang="cs"), "mínus jedna čárka čtyři")
+
+
+def test_cs_string_and_float_decimal_consistency():
+    # Regression for num2words2#75 (ports savoirfairelinux/num2words#458).
+    from num2words2 import num2words
+    assert num2words("1.50", lang="cs") == num2words(1.50, lang="cs") == "jedna čárka pět"
+    assert num2words("1.00", lang="cs") == num2words(1.00, lang="cs") == "jedna čárka nula"
+    assert num2words("1.123", lang="cs") == num2words(1.123, lang="cs")
