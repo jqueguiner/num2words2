@@ -443,19 +443,50 @@ def num2words(number, ordinal=False, lang="en", to="cardinal", **kwargs):
         raise NotImplementedError()
 
     # precision= overrides the per-language fractional precision for this
-    # call. Issue #580 ports savoirfairelinux/num2words#580. Most language
-    # to_cardinal methods don't accept the kwarg, so apply it as a temporary
-    # attribute swap on the converter instead of forwarding.
+    # call. Issue #580 ports savoirfairelinux/num2words#580.
     precision_override = kwargs.pop("precision", None)
     saved_precision = None
     if precision_override is not None and hasattr(converter, "precision"):
         saved_precision = converter.precision
         converter.precision = int(precision_override)
+
+    # cents='omit' on to='currency' drops the cents portion entirely. The
+    # legacy cents=True/False kwarg is kept as-is (False historically meant
+    # "use digits instead of words"). Issue #554 ports
+    # savoirfairelinux/num2words#554 / #190.
+    cents_mode = None
+    if to == "currency":
+        cents_kw = kwargs.get("cents")
+        if cents_kw == "omit":
+            cents_mode = "omit"
+            kwargs["cents"] = True  # let downstream see a valid bool
+            if isinstance(number, float):
+                number = int(number)  # int path drops cents naturally
+        elif cents_kw == "verbose":
+            kwargs["cents"] = True
+        elif cents_kw == "terse":
+            kwargs["cents"] = False
+
+    # style='terse' on to='ordinal' drops the leading 'one' / 'un' / etc.
+    # Issue #535 ports savoirfairelinux/num2words#535 / #147.
+    style = kwargs.pop("style", None)
+
     try:
-        return getattr(converter, "to_{}".format(to))(number, **kwargs)
+        result = getattr(converter, "to_{}".format(to))(number, **kwargs)
     finally:
         if saved_precision is not None:
             converter.precision = saved_precision
+
+    if style == "terse" and to == "ordinal" and isinstance(result, str):
+        # Drop a leading "one " / "un " / "uno " prefix that's stylistic.
+        # 100 → "one hundredth" → "hundredth"; 1000 → "one thousandth" →
+        # "thousandth"; the same applies to fr's "un millionième" but
+        # that's already handled in lang_FR's _BIG_UNITS.
+        for prefix in ("one ", "un ", "uno "):
+            if result.startswith(prefix) and len(result) > len(prefix):
+                result = result[len(prefix):]
+                break
+    return result
 
 
 def num2words_sentence(sentence, lang="en", to="cardinal", **kwargs):
