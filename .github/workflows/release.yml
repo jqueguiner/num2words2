@@ -124,6 +124,30 @@ jobs:
             git log --pretty=format:'- %s (%h)' "${TAG}" | head -50
           fi
 
+          # Surface upstream contributor credits — extract any
+          # "savoirfairelinux/num2words#NNN by @user" mentions from commit
+          # bodies so original authors are visible in the release notes.
+          if [ -n "${PREV_TAG}" ]; then
+            range="${PREV_TAG}..${TAG}"
+          else
+            range="${TAG}"
+          fi
+          credits=$(git log --pretty=format:'%B' "${range}" \
+            | grep -oE 'savoirfairelinux/num2words#[0-9]+ by @[A-Za-z0-9_-]+' \
+            | sort -u || true)
+          if [ -n "${credits}" ]; then
+            echo
+            echo "## Credits"
+            echo
+            echo "Thank you to the upstream contributors whose work this release ports:"
+            echo
+            while IFS= read -r line; do
+              upstream_pr=$(echo "$line" | grep -oE '#[0-9]+' | tr -d '#')
+              author=$(echo "$line" | grep -oE '@[A-Za-z0-9_-]+')
+              echo "- ${author} — [savoirfairelinux/num2words#${upstream_pr}](https://github.com/savoirfairelinux/num2words/pull/${upstream_pr})"
+            done <<<"${credits}"
+          fi
+
           echo
           echo "## Languages Supported"
           echo
