@@ -413,3 +413,25 @@ def test_tr_bir_inserted_between_hundred_and_thousand_in_6_digit_numbers():
     assert num2words(201605, lang="tr") == "ikiyüzbirbinaltıyüzbeş"
     # 1×1000 still suppresses 'bir' (canonical Turkish)
     assert num2words(1100, lang="tr") == "binyüz"
+
+
+def test_tr_spaced_precision_decimal_word_kwargs():
+    # Regression for num2words2#64 part 2/3 (ports savoirfairelinux/num2words#486+#534).
+    from num2words2 import num2words
+
+    # Default unchanged: concatenated, virgül, precision=2
+    assert num2words(1234, lang="tr") == "binikiyüzotuzdört"
+    assert num2words(1.5, lang="tr") == "birvirgülelli"
+
+    # spaced=True splits on Turkish word boundaries
+    assert num2words(1234, lang="tr", spaced=True) == "bin iki yüz otuz dört"
+    assert num2words(401607, lang="tr", spaced=True) == "dört yüz bir bin altı yüz yedi"
+
+    # precision= controls fractional-digit count
+    assert num2words(3.14159, lang="tr", precision=5) == "üçvirgülondörtbinyüzellidokuz"
+
+    # decimal_word= swaps virgül for any chosen word
+    assert num2words(1.5, lang="tr", decimal_word="nokta") == "birnoktaelli"
+
+    # Combined
+    assert num2words(3.14, lang="tr", spaced=True, decimal_word="nokta") == "üç nokta on dört"
