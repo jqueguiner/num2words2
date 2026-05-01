@@ -62,6 +62,13 @@ class Num2Word_ID:
     errmsg_toobig = "Number is too large to convert to words (abs(%s) > %s)."
     MAXVAL = 10**36
 
+    def str_to_number(self, value):
+        # Num2Word_ID does not inherit from Num2Word_Base, so it lacks the
+        # default str_to_number used by num2words() when given a string input.
+        from decimal import Decimal
+
+        return Decimal(value)
+
     def split_by_koma(self, number):
         return str(number).split(".")
 
