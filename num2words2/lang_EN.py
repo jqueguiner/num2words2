@@ -43,7 +43,7 @@ class Num2Word_EN(lang_EUR.Num2Word_EUR):
         self.CURRENCY_FORMS["MXN"] = (("peso", "pesos"), ("cent", "cents"))
         self.CURRENCY_FORMS["BRL"] = (("real", "reais"), ("cent", "cents"))
         self.CURRENCY_FORMS["ZAR"] = (("rand", "rand"), ("cent", "cents"))
-        self.CURRENCY_FORMS["SAR"] = (("riyal", "riyals"), ("halala", "halalas"))
+        self.CURRENCY_FORMS["SAR"] = (("riyal", "riyals"), ("halalah", "halalas"))
         self.CURRENCY_FORMS["QAR"] = (("riyal", "riyals"), ("dirham", "dirhams"))
         self.CURRENCY_FORMS["KWD"] = (("dinar", "dinars"), ("fils", "fils"))
 
