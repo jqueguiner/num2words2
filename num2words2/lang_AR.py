@@ -629,7 +629,37 @@ class Num2Word_AR(Num2Word_Base):
     def to_ordinal_num(self, value):
         return self.to_ordinal(value).strip()
 
-    def to_cardinal(self, number):
+    # Aliases accepted by the case= kwarg. Issue #55 ports
+    # savoirfairelinux/num2words#557.
+    _AR_NOMINATIVE = {"n", "nominative", "رفع", "مرفوع"}
+    _AR_OBLIQUE = {  # accusative + genitive both use the ين dual ending
+        "a", "accusative", "نصب", "منصوب",
+        "g", "genitive", "جر", "مجرور",
+        "o", "oblique",
+    }
+    # Dual-noun endings that switch between nominative (ان) and oblique (ين).
+    # Order matters: longer-stem matches must come first so we don't
+    # accidentally rewrite a substring of a larger word.
+    _AR_DUAL_NOMINATIVE_TO_OBLIQUE = [
+        ("كوادريليونان", "كوادريليونين"),
+        ("تريليونان", "تريليونين"),
+        ("مليونان", "مليونين"),
+        ("ملياران", "مليارين"),
+        ("ألفان", "ألفين"),
+        ("مئتان", "مئتين"),
+    ]
+    # When the entire output IS the construct form (no following counted
+    # noun), normalize to the independent form for the requested case.
+    _AR_STANDALONE_DUAL = {
+        "مئتا": ("مئتان", "مئتين"),
+        "ألفا": ("ألفان", "ألفين"),
+        "مليونا": ("مليونان", "مليونين"),
+        "مليارا": ("ملياران", "مليارين"),
+        "تريليونا": ("تريليونان", "تريليونين"),
+        "كوادريليونا": ("كوادريليونان", "كوادريليونين"),
+    }
+
+    def to_cardinal(self, number, case="nominative"):
         self.isCurrencyNameFeminine = False
         number = self.validate_number(number)
         minus = ""
@@ -644,7 +674,21 @@ class Num2Word_AR(Num2Word_Base):
         self.arabicSuffixText = ""
         self.arabicOnes = ARABIC_ONES
         self.partPrecision = 2
-        return minus + self.convert(value=self.abs(number)).strip()
+        out = minus + self.convert(value=self.abs(number)).strip()
+        # Decide which dual ending to apply.
+        is_oblique = isinstance(case, str) and case.lower() in self._AR_OBLIQUE
+        # Standalone (construct) form: number is exactly مئتا / ألفا / مليونا /
+        # مليارا / تريليونا / كوادريليونا — switch to the independent form.
+        bare = out.lstrip(minus).strip()
+        if bare in self._AR_STANDALONE_DUAL:
+            nom, obl = self._AR_STANDALONE_DUAL[bare]
+            out = (minus + (obl if is_oblique else nom)).strip()
+            return out
+        # Compound forms (e.g. 205 → مئتان وخمسة): switch ان → ين if oblique.
+        if is_oblique:
+            for nom, obl in self._AR_DUAL_NOMINATIVE_TO_OBLIQUE:
+                out = out.replace(nom, obl)
+        return out
 
     def to_currency(self, n, currency="SR", cents=True, separator=",", adjective=False):
         # Arabic has a special currency implementation
