@@ -15,9 +15,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301 USA
 
-from decimal import Decimal, InvalidOperation, ROUND_FLOOR
-from itertools import tee
 from collections import OrderedDict
+from decimal import ROUND_FLOOR, Decimal, InvalidOperation
+from itertools import tee
 
 
 class Num2Word_DV:
@@ -60,11 +60,11 @@ class Num2Word_DV:
         self.cards[1000] = "ހާސް"
 
         self.MAXVAL = Decimal(list(self.cards.keys())[0] * 1000)
-        #getcontext().prec = 34
-        #getcontext().rounding = ROUND_FLOOR
+        # getcontext().prec = 34
+        # getcontext().rounding = ROUND_FLOOR
 
         self.grouping = [-3, -5] + \
-            [(x*3 + 6)*-1 for x in range(len(self.cards))]
+            [(x * 3 + 6) * -1 for x in range(len(self.cards))]
 
         self.base_nominal = {
             0: "ސުމެއް",
@@ -324,7 +324,7 @@ class Num2Word_DV:
 
         result = []
         if (int_part):
-            result.append(self.to_cardinal_float(int_part,  nominal=False))
+            result.append(self.to_cardinal_float(int_part, nominal=False))
             result.append(currency)
 
         if (frac_part):
