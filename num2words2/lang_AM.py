@@ -31,13 +31,26 @@ class Num2Word_AM(lang_EUR.Num2Word_EUR):
     MEGA_SUFFIX = "ሚሊዮን"
 
     def set_high_numwords(self, high):
-        cap = 3 * (len(high) + 1)
-
-        for word, n in zip(high, range(cap, 5, -3)):
-            if n == 9:
-                self.cards[10**n] = word + self.GIGA_SUFFIX
-            else:
-                self.cards[10**n] = word + self.MEGA_SUFFIX
+        # The inherited EUR routine prepends a Latin prefix ("m", "b",
+        # "tr", …) to the Ethiopic suffix, producing mixed-script tokens
+        # like "trሚሊዮን" or "mሚሊዮን" — visible to users as a stray Latin
+        # letter sitting before each big-number word. Replace with proper
+        # Amharic transliterations.
+        self.cards.clear()
+        self.cards.update(
+            {
+                10 ** 33: "ዴሲሊዮን",
+                10 ** 30: "ኖኒሊዮን",
+                10 ** 27: "ኦክቲሊዮን",
+                10 ** 24: "ሴፕቲሊዮን",
+                10 ** 21: "ሴክስቲሊዮን",
+                10 ** 18: "ኲንቲሊዮን",
+                10 ** 15: "ኳድሪሊዮን",
+                10 ** 12: "ትሪሊዮን",
+                10 ** 9: self.GIGA_SUFFIX,
+                10 ** 6: self.MEGA_SUFFIX,
+            }
+        )
 
     def setup(self):
         super(Num2Word_AM, self).setup()

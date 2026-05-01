@@ -87,3 +87,16 @@ class TestAM(LangTest, TestCase):
                 "00000000000000000000000000000000",
                 lang="am",
             )
+
+
+def test_am_no_latin_prefix_in_high_words():
+    # Regression for savoirfairelinux/num2words#591 — stray Latin "m"
+    # appeared between thousands and "ሚሊዮን" in big numbers.
+    from num2words2 import num2words
+    out = num2words(568476685, lang="am")
+    # No ASCII letters allowed; everything must be Ethiopic + spaces.
+    assert all(c.isspace() or not c.isascii() for c in out), out
+    assert "ሚሊዮን" in out
+    out_b = num2words(1_000_000_000, lang="am")
+    assert "ቢሊዮን" in out_b
+    assert "b" not in out_b.lower()
