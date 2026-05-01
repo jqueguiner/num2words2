@@ -124,7 +124,27 @@ class Num2Word_TR(Num2Word_Base):
         self.total_digits_outside_triplets = 0
         self.order_of_last_zero_digit = 0
 
-    def to_cardinal(self, value):
+    def to_cardinal(self, value, spaced=False, precision=None, decimal_word=None):
+        # Apply caller-provided overrides for the duration of this call.
+        # Issue #64 part 2/3 ports savoirfairelinux/num2words#486 + #534.
+        saved_precision = self.precision
+        saved_pointword = self.pointword
+        if precision is not None:
+            self.precision = int(precision)
+        if decimal_word is not None:
+            self.pointword = decimal_word
+        try:
+            wrd = self._to_cardinal_impl(value)
+            # Tokenize while pointword is still the caller's chosen word so
+            # the custom decimal_word is recognized as its own token.
+            if spaced:
+                wrd = self._insert_spaces(wrd)
+        finally:
+            self.precision = saved_precision
+            self.pointword = saved_pointword
+        return wrd
+
+    def _to_cardinal_impl(self, value):
         wrd = ""
         is_cardinal = self.verify_cardinal(value)
         if not is_cardinal:
@@ -420,28 +440,80 @@ class Num2Word_TR(Num2Word_Base):
         is_negative = value < 0
         abs_value = abs(value)
 
-        self.to_splitnum(abs_value)
-        wrd = ""
-        wrd += self.pointword
-        fractional = self.integers_to_read[1]
-        if len(fractional) == 2 and fractional[0] == "0" and fractional[1] != "0":
-            # Without this, 0.03 would drop its leading zero and read as 0.3.
-            wrd += self.ZERO
-            wrd += self.CARDINAL_ONES.get(fractional[1], "")
+        # Use string formatting that respects self.precision so we can emit
+        # arbitrary fractional digits (issue #64 part 3 / upstream #534).
+        prec = max(int(self.precision), 1)
+        whole_str = "{:.{p}f}".format(abs_value, p=prec)
+        if "." in whole_str:
+            int_part, frac_part = whole_str.split(".")
         else:
-            if len(fractional) >= 1:
-                wrd += self.CARDINAL_TENS.get(fractional[0], "")
-            if len(fractional) == 2:
-                wrd += self.CARDINAL_ONES.get(fractional[1], "")
+            int_part, frac_part = whole_str, "0" * prec
 
-        if self.integers_to_read[0] == "0":
+        wrd = self.pointword
+        # If exactly 2 digits (the historical default precision), preserve
+        # the existing tens-and-ones reading so old callers keep working.
+        if prec == 2:
+            if frac_part[0] == "0" and frac_part[1] != "0":
+                wrd += self.ZERO
+                wrd += self.CARDINAL_ONES.get(frac_part[1], "")
+            else:
+                wrd += self.CARDINAL_TENS.get(frac_part[0], "")
+                wrd += self.CARDINAL_ONES.get(frac_part[1], "")
+        else:
+            # Higher precision: read the fractional part as a single integer
+            # (with leading-zero ZEROs spelled out separately, matching how
+            # 0.03 reads at precision=2).
+            leading_zeros = len(frac_part) - len(frac_part.lstrip("0"))
+            for _ in range(leading_zeros):
+                wrd += self.ZERO
+            stripped = frac_part.lstrip("0")
+            if stripped:
+                wrd += self._to_cardinal_impl(int(stripped))
+
+        if int_part == "0":
             wrd = self.ZERO + wrd
         else:
-            wrd = self.to_cardinal(int(self.integers_to_read[0])) + wrd
+            wrd = self._to_cardinal_impl(int(int_part)) + wrd
 
         if is_negative:
             wrd = self.negword + " " + wrd
         return wrd
+
+    def _insert_spaces(self, text):
+        # Greedy longest-first tokenizer: walk the text and emit each known
+        # Turkish token separated by a single space. Issue #64 part 2 ports
+        # savoirfairelinux/num2words#486.
+        tokens = []
+        tokens.extend(self.CARDINAL_TRIPLETS.values())
+        tokens.extend(self.CARDINAL_HUNDRED)
+        tokens.extend(self.CARDINAL_TENS.values())
+        tokens.extend(self.CARDINAL_ONES.values())
+        tokens.append(self.ZERO)
+        tokens.append(self.pointword)
+        # Sort longest first so 'doksandokuz' beats 'doksan' + 'dokuz'.
+        tokens = sorted({t for t in tokens if t}, key=len, reverse=True)
+        out = []
+        i = 0
+        s = text
+        while i < len(s):
+            if s[i].isspace():
+                if out and out[-1] != " ":
+                    out.append(" ")
+                i += 1
+                continue
+            for tok in tokens:
+                if s.startswith(tok, i):
+                    if out and out[-1] != " ":
+                        out.append(" ")
+                    out.append(tok)
+                    i += len(tok)
+                    break
+            else:
+                # Unknown character (shouldn't happen for valid inputs);
+                # pass through verbatim to avoid swallowing data.
+                out.append(s[i])
+                i += 1
+        return "".join(out).strip()
 
     def verify_cardinal(self, value):
         iscardinal = True
