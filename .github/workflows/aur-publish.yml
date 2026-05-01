@@ -74,7 +74,10 @@ jobs:
           set -euo pipefail
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          printf '%s' "$AUR_SSH_KEY" > ~/.ssh/aur_key
+          # OpenSSH requires a trailing newline and chokes on CRLF.
+          # printf '%s\n' + tr -d '\r' normalises both regardless of how
+          # the secret was stored.
+          printf '%s\n' "$AUR_SSH_KEY" | tr -d '\r' > ~/.ssh/aur_key
           chmod 600 ~/.ssh/aur_key
           ssh-keyscan -t rsa,ecdsa,ed25519 aur.archlinux.org >> ~/.ssh/known_hosts 2>/dev/null
           export GIT_SSH_COMMAND="ssh -i ~/.ssh/aur_key -o StrictHostKeyChecking=yes"
