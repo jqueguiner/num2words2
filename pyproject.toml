@@ -7,7 +7,7 @@ name = "num2words2"
 dynamic = ["version", "license"]
 description = "Modern, actively maintained fork of num2words optimized for LLM/AI/speech applications."
 readme = "README.rst"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = ["docopt>=0.6.2"]
 authors = [
     {name = "Jean-Louis Queguiner", email = "jean-louis.queguiner@gmail.com"}
@@ -22,12 +22,12 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Topic :: Software Development :: Internationalization",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Localization",
