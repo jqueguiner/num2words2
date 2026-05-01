@@ -528,10 +528,90 @@ class Num2Word_AR(Num2Word_Base):
             self.currency_subunit = CURRENCY_SR[1]
             self.partPrecision = 2
 
-    def to_ordinal(self, number, prefix=""):
-        number = int(number)  # Convert float to int
-        if number <= 19:
-            return "{}".format(self.arabicOrdinal[number])
+    # Definite-article ordinal forms for 1-19 with masculine/feminine pairs.
+    # Issue #54 ports savoirfairelinux/num2words#403.
+    _AR_ORDINALS_DEF = {
+        1: ("الأول", "الأولى"),
+        2: ("الثاني", "الثانية"),
+        3: ("الثالث", "الثالثة"),
+        4: ("الرابع", "الرابعة"),
+        5: ("الخامس", "الخامسة"),
+        6: ("السادس", "السادسة"),
+        7: ("السابع", "السابعة"),
+        8: ("الثامن", "الثامنة"),
+        9: ("التاسع", "التاسعة"),
+        10: ("العاشر", "العاشرة"),
+        11: ("الحادي عشر", "الحادية عشرة"),
+        12: ("الثاني عشر", "الثانية عشرة"),
+        13: ("الثالث عشر", "الثالثة عشرة"),
+        14: ("الرابع عشر", "الرابعة عشرة"),
+        15: ("الخامس عشر", "الخامسة عشرة"),
+        16: ("السادس عشر", "السادسة عشرة"),
+        17: ("السابع عشر", "السابعة عشرة"),
+        18: ("الثامن عشر", "الثامنة عشرة"),
+        19: ("التاسع عشر", "التاسعة عشرة"),
+    }
+    _AR_TENS_DEF = {
+        20: "العشرون",
+        30: "الثلاثون",
+        40: "الأربعون",
+        50: "الخمسون",
+        60: "الستون",
+        70: "السبعون",
+        80: "الثمانون",
+        90: "التسعون",
+    }
+    _AR_HUNDREDS_DEF = {
+        100: "المائة",
+        200: "المئتان",
+        300: "الثلاثمائة",
+        400: "الأربعمائة",
+        500: "الخمسمائة",
+        600: "الستمائة",
+        700: "السبعمائة",
+        800: "الثمانمائة",
+        900: "التسعمائة",
+    }
+    _AR_AFTER_HUNDRED = {
+        100: "بعد المائة",
+        200: "بعد المئتين",
+        300: "بعد الثلاثمائة",
+        400: "بعد الأربعمائة",
+        500: "بعد الخمسمائة",
+        600: "بعد الستمائة",
+        700: "بعد السبعمائة",
+        800: "بعد الثمانمائة",
+        900: "بعد التسعمائة",
+    }
+
+    def to_ordinal(self, number, gender="m", prefix=""):
+        """Return the Arabic ordinal form of ``number``.
+
+        ``gender`` is "m" (masculine, default) or "f" (feminine). For values
+        above 999 the implementation currently falls back to the cardinal
+        form (the upstream issue covers 1-999 only).
+        """
+        number = int(number)
+        gender_idx = 0 if gender == "m" else 1
+        if 1 <= number <= 19:
+            return self._AR_ORDINALS_DEF[number][gender_idx]
+        if 20 <= number <= 99:
+            tens = (number // 10) * 10
+            ones = number % 10
+            if ones == 0:
+                return self._AR_TENS_DEF[tens]
+            ones_form = self._AR_ORDINALS_DEF[ones][gender_idx]
+            return "{} و{}".format(ones_form, self._AR_TENS_DEF[tens])
+        if 100 <= number <= 999:
+            hundreds = (number // 100) * 100
+            remainder = number % 100
+            if remainder == 0:
+                return self._AR_HUNDREDS_DEF[hundreds]
+            # ordinal-of-remainder + بعد + ال + cardinal-hundreds
+            inner = self.to_ordinal(remainder, gender=gender)
+            return "{} {}".format(inner, self._AR_AFTER_HUNDRED[hundreds])
+        # >= 1000 or 0/negative: not yet covered by the ordinal patterns,
+        # fall back to the cardinal form so callers don't break.
         if number < 100:
             self.isCurrencyNameFeminine = True
         else:
