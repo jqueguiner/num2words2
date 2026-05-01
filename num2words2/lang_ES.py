@@ -353,6 +353,14 @@ class Num2Word_ES(Num2Word_EUR):
                 ctext = "nove"
             ntext += "t" + self.gender_stem + "s"
         else:
+            # Spanish drops the final 'o' of 'uno' (and adds an accent in
+            # 'veintiuno') before any noun like 'mil' or 'millones':
+            # 31000 -> "treinta y un mil", 21000 -> "veintiún mil".
+            if nnum >= 1000:
+                if ctext.endswith("veintiuno"):
+                    ctext = ctext[:-3] + "ún"
+                elif ctext.endswith("uno"):
+                    ctext = ctext[:-1]
             ntext = " " + ntext
 
         return (ctext + ntext, cnum * nnum)

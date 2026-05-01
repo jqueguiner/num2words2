@@ -2758,3 +2758,27 @@ class Num2WordsESTest(TestCase):
         self.assertEqual(num2words(-1.4, lang="es"), "menos uno punto cuatro")
         self.assertEqual(num2words(-10.25, lang="es"), "menos diez punto dos cinco")
         self.assertEqual(num2words(-0.001, lang="es"), "menos cero punto cero cero uno")
+
+
+# Regression tests for savoirfairelinux/num2words#515 — "uno mil" elision.
+
+def test_es_uno_elides_to_un_before_mil():
+    from num2words2 import num2words
+    assert num2words(31000, lang="es") == "treinta y un mil"
+    assert num2words(101300, lang="es") == "ciento un mil trescientos"
+    assert num2words(891003, lang="es") == "ochocientos noventa y un mil tres"
+
+
+def test_es_veintiuno_elides_to_veintiun_before_mil_or_millones():
+    from num2words2 import num2words
+    assert num2words(21000, lang="es") == "veintiún mil"
+    assert num2words(21000000, lang="es") == "veintiún millones"
+
+
+def test_es_uno_intact_when_terminal():
+    from num2words2 import num2words
+    # The elision must not fire for terminal "uno" — these stay intact.
+    assert num2words(1, lang="es") == "uno"
+    assert num2words(21, lang="es") == "veintiuno"
+    assert num2words(31, lang="es") == "treinta y uno"
+    assert num2words(101, lang="es") == "ciento uno"
