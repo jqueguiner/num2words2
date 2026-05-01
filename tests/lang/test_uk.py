@@ -3440,3 +3440,21 @@ class Num2WordsUKTest(TestCase):
         self.assertEqual(
             num2words(-10.25, lang="uk"), "мінус десять кома двадцять п'ять"
         )
+
+
+class UkrainianGenderAliasTest:
+    pass
+
+
+def test_uk_gender_short_alias_feminine():
+    # Regression for savoirfairelinux/num2words#560 — gender='f' was ignored.
+    from num2words2 import num2words
+    assert num2words(21, lang="uk", gender="f") == "двадцять одна"
+    assert num2words(1, lang="uk", gender="f") == "одна"
+    assert num2words(21, lang="uk", gender="ж") == "двадцять одна"
+    assert num2words(21, lang="uk", gender="feminine") == "двадцять одна"
+
+
+def test_uk_gender_default_is_masculine():
+    from num2words2 import num2words
+    assert num2words(21, lang="uk") == "двадцять один"

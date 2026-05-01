@@ -581,10 +581,14 @@ class Num2Word_UK(Num2Word_Base):
         else:
             morphological_case = 0
 
-        if "gender" in kwargs:
-            gender = kwargs["gender"] == "feminine"
-        else:
-            gender = False
+        # Accept the same gender aliases as lang_RU: short codes, English
+        # names, and Ukrainian/Russian Cyrillic names. Anything else falls
+        # back to masculine.
+        feminine_aliases = {"f", "feminine", "ж", "жіночий", "женский"}
+        gender_kw = kwargs.get("gender")
+        gender = (
+            isinstance(gender_kw, str) and gender_kw.lower() in feminine_aliases
+        )
 
         n = str(number).replace(",", ".")
         if "." in n:
