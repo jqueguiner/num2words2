@@ -355,6 +355,8 @@ CONVERTER_CLASSES = {
     "nb": lang_NO.Num2Word_NO(),  # Alias for Norwegian Bokmål
     "jv": lang_JW.Num2Word_JW(),  # Alias for Javanese (modern ISO 639-1)
     "miz": lang_LUS.Num2Word_LUS(),  # Alias for Mizo
+    "cz": lang_CS.Num2Word_CS(),  # Pre-ISO-639 code for Czech (ISO is 'cs')
+    "dk": lang_DA.Num2Word_DA(),  # Pre-ISO-639 code for Danish (ISO is 'da')
 }
 
 CONVERTES_TYPES = ["cardinal", "ordinal", "ordinal_num", "year", "currency"]
