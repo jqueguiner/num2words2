@@ -87,6 +87,30 @@ class Num2Word_EUR(Num2Word_Base):
     def gen_high_numwords(self, units, tens, lows):
         out = [u + t for t in tens for u in units]
         out.reverse()
+        # Standard Latin-prefix elision rules so that compound illion names
+        # like "septenvigintillion" / "trevigintillion" are formed correctly.
+        replacements = [
+            ("novemn", "noven"),
+            ("novemo", "novo"),
+            ("octoo", "octo"),
+            ("quintd", "quind"),
+            ("quintn", "quin"),
+            ("quintq", "quinq"),
+            ("quints", "quins"),
+            ("quintt", "quint"),
+            ("quintv", "quinv"),
+            ("septenn", "septen"),
+            ("septent", "sept"),
+            ("sexn", "sen"),
+            ("sexs", "ses"),
+            ("tresd", "tred"),
+            ("tresn", "tren"),
+            ("tress", "tres"),
+            ("tresv", "trev"),
+            ("unno", "uno"),
+        ]
+        for k, v in replacements:
+            out = [o.replace(k, v) for o in out]
         return out + lows
 
     def pluralize(self, n, forms):
@@ -99,11 +123,11 @@ class Num2Word_EUR(Num2Word_Base):
             "",
             "un",
             "duo",
-            "tre",
+            "tres",
             "quattuor",
-            "quin",
+            "quint",
             "sex",
-            "sept",
+            "septen",
             "octo",
             "novem",
         ]
