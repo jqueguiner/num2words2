@@ -60,6 +60,8 @@ setup(
     "internationalization",
     url="https://github.com/jqueguiner/num2words",
     packages=find_packages(exclude=["tests"]),
+    package_data={"num2words2": ["py.typed"]},
+    include_package_data=True,
     classifiers=CLASSIFIERS,
     scripts=["bin/num2words2"],
 )
