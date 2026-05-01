@@ -466,7 +466,7 @@ class Num2Word_RU(Num2Word_Base):
         return forms[2]
 
     def to_currency(
-        self, val, currency="EUR", cents=True, separator=",", adjective=False
+        self, val, currency="RUB", cents=True, separator=",", adjective=False
     ):
         # Handle scientific notation that results in whole numbers
         # (e.g., 1e+18 becomes 1000000000000000000.0)

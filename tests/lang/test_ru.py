@@ -404,3 +404,19 @@ class Num2WordsRUTest(TestCase):
         self.assertEqual(
             num2words(-10.25, lang="ru"), "минус десять целых двадцать пять сотых"
         )
+
+
+def test_ru_currency_defaults_to_rub():
+    # Regression for savoirfairelinux/num2words#483 — RU default currency.
+    from num2words2 import num2words
+    assert num2words(5, lang="ru", to="currency") == "пять рублей"
+    assert (
+        num2words(5.20, lang="ru", to="currency")
+        == "пять рублей, двадцать копеек"
+    )
+    # Explicit currency overrides still work.
+    assert num2words(5, lang="ru", to="currency", currency="EUR") == "пять евро"
+    assert (
+        num2words(5.20, lang="ru", to="currency", currency="USD")
+        == "пять долларов, двадцать центов"
+    )
