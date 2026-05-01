@@ -21,8 +21,18 @@ from .lang_EN import Num2Word_EN
 
 
 class Num2Word_EN_IN(Num2Word_EN):
+    def __init__(self):
+        super(Num2Word_EN_IN, self).__init__()
+        self.CURRENCY_FORMS["INR"] = (("rupee", "rupees"), ("paisa", "paise"))
+
     def set_high_numwords(self, high):
         self.cards[10**11] = "kharab"
         self.cards[10**9] = "arab"
         self.cards[10**7] = "crore"
         self.cards[10**5] = "lakh"
+
+    def to_currency(self, val, currency="INR", **kwargs):
+        # Indian English defaults to INR (rupees/paise) instead of EUR.
+        return super(Num2Word_EN_IN, self).to_currency(
+            val, currency=currency, **kwargs
+        )

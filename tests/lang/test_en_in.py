@@ -103,3 +103,19 @@ class Num2WordsENINTest(TestCase):
         # Ordinals with Indian numbers
         self.assertEqual(num2words(100000, lang="en_IN", to="ordinal"), "one lakhth")
         self.assertEqual(num2words(10000000, lang="en_IN", to="ordinal"), "one croreth")
+
+
+def test_en_in_currency_defaults_to_inr():
+    # Regression for savoirfairelinux/num2words#313 — en_IN default currency.
+    from num2words2 import num2words
+    assert "rupee" in num2words(1, to="currency", lang="en_IN")
+    assert "rupee" in num2words(1.50, to="currency", lang="en_IN")
+    assert num2words(639098, to="currency", lang="en_IN").endswith("rupees")
+    # Explicit currency still wins.
+    assert num2words(1, to="currency", currency="USD", lang="en_IN") == "one dollar"
+
+
+def test_en_in_paise_subunit():
+    from num2words2 import num2words
+    assert "paise" in num2words(1.50, to="currency", lang="en_IN")
+    assert "paisa" in num2words(0.01, to="currency", lang="en_IN")
