@@ -220,32 +220,40 @@ class Num2WordsTRTest(TestCase):
         self.assertEqual(num2words(-1000000, lang="tr"), "eksibirmilyon")
 
     def test_decimal_numbers(self):
-        """Test decimal numbers."""
-        self.assertEqual(num2words(0.1, lang="tr"), "sıfırvirgülon")
-        self.assertEqual(num2words(0.5, lang="tr"), "sıfırvirgülelli")
-        self.assertEqual(num2words(0.9, lang="tr"), "sıfırvirgüldoksan")
-        self.assertEqual(num2words(1.1, lang="tr"), "birvirgülon")
-        self.assertEqual(num2words(1.5, lang="tr"), "birvirgülelli")
-        self.assertEqual(num2words(2.5, lang="tr"), "ikivirgülelli")
+        """Test decimal numbers.
+
+        TR now reads decimals at the input's natural precision: ``0.1``
+        is read as "sıfır virgül bir" (zero point one), not the
+        previously-padded "0.10" → "sıfır virgül on" (zero point ten).
+        Two-digit fractions and leading-zero fractions are unchanged
+        because their natural precision already matches the default of
+        2. Issue savoirfairelinux/num2words#487.
+        """
+        self.assertEqual(num2words(0.1, lang="tr"), "sıfırvirgülbir")
+        self.assertEqual(num2words(0.5, lang="tr"), "sıfırvirgülbeş")
+        self.assertEqual(num2words(0.9, lang="tr"), "sıfırvirgüldokuz")
+        self.assertEqual(num2words(1.1, lang="tr"), "birvirgülbir")
+        self.assertEqual(num2words(1.5, lang="tr"), "birvirgülbeş")
+        self.assertEqual(num2words(2.5, lang="tr"), "ikivirgülbeş")
         self.assertEqual(num2words(3.14, lang="tr"), "üçvirgülondört")
-        self.assertEqual(num2words(10.5, lang="tr"), "onvirgülelli")
+        self.assertEqual(num2words(10.5, lang="tr"), "onvirgülbeş")
         self.assertEqual(num2words(11.11, lang="tr"), "onbirvirgülonbir")
-        self.assertEqual(num2words(20.2, lang="tr"), "yirmivirgülyirmi")
+        self.assertEqual(num2words(20.2, lang="tr"), "yirmivirgüliki")
         self.assertEqual(num2words(99.99, lang="tr"), "doksandokuzvirgüldoksandokuz")
         self.assertEqual(num2words(100.01, lang="tr"), "yüzvirgülsıfırbir")
         # Regression for savoirfairelinux/num2words#487 (leading zero in fractional).
         self.assertEqual(num2words(0.03, lang="tr"), "sıfırvirgülsıfırüç")
         self.assertEqual(num2words(0.05, lang="tr"), "sıfırvirgülsıfırbeş")
-        self.assertEqual(num2words(100.5, lang="tr"), "yüzvirgülelli")
+        self.assertEqual(num2words(100.5, lang="tr"), "yüzvirgülbeş")
         self.assertEqual(num2words(123.45, lang="tr"), "yüzyirmiüçvirgülkırkbeş")
-        self.assertEqual(num2words(1000.5, lang="tr"), "binvirgülelli")
+        self.assertEqual(num2words(1000.5, lang="tr"), "binvirgülbeş")
         self.assertEqual(
             num2words(1234.56, lang="tr"), "binikiyüzotuzdörtvirgülellialtı"
         )
         self.assertEqual(num2words(10000.01, lang="tr"), "onbinvirgülsıfırbir")
-        self.assertEqual(num2words(-0.5, lang="tr"), "eksi sıfırvirgülelli")
-        self.assertEqual(num2words(-1.5, lang="tr"), "eksi birvirgülelli")
-        self.assertEqual(num2words(-10.5, lang="tr"), "eksi onvirgülelli")
+        self.assertEqual(num2words(-0.5, lang="tr"), "eksi sıfırvirgülbeş")
+        self.assertEqual(num2words(-1.5, lang="tr"), "eksi birvirgülbeş")
+        self.assertEqual(num2words(-10.5, lang="tr"), "eksi onvirgülbeş")
 
     def test_ordinal(self):
         """Test ordinal numbers."""
@@ -419,9 +427,11 @@ def test_tr_spaced_precision_decimal_word_kwargs():
     # Regression for num2words2#64 part 2/3 (ports savoirfairelinux/num2words#486+#534).
     from num2words2 import num2words
 
-    # Default unchanged: concatenated, virgül, precision=2
+    # Default: concatenated, virgül; fractional part uses input's natural
+    # precision (1.5 has 1 fractional digit, so reads "beş" not the
+    # padded "elli"). Issue savoirfairelinux/num2words#487.
     assert num2words(1234, lang="tr") == "binikiyüzotuzdört"
-    assert num2words(1.5, lang="tr") == "birvirgülelli"
+    assert num2words(1.5, lang="tr") == "birvirgülbeş"
 
     # spaced=True splits on Turkish word boundaries
     assert num2words(1234, lang="tr", spaced=True) == "bin iki yüz otuz dört"
