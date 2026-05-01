@@ -1,3 +1,9 @@
+# Contributing to num2words2
+
+`num2words2` is an actively-maintained, independent fork of `savoirfairelinux/num2words`. Contributions are welcome here directly — open issues and pull requests against [`jqueguiner/num2words2`](https://github.com/jqueguiner/num2words2), not the upstream repo.
+
+If you have an upstream PR that's been waiting for attention, feel free to open an equivalent PR here and reference the original — we'll port it with full credit to you.
+
 ## How can I contribute ?
 
 ### Code contribution
@@ -5,7 +11,7 @@
 #### Issues
 
 If you are unsure where to begin contribution to Num2Words, you can start by looking through the issues page.
-Numerous issues are created and waiting for your love on the [issue board](https://github.com/savoirfairelinux/num2words/issues).
+Numerous issues are created and waiting for your love on the [issue board](https://github.com/jqueguiner/num2words2/issues).
 
 #### Pull Requests
 
@@ -13,7 +19,7 @@ Contributions will be accepted through the creation of Pull Requests. Here is th
 
 * Fork the repository into yours and work from there
 * Commit and push your changes into your fork
-* When you are done, create a [Pull Request](https://github.com/savoirfairelinux/num2words/compare) on the **master** branch
+* When you are done, create a [Pull Request](https://github.com/jqueguiner/num2words2/compare) on the **master** branch
 
 A template is provided to create your Pull Request. Try to fill the information at the best of your knowledge.
 
