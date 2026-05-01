@@ -158,3 +158,42 @@ def test_ar_decimal_uses_arabic_comma_no_double_space():
     assert "،" in out  # Arabic comma U+060C
     assert "," not in out  # no Latin comma
     assert "  " not in out  # no double space
+
+
+def test_ar_ordinals_use_definite_article_form():
+    # Regression for num2words2#54 (ports savoirfairelinux/num2words#403).
+    from num2words2 import num2words
+
+    # Single digits — distinct ordinal words with definite article.
+    assert num2words(1, lang="ar", to="ordinal") == "الأول"
+    assert num2words(2, lang="ar", to="ordinal") == "الثاني"
+    assert num2words(10, lang="ar", to="ordinal") == "العاشر"
+
+    # 11 uses the special الحادي root.
+    assert num2words(11, lang="ar", to="ordinal") == "الحادي عشر"
+
+    # Round tens take the definite article form.
+    assert num2words(20, lang="ar", to="ordinal") == "العشرون"
+    assert num2words(50, lang="ar", to="ordinal") == "الخمسون"
+
+    # Compound 20-99: ordinal-ones + و + ال + cardinal-tens.
+    assert num2words(24, lang="ar", to="ordinal") == "الرابع والعشرون"
+    assert num2words(35, lang="ar", to="ordinal") == "الخامس والثلاثون"
+    assert num2words(99, lang="ar", to="ordinal") == "التاسع والتسعون"
+
+    # Hundreds: round 100, 200, …
+    assert num2words(100, lang="ar", to="ordinal") == "المائة"
+    assert num2words(200, lang="ar", to="ordinal") == "المئتان"
+
+    # 100+ remainder uses بعد + ال + cardinal hundreds.
+    assert num2words(122, lang="ar", to="ordinal") == "الثاني والعشرون بعد المائة"
+    assert num2words(999, lang="ar", to="ordinal") == "التاسع والتسعون بعد التسعمائة"
+
+
+def test_ar_ordinals_feminine():
+    # Feminine forms via gender='f' kwarg.
+    from num2words2.lang_AR import Num2Word_AR
+    ar = Num2Word_AR()
+    assert ar.to_ordinal(1, gender="f") == "الأولى"
+    assert ar.to_ordinal(2, gender="f") == "الثانية"
+    assert ar.to_ordinal(11, gender="f") == "الحادية عشرة"
