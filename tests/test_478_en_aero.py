@@ -147,5 +147,138 @@ class TestEnAeroFractionsRoute(unittest.TestCase):
         self.assertEqual(num2words("1/2", lang="en_Aero_ICAO"), "one half")
 
 
+class TestEnAeroAviationPhraseology(unittest.TestCase):
+    """Aviation-specific reading conventions for altitude / flight level
+    / heading / squawk / runway / frequency. Each follows FAA AIM 4-2-9
+    and the matching ICAO Annex 10 vol II rule.
+
+    These methods are aviation-only and live on Num2Word_EN_AERO; users
+    call them via the converter instance:
+
+        from num2words2 import CONVERTER_CLASSES
+        aero = CONVERTER_CLASSES['en_Aero_ICAO']
+        aero.to_altitude(5500)   # "fife thousand fife hundred feet"
+    """
+
+    def setUp(self):
+        from num2words2 import CONVERTER_CLASSES
+        self.aero = CONVERTER_CLASSES["en_Aero_ICAO"]
+
+    # ---- altitude ----
+    def test_altitude_thousands_under_10k(self):
+        self.assertEqual(
+            self.aero.to_altitude(5500),
+            "fife thousand fife hundred feet",
+        )
+        self.assertEqual(
+            self.aero.to_altitude(1000),
+            "wun thousand feet",
+        )
+        self.assertEqual(
+            self.aero.to_altitude(9900),
+            "niner thousand niner hundred feet",
+        )
+
+    def test_altitude_at_or_above_10k_digit_by_digit(self):
+        # Per FAA AIM 4-2-9, ≥10 000 ft uses digit-by-digit thousands.
+        self.assertEqual(
+            self.aero.to_altitude(10000),
+            "wun zero thousand feet",
+        )
+        self.assertEqual(
+            self.aero.to_altitude(12500),
+            "wun too thousand fife hundred feet",
+        )
+        self.assertEqual(
+            self.aero.to_altitude(25000),
+            "too fife thousand feet",
+        )
+
+    def test_altitude_unit_override(self):
+        self.assertEqual(
+            self.aero.to_altitude(3000, unit="meters"),
+            "tree thousand meters",
+        )
+
+    def test_altitude_negative_raises(self):
+        with self.assertRaises(ValueError):
+            self.aero.to_altitude(-100)
+
+    # ---- flight level ----
+    def test_flight_level(self):
+        self.assertEqual(self.aero.to_flight_level(230), "flight level too tree zero")
+        self.assertEqual(self.aero.to_flight_level(360), "flight level tree six zero")
+        self.assertEqual(self.aero.to_flight_level(50), "flight level zero fife zero")
+
+    def test_flight_level_out_of_range(self):
+        with self.assertRaises(ValueError):
+            self.aero.to_flight_level(1000)
+
+    # ---- heading ----
+    def test_heading_three_digits(self):
+        self.assertEqual(self.aero.to_heading(360), "heading tree six zero")
+        self.assertEqual(self.aero.to_heading(30), "heading zero tree zero")
+        self.assertEqual(self.aero.to_heading(180), "heading wun ait zero")
+
+    def test_heading_zero_maps_to_360(self):
+        # In aviation, 360 (or 000) is north. Treat 0 as 360.
+        self.assertEqual(self.aero.to_heading(0), "heading tree six zero")
+
+    # ---- squawk ----
+    def test_squawk_codes(self):
+        # Common codes: 7700 emergency, 7600 lost-comms, 7500 hijack,
+        # 1200 VFR (US).
+        self.assertEqual(self.aero.to_squawk(7700), "squawk seven seven zero zero")
+        self.assertEqual(self.aero.to_squawk(7600), "squawk seven six zero zero")
+        self.assertEqual(self.aero.to_squawk(7500), "squawk seven fife zero zero")
+        self.assertEqual(self.aero.to_squawk(1200), "squawk wun too zero zero")
+        self.assertEqual(self.aero.to_squawk(0), "squawk zero zero zero zero")
+
+    def test_squawk_out_of_range(self):
+        with self.assertRaises(ValueError):
+            self.aero.to_squawk(8888)
+
+    # ---- runway ----
+    def test_runway_with_suffix(self):
+        self.assertEqual(self.aero.to_runway("27R"), "runway too seven right")
+        self.assertEqual(self.aero.to_runway("09L"), "runway zero niner left")
+        self.assertEqual(self.aero.to_runway("36C"), "runway tree six center")
+
+    def test_runway_no_suffix(self):
+        self.assertEqual(self.aero.to_runway("14"), "runway wun fower")
+        self.assertEqual(self.aero.to_runway("5"), "runway fife")
+
+    def test_runway_int_input(self):
+        self.assertEqual(self.aero.to_runway(27), "runway too seven")
+
+    def test_runway_lowercase_suffix(self):
+        self.assertEqual(self.aero.to_runway("27r"), "runway too seven right")
+
+    # ---- frequency ----
+    def test_frequency_with_decimal(self):
+        # Common ATC freqs: 121.5 = guard; 118.x range = tower.
+        self.assertEqual(
+            self.aero.to_frequency(121.5),
+            "wun too wun decimal fife",
+        )
+        self.assertEqual(
+            self.aero.to_frequency(118.025),
+            "wun wun ait decimal zero too fife",
+        )
+
+    def test_frequency_string_preserves_trailing_zero(self):
+        # Strings keep trailing zeros that float literals lose.
+        self.assertEqual(
+            self.aero.to_frequency("121.50"),
+            "wun too wun decimal fife zero",
+        )
+
+    def test_frequency_integer(self):
+        self.assertEqual(
+            self.aero.to_frequency(122),
+            "wun too too",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
