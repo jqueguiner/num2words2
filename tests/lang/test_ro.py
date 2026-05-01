@@ -51,7 +51,9 @@ class Num2WordsROTest(TestCase):
     def test_big_numbers(self):
         self.assertEqual(num2words(1000000, lang="ro"), "un milion")
         self.assertEqual(num2words(1000000000, lang="ro"), "un miliard")
-        self.assertEqual(num2words(33000000, lang="ro"), "treizeci și trei milioane")
+        self.assertEqual(
+            num2words(33000000, lang="ro"), "treizeci și trei de milioane"
+        )
         self.assertEqual(
             num2words(247000000000, lang="ro"),
             "două sute patruzeci și șapte de miliarde",
@@ -96,8 +98,8 @@ class Num2WordsROTest(TestCase):
         )
         self.assertEqual(
             num2words(123456789, lang="ro", to="currency"),
-            "una sută douăzeci și trei milioane patru sute cincizeci și șase de mii "
-            "șapte sute optzeci și nouă de lei",
+            "una sută douăzeci și trei de milioane patru sute cincizeci și șase "
+            "de mii șapte sute optzeci și nouă de lei",
         )
 
     def test_to_year(self):
@@ -130,7 +132,8 @@ class Num2WordsROTest(TestCase):
             num2words(1, lang="ro", to="year", suffix="d.Hr."), "unu d.Hr."
         )
         self.assertEqual(
-            num2words(-66000000, lang="ro", to="year"), "șaizeci și șase milioane î.Hr."
+            num2words(-66000000, lang="ro", to="year"),
+            "șaizeci și șase de milioane î.Hr.",
         )
 
     def test_negative_decimals(self):
