@@ -122,6 +122,11 @@ def accentuate(string):
 
 
 def phonetic_contraction(string):
+    # "diciotto" must not be contracted to "dicotto" — it is the canonical
+    # Italian form for 18, even when embedded in compounds like "centodiciotto".
+    if "diciotto" in string:
+        return string
+
     return (
         string.replace("oo", "o")  # ex. "centootto"
         .replace("ao", "o")  # ex. "settantaotto"
