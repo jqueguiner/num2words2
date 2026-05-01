@@ -1,0 +1,76 @@
+name: Refresh README badges
+
+# GitHub serves images embedded in the README via the Camo image proxy
+# (camo.githubusercontent.com). Camo aggressively caches each upstream
+# image URL — typical TTL is ~24h — so when shields.io or coveralls.io
+# update, repository visitors keep seeing the stale badge until either
+# Camo refreshes on its own or someone PURGEs the cached entry.
+#
+# This workflow PURGEs every Camo URL referenced from the rendered
+# README so the new release/coverage value shows up immediately. Runs:
+#  * on every push to the default branch (e.g. when README changes)
+#  * after every v* tag (so PyPI/AUR version badges flip on release)
+#  * manually via workflow_dispatch (for ad-hoc refresh)
+
+on:
+  push:
+    branches: [main, master]
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  purge:
+    name: PURGE camo URLs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Wait for upstream sources to update
+        # On a fresh tag, shields.io/PyPI and coveralls.io may need a
+        # minute or two to register the new release — sleep so we don't
+        # purge too early and re-cache the still-old SVG.
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: sleep 60
+
+      - name: PURGE camo cache for all README badges
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          # Fetch the rendered README HTML (GitHub rewrites <img src> to
+          # camo.githubusercontent.com URLs in the rendered version).
+          rendered=$(curl -fsSL \
+            -H "Accept: application/vnd.github.html" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            "https://api.github.com/repos/${REPO}/readme")
+
+          urls=$(printf '%s' "$rendered" \
+                 | grep -oE 'https://camo\.githubusercontent\.com/[a-f0-9]+/[^"]*' \
+                 | sort -u)
+
+          if [ -z "$urls" ]; then
+            echo "No camo URLs found in rendered README — nothing to purge."
+            exit 0
+          fi
+
+          echo "Found $(echo "$urls" | wc -l | tr -d ' ') camo URL(s) to purge:"
+          echo "$urls"
+          echo
+
+          fail=0
+          while IFS= read -r url; do
+            [ -z "$url" ] && continue
+            code=$(curl -sI -X PURGE -o /dev/null -w '%{http_code}' "$url")
+            if [ "$code" = "200" ]; then
+              echo "  ok    $url"
+            else
+              echo "  HTTP $code  $url" >&2
+              fail=1
+            fi
+          done <<<"$urls"
+
+          if [ "$fail" -ne 0 ]; then
+            echo "::warning::At least one PURGE failed; badges may stay stale until Camo's normal TTL expires."
+          fi
