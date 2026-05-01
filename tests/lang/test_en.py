@@ -169,3 +169,16 @@ class TestEN(LangTest, TestCase):
                 "0000000000000000000000000000000000000000000000000000000"
                 "00000000000000000000000000000000"
             )
+
+
+def test_en_currency_audit_includes_common_codes():
+    # Regression for num2words2#74 (ports savoirfairelinux/num2words#590).
+    from num2words2 import num2words
+    assert "dollar" in num2words(12, lang="en", to="currency", currency="SGD")
+    assert "franc" in num2words(12, lang="en", to="currency", currency="CHF")
+    assert "dirham" in num2words(12, lang="en", to="currency", currency="AED")
+    assert "yen" in num2words(12, lang="en", to="currency", currency="JPY")
+    assert "rupee" in num2words(12, lang="en", to="currency", currency="INR")
+    # No NotImplementedError for these codes
+    for c in ["NZD", "HKD", "CNY", "KRW", "MXN", "BRL", "ZAR", "SAR", "QAR", "KWD"]:
+        num2words(12, lang="en", to="currency", currency=c)

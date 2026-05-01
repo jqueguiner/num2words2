@@ -23,11 +23,29 @@ from . import lang_EUR
 class Num2Word_EN(lang_EUR.Num2Word_EUR):
     def __init__(self):
         super(Num2Word_EN, self).__init__()
-        # Override specific currency forms for proper English pluralization
+        # Override specific currency forms for proper English pluralization.
         self.CURRENCY_FORMS["EUR"] = (("euro", "euros"), ("cent", "cents"))
         self.CURRENCY_FORMS["USD"] = (("dollar", "dollars"), ("cent", "cents"))
         self.CURRENCY_FORMS["GBP"] = (("pound", "pounds"), ("penny", "pence"))
         self.CURRENCY_FORMS["NGN"] = (("naira", "naira"), ("kobo", "kobo"))
+        # Common ISO 4217 codes that downstream users hit (#74).
+        self.CURRENCY_FORMS["AUD"] = (("dollar", "dollars"), ("cent", "cents"))
+        self.CURRENCY_FORMS["CAD"] = (("dollar", "dollars"), ("cent", "cents"))
+        self.CURRENCY_FORMS["NZD"] = (("dollar", "dollars"), ("cent", "cents"))
+        self.CURRENCY_FORMS["HKD"] = (("dollar", "dollars"), ("cent", "cents"))
+        self.CURRENCY_FORMS["SGD"] = (("dollar", "dollars"), ("cent", "cents"))
+        self.CURRENCY_FORMS["CHF"] = (("franc", "francs"), ("rappen", "rappen"))
+        self.CURRENCY_FORMS["AED"] = (("dirham", "dirhams"), ("fils", "fils"))
+        self.CURRENCY_FORMS["JPY"] = (("yen", "yen"), ("sen", "sen"))
+        self.CURRENCY_FORMS["CNY"] = (("yuan", "yuan"), ("fen", "fen"))
+        self.CURRENCY_FORMS["INR"] = (("rupee", "rupees"), ("paisa", "paise"))
+        self.CURRENCY_FORMS["KRW"] = (("won", "won"), ("jeon", "jeon"))
+        self.CURRENCY_FORMS["MXN"] = (("peso", "pesos"), ("cent", "cents"))
+        self.CURRENCY_FORMS["BRL"] = (("real", "reais"), ("cent", "cents"))
+        self.CURRENCY_FORMS["ZAR"] = (("rand", "rand"), ("cent", "cents"))
+        self.CURRENCY_FORMS["SAR"] = (("riyal", "riyals"), ("halala", "halalas"))
+        self.CURRENCY_FORMS["QAR"] = (("riyal", "riyals"), ("dirham", "dirhams"))
+        self.CURRENCY_FORMS["KWD"] = (("dinar", "dinars"), ("fils", "fils"))
 
     def set_high_numwords(self, high):
         max = 3 + 3 * len(high)
