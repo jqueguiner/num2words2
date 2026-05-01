@@ -38,6 +38,14 @@ CURRENCY_LBP = [
     ("ليرة", "ليرتان", "ليرات", "ليرة"),
     ("قرش", "قرشان", "قروش", "قرش"),
 ]
+CURRENCY_YER = [
+    ("ريال", "ريالان", "ريالات", "ريالاً"),
+    ("فلس", "فلسان", "فلس", "فلس"),
+]
+CURRENCY_USD = [
+    ("دولار", "دولارين", "دولارات", "دولاراً"),
+    ("سنت", "سنتان", "سنتا", "سنتاٌ"),
+]
 CURRENCY_TND = [
     ("دينار", "ديناران", "دينارات", "ديناراً"),
     ("مليماً", "ميلمان", "مليمات", "مليم"),
@@ -502,6 +510,14 @@ class Num2Word_AR(Num2Word_Base):
         elif currency == "LBP":
             self.currency_unit = CURRENCY_LBP[0]
             self.currency_subunit = CURRENCY_LBP[1]
+            self.partPrecision = 2
+        elif currency == "YER":
+            self.currency_unit = CURRENCY_YER[0]
+            self.currency_subunit = CURRENCY_YER[1]
+            self.partPrecision = 2
+        elif currency == "USD":
+            self.currency_unit = CURRENCY_USD[0]
+            self.currency_subunit = CURRENCY_USD[1]
             self.partPrecision = 2
         else:
             self.currency_unit = CURRENCY_SR[0]
