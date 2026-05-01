@@ -27,14 +27,14 @@ from .lang_EN import Num2Word_EN
 # audio can mistake it for "nine", but "fife"/"niner" pair cleanly.
 _ICAO_DIGITS = {
     "0": "zero",
-    "1": "one",
-    "2": "two",
+    "1": "wun",
+    "2": "too",
     "3": "tree",
     "4": "fower",
     "5": "fife",
     "6": "six",
     "7": "seven",
-    "8": "eight",
+    "8": "ait",
     "9": "niner",
 }
 _ICAO_DECIMAL = "decimal"
