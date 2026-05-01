@@ -200,3 +200,14 @@ class Num2WordsFRTest(TestCase):
         self.assertEqual(num2words(-0.04, lang="fr"), "moins zéro virgule zéro quatre")
         self.assertEqual(num2words(-1.4, lang="fr"), "moins un virgule quatre")
         self.assertEqual(num2words(-10.25, lang="fr"), "moins dix virgule deux cinq")
+
+
+def test_fr_ordinal_drops_trailing_s_of_cents_and_vingts():
+    # Regression for num2words2#65 (ports savoirfairelinux/num2words#409).
+    from num2words2 import num2words
+    assert num2words(200, lang="fr", to="ordinal") == "deux centième"
+    assert num2words(80, lang="fr", to="ordinal") == "quatre-vingtième"
+    assert num2words(280, lang="fr", to="ordinal") == "deux cent quatre-vingtième"
+    # Non-cents/vingts words unaffected
+    assert num2words(3, lang="fr", to="ordinal") == "troisième"
+    assert num2words(100, lang="fr", to="ordinal") == "centième"
