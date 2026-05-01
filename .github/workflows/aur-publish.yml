@@ -54,11 +54,13 @@ jobs:
               -e "s/^sha256sums=.*/sha256sums=('${sha}')/" \
               packaging/aur/python-num2words2/PKGBUILD > out/PKGBUILD
 
-          # Re-render .SRCINFO from the new PKGBUILD using makepkg in an Arch container.
-          docker run --rm -v "$PWD/out:/pkg" archlinux:base-devel bash -c '
-            cd /pkg && \
-            sudo -u nobody makepkg --printsrcinfo > .SRCINFO
-          '
+          # Re-render .SRCINFO via sed on the existing template instead of
+          # makepkg in a container. Avoids the docker permission failure on
+          # hosted runners and keeps the transform deterministic.
+          sed -e "s/^\tpkgver = .*/\tpkgver = ${version}/" \
+              -e "s|^\tsource = .*|\tsource = https://files.pythonhosted.org/packages/source/n/num2words2/num2words2-${version}.tar.gz|" \
+              -e "s/^\tsha256sums = .*/\tsha256sums = ${sha}/" \
+              packaging/aur/python-num2words2/.SRCINFO > out/.SRCINFO
 
       - name: Push to AUR
         uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
