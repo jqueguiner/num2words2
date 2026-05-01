@@ -46,6 +46,22 @@ class Num2Word_EN(lang_EUR.Num2Word_EUR):
         self.CURRENCY_FORMS["SAR"] = (("riyal", "riyals"), ("halalah", "halalas"))
         self.CURRENCY_FORMS["QAR"] = (("riyal", "riyals"), ("dirham", "dirhams"))
         self.CURRENCY_FORMS["KWD"] = (("dinar", "dinars"), ("fils", "fils"))
+        # 3-decimal currencies (mils as subunit). Issue #256 ports
+        # savoirfairelinux/num2words#256.
+        self.CURRENCY_FORMS["BHD"] = (("dinar", "dinars"), ("fils", "fils"))
+        self.CURRENCY_FORMS["OMR"] = (("rial", "rials"), ("baisa", "baisa"))
+        self.CURRENCY_FORMS["JOD"] = (("dinar", "dinars"), ("fils", "fils"))
+        self.CURRENCY_FORMS["TND"] = (("dinar", "dinars"), ("millime", "millimes"))
+        self.CURRENCY_FORMS["LYD"] = (("dinar", "dinars"), ("dirham", "dirhams"))
+        self.CURRENCY_FORMS["IQD"] = (("dinar", "dinars"), ("fils", "fils"))
+        # Per-currency subunit precision (1000 = 3-decimal mils). Currencies
+        # not listed default to 100 (cents). JPY/KRW are kept at the default
+        # because their historical sen/jeon subunits are still expected by
+        # the test fixtures even though no longer in everyday use.
+        self.CURRENCY_PRECISION = {
+            "BHD": 1000, "KWD": 1000, "OMR": 1000, "JOD": 1000,
+            "TND": 1000, "LYD": 1000, "IQD": 1000,
+        }
 
     def set_high_numwords(self, high):
         max = 3 + 3 * len(high)

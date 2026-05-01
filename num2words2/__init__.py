@@ -385,7 +385,9 @@ CONVERTER_CLASSES = {
     "dk": lang_DA.Num2Word_DA(),  # Pre-ISO-639 code for Danish (ISO is 'da')
 }
 
-CONVERTES_TYPES = ["cardinal", "ordinal", "ordinal_num", "year", "currency"]
+CONVERTES_TYPES = [
+    "cardinal", "ordinal", "ordinal_num", "year", "currency", "cheque",
+]
 CONVERTER_TYPES = CONVERTES_TYPES  # Alias for compatibility
 
 
