@@ -63,7 +63,9 @@ class TestAR(LangTest, TestCase):
     cardinal_tests = [
         (0, "صفر"),
         # These are actually from test_cardinal, but are integers
-        (200, "مئتا"),
+        # 200/2000 alone are now the independent dual form (مئتان / ألفان);
+        # the construct form is only correct when followed by a noun.
+        (200, "مئتان"),
         (700, "سبعمائة"),
         (101010, "مائة وألف ألف وعشرة"),
         (431, "أربعمائة وواحد وثلاثون"),
@@ -115,7 +117,7 @@ class TestAR(LangTest, TestCase):
     ]
 
     year_tests = [
-        (2000, "ألفا"),
+        (2000, "ألفان"),
     ]
 
     def test_cardinal(self):
@@ -197,3 +199,26 @@ def test_ar_ordinals_feminine():
     assert ar.to_ordinal(1, gender="f") == "الأولى"
     assert ar.to_ordinal(2, gender="f") == "الثانية"
     assert ar.to_ordinal(11, gender="f") == "الحادية عشرة"
+
+
+def test_ar_dual_endings_switch_with_case_kwarg():
+    # Regression for num2words2#55 (ports savoirfairelinux/num2words#557).
+    from num2words2 import num2words
+
+    # Standalone dual nouns: independent form, not construct.
+    assert num2words(200, lang="ar") == "مئتان"
+    assert num2words(2000, lang="ar") == "ألفان"
+    assert num2words(2_000_000, lang="ar") == "مليونان"
+
+    # Accusative / genitive use the ين ending.
+    assert num2words(200, lang="ar", case="accusative") == "مئتين"
+    assert num2words(2000, lang="ar", case="accusative") == "ألفين"
+    assert num2words(2_000_000, lang="ar", case="genitive") == "مليونين"
+    assert num2words(200, lang="ar", case="a") == "مئتين"
+    assert num2words(200, lang="ar", case="نصب") == "مئتين"
+    assert num2words(200, lang="ar", case="جر") == "مئتين"
+
+    # Compound forms also switch.
+    assert num2words(205, lang="ar") == "مئتان وخمسة"
+    assert num2words(205, lang="ar", case="accusative") == "مئتين وخمسة"
+    assert num2words(2005, lang="ar", case="accusative") == "ألفين وخمسة"
