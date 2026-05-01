@@ -121,6 +121,15 @@ class Num2Word_Base(object):
         return self.title(out + words)
 
     def float2tuple(self, value):
+        # Decimal input keeps full precision: avoid the float() cast that
+        # would silently round e.g. 98_746_251_323_029.99 to .98 at trillion
+        # scale. Issue #603 ports savoirfairelinux/num2words#603.
+        if isinstance(value, Decimal):
+            pre = int(value)
+            self.precision = abs(value.as_tuple().exponent)
+            post = abs(value - Decimal(pre)) * (Decimal(10) ** self.precision)
+            return pre, int(post)
+
         pre = int(value)
 
         # Simple way of finding decimal places to update the precision
@@ -150,7 +159,12 @@ class Num2Word_Base(object):
         if precision is not None:
             self.precision = int(precision)
         try:
-            pre, post = self.float2tuple(float(value))
+            # Preserve Decimal precision; only float-cast plain numerics.
+            # Issue #603 ports savoirfairelinux/num2words#603.
+            if isinstance(value, Decimal):
+                pre, post = self.float2tuple(value)
+            else:
+                pre, post = self.float2tuple(float(value))
 
             post = str(post)
             post = "0" * (self.precision - len(post)) + post
