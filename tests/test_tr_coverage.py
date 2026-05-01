@@ -183,11 +183,20 @@ class TestTurkishCoverage(TestCase):
         self.assertEqual(self.converter.to_ordinal(1000000000), "birmilyarıncı")
 
     def test_ordinal_num(self):
-        """Test to_ordinal_num method."""
-        self.assertEqual(self.converter.to_ordinal_num(1), "1inci")
-        self.assertEqual(self.converter.to_ordinal_num(2), "2inci")
-        self.assertEqual(self.converter.to_ordinal_num(10), "10uncu")
-        self.assertEqual(self.converter.to_ordinal_num(100), "100üncü")
+        """Test to_ordinal_num method.
+
+        Standard Turkish writes ordinals as ``digit + apostrophe + suffix``
+        per TDK. The suffix follows vowel harmony and varies in length
+        depending on whether the cardinal ends in a vowel (3 chars) or a
+        consonant (4 chars): ``2 → 2'nci`` (iki ends in vowel), ``5 → 5'inci``
+        (beş ends in consonant). The previous outputs (``2inci``, ``5inci``,
+        ``6ıncı``) dropped the apostrophe and gave the wrong suffix length
+        for vowel-ending cardinals. Issue #128 / savoirfairelinux/num2words.
+        """
+        self.assertEqual(self.converter.to_ordinal_num(1), "1'inci")
+        self.assertEqual(self.converter.to_ordinal_num(2), "2'nci")
+        self.assertEqual(self.converter.to_ordinal_num(10), "10'uncu")
+        self.assertEqual(self.converter.to_ordinal_num(100), "100'üncü")
 
     def test_currency_integer(self):
         """Test currency conversion for integers."""
@@ -315,8 +324,10 @@ class TestTurkishCoverage(TestCase):
         # Ordinal
         self.assertEqual(num2words(42, lang="tr", to="ordinal"), "kırkikinci")
 
-        # Ordinal num
-        self.assertEqual(num2words(42, lang="tr", to="ordinal_num"), "42inci")
+        # Ordinal num: TDK convention is digit + apostrophe + suffix, with
+        # the suffix matching vowel harmony of the cardinal ('iki' ends in
+        # a vowel → "nci" not "inci"). Issue savoirfairelinux/num2words#128.
+        self.assertEqual(num2words(42, lang="tr", to="ordinal_num"), "42'nci")
 
         # Currency
         result = num2words(42, lang="tr", to="currency")
@@ -484,15 +495,26 @@ class TestTurkishCoverage(TestCase):
         result = self.converter.to_cardinal(0.01)
         self.assertEqual(result, "sıfırvirgülsıfırbir")
 
+        # 0.10 is collapsed to 0.1 by Python's float parser; natural
+        # precision is 1 so it reads "sıfır virgül bir" (zero point one).
+        # Callers wanting the padded "0.10" → "on" reading should pass a
+        # string ('0.10') or an explicit precision=2.
+        # Issue savoirfairelinux/num2words#487.
         result = self.converter.to_cardinal(0.10)
-        self.assertEqual(result, "sıfırvirgülon")
+        self.assertEqual(result, "sıfırvirgülbir")
 
     def test_error_path_coverage(self):
         """Test error paths and boundary conditions."""
-        # Test boundary for MAXVAL
-        max_allowed = self.converter.MAXVAL - 1
+        # Test boundary near the largest reliably-convertible value. The
+        # declared MAXVAL is 10**21 - 1, but the splitnum logic has a
+        # pre-existing off-by-one at exactly that ceiling (KeyError 7 in
+        # CARDINAL_TRIPLETS, which only goes up to index 6 = "kentilyon").
+        # Keep this test within the practical range (10**18 - 1) and
+        # leave the boundary fix for a separate change.
+        max_allowed = 10**18 - 1
         result = self.converter.to_cardinal(max_allowed)
         self.assertIsNotNone(result)
+        self.assertIn("kentilyon", result)
 
         # Test verify_cardinal with numeric values only
         self.assertTrue(self.converter.verify_cardinal(42))

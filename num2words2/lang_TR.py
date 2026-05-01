@@ -18,6 +18,8 @@
 
 from __future__ import unicode_literals
 
+from decimal import Decimal
+
 from .base import Num2Word_Base
 
 
@@ -442,7 +444,19 @@ class Num2Word_TR(Num2Word_Base):
 
         # Use string formatting that respects self.precision so we can emit
         # arbitrary fractional digits (issue #64 part 3 / upstream #534).
-        prec = max(int(self.precision), 1)
+        # Special case: when the caller didn't override precision (still
+        # at the language default of 2) and the input has fewer
+        # fractional digits than that, fall back to the input's natural
+        # precision. Otherwise 0.1 → "0.10" → "on" (ten) instead of the
+        # natural "bir" (one). Two-digit fractions (0.25, 1234.56) and
+        # leading-zero fractions (0.01, 0.05) are preserved because
+        # their natural precision already matches the default.
+        # Issue savoirfairelinux/num2words#487.
+        natural = abs(Decimal(str(abs_value)).as_tuple().exponent)
+        if self.precision == 2 and natural and natural < 2:
+            prec = natural
+        else:
+            prec = max(int(self.precision), 1)
         whole_str = "{:.{p}f}".format(abs_value, p=prec)
         if "." in whole_str:
             int_part, frac_part = whole_str.split(".")
@@ -516,15 +530,21 @@ class Num2Word_TR(Num2Word_Base):
         return "".join(out).strip()
 
     def verify_cardinal(self, value):
-        iscardinal = True
+        # The historical False branch (`not float(value) == value`) was a
+        # buggy attempt at "is integer?" detection that misfired on
+        # Decimal('0.1') — float(Decimal('0.1')) ≈ 0.1 ≠ Decimal('0.1')
+        # due to IEEE 754, so Decimal floats were silently dropped to "".
+        # We now just gate non-numeric input via the type-cast probe and
+        # leave fractional-vs-integer routing to _to_cardinal_impl, which
+        # already dispatches floats to to_cardinal_float separately.
+        # Issue savoirfairelinux/num2words#487.
         try:
-            if not float(value) == value:
-                iscardinal = False
+            float(value)
         except (ValueError, TypeError):
             raise TypeError(self.errmsg_nonnum)
         if abs(value) >= self.MAXVAL:
             raise OverflowError(self.errmsg_toobig.format(value, self.MAXVAL))
-        return iscardinal
+        return True
 
     def verify_ordinal(self, value):
         isordinal = True
@@ -880,7 +900,20 @@ class Num2Word_TR(Num2Word_Base):
 
     def to_ordinal_num(self, value):
         self.verify_ordinal(value)
-        return "%s%s" % (value, self.to_ordinal(value)[-4:])
+        # Standard Turkish writes ordinals as digit + apostrophe + suffix
+        # (TDK: "5'inci", "12'nci"). The suffix length depends on whether
+        # the cardinal ends in a vowel (3 chars: "nci/ncı/ncu/ncü") or a
+        # consonant (4 chars: "inci/ıncı/uncu/üncü"), so we recover it by
+        # stripping the cardinal off the ordinal — robust under all vowel
+        # harmony cases.
+        cardinal = self.to_cardinal(value)
+        ordinal = self.to_ordinal(value)
+        if ordinal.startswith(cardinal):
+            suffix = ordinal[len(cardinal):]
+        else:
+            # Defensive fallback: keep the historical 4-char tail.
+            suffix = ordinal[-4:]
+        return "%s'%s" % (value, suffix)
 
     def pluralize(self, number, forms):
         """Return the appropriate plural form."""
