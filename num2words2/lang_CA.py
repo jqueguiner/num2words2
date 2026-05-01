@@ -216,7 +216,7 @@ class Num2Word_CA(Num2Word_EUR):
         lows = ["quadr", "tr", "b", "m"]
         self.high_numwords = self.gen_high_numwords([], [], lows)
         self.negword = "menys "
-        self.pointword = "punt"
+        self.pointword = "coma"
         self.errmsg_nonnum = "type(%s) no és [long, int, float]"
         self.errmsg_floatord = "El float %s no pot ser tractat com un" " ordinal."
         self.errmsg_negord = (
@@ -224,7 +224,7 @@ class Num2Word_CA(Num2Word_EUR):
         )
         self.errmsg_toobig = "abs(%s) ha de ser inferior a %s."
         self.gender_stem = "è"
-        self.exclude_title = ["i", "menys", "punt"]
+        self.exclude_title = ["i", "menys", "coma"]
 
         self.mid_numwords = [
             (1000, "mil"),
@@ -395,6 +395,28 @@ class Num2Word_CA(Num2Word_EUR):
         else:
             ntext = " " + ntext
         return (ctext + ntext, cnum * nnum)
+
+    def to_cardinal_float(self, value):
+        # Catalan reads the fractional part as one integer (with leading zeros
+        # spelled out). 42.15 -> "quaranta-dos coma quinze", not "... un cinc".
+        # Issue #57; ports savoirfairelinux/num2words#631.
+        try:
+            float(value) == value
+        except (ValueError, TypeError):
+            raise TypeError(self.errmsg_nonnum % value)
+        pre, post = self.float2tuple(float(value))
+        post_str = str(post)
+        leading_zeros = self.precision - len(post_str)
+        post_str = "0" * leading_zeros + post_str
+        out = [self.to_cardinal(pre)]
+        if value < 0 and pre == 0:
+            out = [self.negword.strip()] + out
+        out.append(self.title(self.pointword))
+        for _ in range(leading_zeros):
+            out.append(self.to_cardinal(0))
+        if int(post_str) > 0 or leading_zeros == 0:
+            out.append(self.to_cardinal(int(post_str)))
+        return " ".join(out)
 
     def to_ordinal(self, value):
         self.verify_ordinal(value)
