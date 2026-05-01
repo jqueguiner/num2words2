@@ -232,14 +232,17 @@ class Num2WordsTRTest(TestCase):
         self.assertEqual(num2words(11.11, lang="tr"), "onbirvirgülonbir")
         self.assertEqual(num2words(20.2, lang="tr"), "yirmivirgülyirmi")
         self.assertEqual(num2words(99.99, lang="tr"), "doksandokuzvirgüldoksandokuz")
-        self.assertEqual(num2words(100.01, lang="tr"), "yüzvirgülbir")
+        self.assertEqual(num2words(100.01, lang="tr"), "yüzvirgülsıfırbir")
+        # Regression for savoirfairelinux/num2words#487 (leading zero in fractional).
+        self.assertEqual(num2words(0.03, lang="tr"), "sıfırvirgülsıfırüç")
+        self.assertEqual(num2words(0.05, lang="tr"), "sıfırvirgülsıfırbeş")
         self.assertEqual(num2words(100.5, lang="tr"), "yüzvirgülelli")
         self.assertEqual(num2words(123.45, lang="tr"), "yüzyirmiüçvirgülkırkbeş")
         self.assertEqual(num2words(1000.5, lang="tr"), "binvirgülelli")
         self.assertEqual(
             num2words(1234.56, lang="tr"), "binikiyüzotuzdörtvirgülellialtı"
         )
-        self.assertEqual(num2words(10000.01, lang="tr"), "onbinvirgülbir")
+        self.assertEqual(num2words(10000.01, lang="tr"), "onbinvirgülsıfırbir")
         self.assertEqual(num2words(-0.5, lang="tr"), "eksi sıfırvirgülelli")
         self.assertEqual(num2words(-1.5, lang="tr"), "eksi birvirgülelli")
         self.assertEqual(num2words(-10.5, lang="tr"), "eksi onvirgülelli")
