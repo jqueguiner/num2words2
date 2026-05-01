@@ -39,6 +39,31 @@ class Num2Word_PT_BR(lang_PT.Num2Word_PT):
         super(Num2Word_PT_BR, self).__init__()
         self.negword = "menos "
 
+    def str_to_number(self, value):
+        # Brazilian Portuguese uses ',' as the decimal separator. A string
+        # written with '.' (e.g. '1.50') comes from US-style notation and
+        # should be pronounced 'ponto' (point) instead of 'vírgula' (comma).
+        # A string with ',' is the canonical pt-BR form and uses 'vírgula'.
+        # Issue #63 ports savoirfairelinux/num2words#300.
+        s = str(value).strip()
+        if isinstance(value, str) and "." in s and "," not in s:
+            self._pending_pointword = "ponto"
+        else:
+            self._pending_pointword = None
+        return super(Num2Word_PT_BR, self).str_to_number(value)
+
+    def to_cardinal_float(self, value):
+        pending = getattr(self, "_pending_pointword", None)
+        if pending:
+            saved = self.pointword
+            self.pointword = pending
+            try:
+                return super(Num2Word_PT_BR, self).to_cardinal_float(value)
+            finally:
+                self.pointword = saved
+                self._pending_pointword = None
+        return super(Num2Word_PT_BR, self).to_cardinal_float(value)
+
     def setup(self):
         # First call parent setup
         super(Num2Word_PT_BR, self).setup()
