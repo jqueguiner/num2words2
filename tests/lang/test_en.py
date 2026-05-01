@@ -182,3 +182,13 @@ def test_en_currency_audit_includes_common_codes():
     # No NotImplementedError for these codes
     for c in ["NZD", "HKD", "CNY", "KRW", "MXN", "BRL", "ZAR", "SAR", "QAR", "KWD"]:
         num2words(12, lang="en", to="currency", currency=c)
+
+
+def test_en_mixed_text_and_numerals():
+    # Regression for num2words2#61 (ports savoirfairelinux/num2words#281).
+    from num2words2 import num2words
+    assert num2words("text 1", lang="en") == "text one"
+    assert num2words("I have 5 apples", lang="en") == "I have five apples"
+    # Pure numeric strings still work.
+    assert num2words("5", lang="en") == "five"
+    assert num2words("5.5", lang="en") == "five point five"

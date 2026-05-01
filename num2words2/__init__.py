@@ -17,6 +17,8 @@
 
 from __future__ import unicode_literals
 
+import decimal
+
 from . import (
     lang_AF,
     lang_AM,
@@ -387,7 +389,14 @@ def num2words(number, ordinal=False, lang="en", to="cardinal", **kwargs):
     converter = CONVERTER_CLASSES[lang]
 
     if isinstance(number, str):
-        number = converter.str_to_number(number)
+        # If the string is a mix of text and numerals (e.g. "text 1"),
+        # route to num2words_sentence which extracts numerals and
+        # converts each in place. Issue #61 ports
+        # savoirfairelinux/num2words#281.
+        try:
+            number = converter.str_to_number(number)
+        except (decimal.InvalidOperation, ValueError):
+            return num2words_sentence(number, lang=lang, to=to, **kwargs)
 
     # backwards compatible
     if ordinal:
