@@ -118,7 +118,6 @@ class Num2WordsUZCYRTest(TestCase):
             'минг биринчи'
         )
 
-
     def test_to_currency(self):
         self.assertEqual(
             num2words(1.0, lang='uz_cyr', to='currency', currency='EUR'),
