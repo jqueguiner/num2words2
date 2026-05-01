@@ -290,6 +290,29 @@ class Num2Word_Base(object):
     def to_year(self, value, **kwargs):
         return self.to_cardinal(value)
 
+    def to_fraction(self, numerator, denominator):
+        """Render ``numerator/denominator`` as words.
+
+        Default is "<cardinal numerator> <ordinal denominator>[s]" — e.g.
+        ``2/5`` → "two fifths". Languages with idiomatic forms for
+        common denominators (English half/quarter, French demi/tiers,
+        German Drittel/Viertel, ...) override this. Issue #584 ports
+        savoirfairelinux/num2words#584.
+        """
+        if denominator == 0:
+            raise ZeroDivisionError("denominator must not be zero")
+        if denominator == 1 or numerator == 0:
+            return self.to_cardinal(numerator)
+        is_negative = (numerator < 0) ^ (denominator < 0)
+        abs_n = abs(int(numerator))
+        abs_d = abs(int(denominator))
+        sign = "%s " % self.negword.strip() if is_negative else ""
+        num_word = self.to_cardinal(abs_n)
+        den_word = self.to_ordinal(abs_d)
+        if abs_n != 1:
+            den_word = den_word + "s"  # languages override for proper plural
+        return sign + num_word + " " + den_word
+
     def pluralize(self, n, forms):
         """
         Should resolve gettext form:

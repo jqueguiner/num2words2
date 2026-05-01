@@ -203,6 +203,61 @@ class Num2Word_DE(Num2Word_EUR):
         self.verify_ordinal(value)
         return str(value) + "."
 
+    def to_fraction(self, numerator, denominator):
+        """German fractions: capitalised noun, invariant plural.
+
+        ``1/3`` → "ein Drittel"; ``2/3`` → "zwei Drittel" (no -s plural).
+        ``1/2`` → "ein halb"; ``2/2`` → "zwei halbe" (adjectival).
+        Numerator uses the apocopated ``ein`` rather than the cardinal
+        ``eins`` since the fraction is a noun phrase. Issue #584.
+        """
+        if denominator == 0:
+            raise ZeroDivisionError("denominator must not be zero")
+        if denominator == 1 or numerator == 0:
+            return self.to_cardinal(numerator)
+        is_negative = (numerator < 0) ^ (denominator < 0)
+        abs_n = abs(int(numerator))
+        abs_d = abs(int(denominator))
+
+        # Common denominators with their idiomatic noun. Plural is
+        # invariant for these — "zwei Drittel" not "zwei Drittels".
+        de_frac = {
+            3: "Drittel",
+            4: "Viertel",
+            5: "Fünftel",
+            6: "Sechstel",
+            7: "Siebtel",
+            8: "Achtel",
+            9: "Neuntel",
+            10: "Zehntel",
+            11: "Elftel",
+            12: "Zwölftel",
+        }
+        if abs_d == 2:
+            den_word = "halb" if abs_n == 1 else "halbe"
+        elif abs_d in de_frac:
+            den_word = de_frac[abs_d]
+        elif abs_d < 20:
+            stem = self.to_cardinal(abs_d)
+            den_word = stem + "tel"
+            den_word = den_word[0].upper() + den_word[1:]
+        else:
+            # 20+ → cardinal + 'stel' (zwanzigstel, hundertstel, ...).
+            stem = self.to_cardinal(abs_d)
+            # Drop the redundant 'ein' prefix on round powers of ten:
+            # 100 reads as 'einhundert' standalone but 'Hundertstel' as
+            # a fraction noun; same for 'eintausend' → 'Tausendstel'.
+            for prefix in ("einhundert", "eintausend", "einemillion", "einemilliarde"):
+                if stem.startswith(prefix) and stem == prefix:
+                    stem = stem[3:]  # drop 'ein'
+                    break
+            den_word = stem + "stel"
+            den_word = den_word[0].upper() + den_word[1:]
+
+        num_word = "ein" if abs_n == 1 else self.to_cardinal(abs_n)
+        sign = "%s " % self.negword.strip() if is_negative else ""
+        return sign + num_word + " " + den_word
+
     def to_currency(
         self, val, currency="EUR", cents=True, separator=" und", adjective=False
     ):

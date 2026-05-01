@@ -246,6 +246,33 @@ class Num2Word_PT(Num2Word_EUR):
         self.verify_ordinal(value)
         return "%sº" % (value)
 
+    def to_fraction(self, numerator, denominator):
+        """Portuguese fractions: 'meio/terço/quarto/quinto...' with -s plural.
+
+        Issue #584. Inherited by PT-BR.
+        """
+        if denominator == 0:
+            raise ZeroDivisionError("denominator must not be zero")
+        if denominator == 1 or numerator == 0:
+            return self.to_cardinal(numerator)
+        is_negative = (numerator < 0) ^ (denominator < 0)
+        abs_n = abs(int(numerator))
+        abs_d = abs(int(denominator))
+        idiomatic = {
+            2: ("meio", "meios"),
+            3: ("terço", "terços"),
+        }
+        if abs_d in idiomatic:
+            sing, plur = idiomatic[abs_d]
+            den_word = sing if abs_n == 1 else plur
+        else:
+            den_word = self.to_ordinal(abs_d)
+            if abs_n != 1 and not den_word.endswith("s"):
+                den_word = den_word + "s"
+        num_word = "um" if abs_n == 1 else self.to_cardinal(abs_n)
+        sign = "%s " % self.negword.strip() if is_negative else ""
+        return sign + num_word + " " + den_word
+
     def to_year(self, val, longval=True):
         # Before changing this function remember this is used by pt-BR
         # so act accordingly
