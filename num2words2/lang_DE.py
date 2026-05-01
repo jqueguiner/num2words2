@@ -23,6 +23,10 @@ from .lang_EUR import Num2Word_EUR
 
 
 class Num2Word_DE(Num2Word_EUR):
+    # Feminine grammatical-gender currencies need the numeral 'eine' (not
+    # 'ein'/'eins') when the value ends in 1. Issue #69.
+    FEMININE_CURRENCIES = {"DEM", "INR"}
+
     CURRENCY_FORMS = {
         "EUR": (("Euro", "Euro"), ("Cent", "Cent")),
         "GBP": (("Pfund", "Pfund"), ("Penny", "Pence")),
@@ -214,6 +218,16 @@ class Num2Word_DE(Num2Word_EUR):
             minus_str = self.negword if val < 0 else ""
             abs_val = abs(val)
             money_str = self.to_cardinal(abs_val)
+
+            # German feminine-currency rule: when the currency word is
+            # feminine and the number ends in 'mod 100 == 1', the numeral
+            # takes the feminine form 'eine' instead of 'ein'/'eins'.
+            # Issue #69 ports savoirfairelinux/num2words#462.
+            if currency in self.FEMININE_CURRENCIES and abs_val % 100 == 1:
+                if money_str.endswith("eins"):
+                    money_str = money_str[:-4] + "eine"
+                elif money_str.endswith("ein"):
+                    money_str = money_str + "e"
 
             # Proper pluralization for currency
             if abs_val == 1:

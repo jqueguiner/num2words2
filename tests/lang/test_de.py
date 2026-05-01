@@ -154,3 +154,15 @@ class Num2WordsDETest(TestCase):
         self.assertEqual(num2words(-0.04, lang="de"), "minus null Komma null vier")
         self.assertEqual(num2words(-1.4, lang="de"), "minus eins Komma vier")
         self.assertEqual(num2words(-10.25, lang="de"), "minus zehn Komma zwei fünf")
+
+
+def test_de_dm_eine_mark_for_feminine_unit():
+    # Regression for num2words2#69 (ports savoirfairelinux/num2words#462).
+    from num2words2 import num2words
+    assert num2words(1, lang="de", to="currency", currency="DEM") == "eine Mark"
+    assert num2words(101, lang="de", to="currency", currency="DEM") == "einhunderteine Mark"
+    assert num2words(1001, lang="de", to="currency", currency="DEM") == "eintausendeine Mark"
+    # 21 ends in '...zwanzig' so the 'ein' rule does not apply
+    assert num2words(21, lang="de", to="currency", currency="DEM") == "einundzwanzig Mark"
+    # Plain 1 EUR (masculine/neuter) unchanged
+    assert num2words(1, lang="de", to="currency", currency="EUR") == "eins Euro"
