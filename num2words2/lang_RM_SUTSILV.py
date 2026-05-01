@@ -30,7 +30,7 @@ CARDINAL_WORDS = [
 
 ORDINAL_WORDS = [
     ZERO, "amprem", "savund", "tearz", "quart", "tschentgavel", "sisavel",
-    "seatavel", "otgavel", "novavel", "dieschavel",  "endeschavel",
+    "seatavel", "otgavel", "novavel", "dieschavel", "endeschavel",
     "dudeschavel", "tredeschavel", "quitordeschavel", "quendeschavel",
     "sedeschavel", "gisseatavel", "schotgavel", "schenevavel", "veintgavel"
 ]
