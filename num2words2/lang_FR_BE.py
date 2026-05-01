@@ -42,9 +42,23 @@ class Num2Word_FR_BE(Num2Word_FR):
         if cnum == 1:
             if nnum < 1000000:
                 return next
-
-        if cnum < 1000 and nnum != 1000 and ntext[-1] != "s" and not nnum % 100:
-            ntext += "s"
+        else:
+            # Drop trailing 's' from 'cents' / 'vingts' when followed by
+            # another word: 'sept cent vingt-neuf' (not 'sept cents vingt-
+            # neuf'). Issue #70 ports savoirfairelinux/num2words#532.
+            if (
+                (not (cnum - 80) % 100 or (not cnum % 100 and cnum < 1000))
+                and nnum < 1000000
+                and ctext[-1] == "s"
+            ):
+                ctext = ctext[:-1]
+            if (
+                cnum < 1000
+                and nnum != 1000
+                and ntext[-1] != "s"
+                and not nnum % 100
+            ):
+                ntext += "s"
 
         if nnum < cnum < 100:
             if nnum % 10 == 1:

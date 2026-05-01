@@ -25,19 +25,19 @@ TEST_CASES_CARDINAL = (
     (79, "septante-neuf"),
     (89, "quatre-vingt-neuf"),
     (95, "nonante-cinq"),
-    (729, "sept cents vingt-neuf"),
-    (894, "huit cents nonante-quatre"),
-    (999, "neuf cents nonante-neuf"),
-    (7232, "sept mille deux cents trente-deux"),
-    (8569, "huit mille cinq cents soixante-neuf"),
-    (9539, "neuf mille cinq cents trente-neuf"),
-    (1000000, "un millions"),
-    (1000001, "un millions un"),
+    (729, "sept cent vingt-neuf"),
+    (894, "huit cent nonante-quatre"),
+    (999, "neuf cent nonante-neuf"),
+    (7232, "sept mille deux cent trente-deux"),
+    (8569, "huit mille cinq cent soixante-neuf"),
+    (9539, "neuf mille cinq cent trente-neuf"),
+    (1000000, "un million"),
+    (1000001, "un million un"),
     (4000000, "quatre millions"),
     (10000000000000, "dix billions"),
     (100000000000000, "cent billions"),
-    (1000000000000000000, "un trillions"),
-    (1000000000000000000000, "un trilliards"),
+    (1000000000000000000, "un trillion"),
+    (1000000000000000000000, "un trilliard"),
     (10000000000000000000000000, "dix quadrillions"),
 )
 
@@ -49,9 +49,9 @@ TEST_CASES_ORDINAL = (
     (28, "vingt-huitième"),
     (100, "centième"),
     (1000, "millième"),
-    (1000000, "un millionsième"),
-    (1000000000000000, "un billiardsième"),
-    (1000000000000000000, "un trillionsième"),  # over 1e18 is not supported
+    (1000000, "millionième"),
+    (1000000000000000, "billiardième"),
+    (1000000000000000000, "trillionième"),  # over 1e18 is not supported
 )
 
 TEST_CASES_TO_CURRENCY_EUR = (
@@ -88,7 +88,7 @@ class Num2WordsENTest(TestCase):
         self.assertEqual(num2words(71, lang=LANG), "septante et un")
         self.assertEqual(num2words(81, lang=LANG), "quatre-vingt et un")
         self.assertEqual(num2words(80, lang=LANG), "quatre-vingt")
-        self.assertEqual(num2words(880, lang=LANG), "huit cents quatre-vingt")
+        self.assertEqual(num2words(880, lang=LANG), "huit cent quatre-vingt")
         self.assertEqual(num2words(91, ordinal=True, lang=LANG), "nonante et unième")
         self.assertEqual(num2words(53, lang=LANG), "cinquante-trois")
 
@@ -115,3 +115,28 @@ class Num2WordsENTest(TestCase):
         self.assertEqual(num2words(-0.4, lang="fr_BE"), "moins zéro virgule quatre")
         self.assertEqual(num2words(-0.5, lang="fr_BE"), "moins zéro virgule cinq")
         self.assertEqual(num2words(-1.4, lang="fr_BE"), "moins un virgule quatre")
+
+
+def test_fr_be_corrections_from_upstream_532():
+    # Regression for num2words2#70 (ports savoirfairelinux/num2words#532).
+    from num2words2 import num2words
+
+    # Cardinal: cents singular before continuation, million/trillion/trilliard
+    # singular when count is 1.
+    assert num2words(729, lang="fr_BE") == "sept cent vingt-neuf"
+    assert num2words(894, lang="fr_BE") == "huit cent nonante-quatre"
+    assert num2words(1_000_000, lang="fr_BE") == "un million"
+    assert num2words(1_000_001, lang="fr_BE") == "un million un"
+    assert num2words(10 ** 18, lang="fr_BE") == "un trillion"
+    assert num2words(10 ** 21, lang="fr_BE") == "un trilliard"
+
+    # Ordinal: drop leading 'un', drop trailing 's' before -ième, and
+    # pluralize -ième when count > 1.
+    assert num2words(1_000_000, lang="fr_BE", to="ordinal") == "millionième"
+    assert num2words(2_000_000, lang="fr_BE", to="ordinal") == "deux millionièmes"
+    assert num2words(10 ** 15, lang="fr_BE", to="ordinal") == "billiardième"
+
+    # Currency: zéro takes singular for both major and minor unit.
+    assert num2words(1.00, lang="fr_BE", to="currency") == "un euro et zéro centime"
+    assert num2words(100.00, lang="fr_BE", to="currency") == "cent euros et zéro centime"
+    assert num2words(1.00, lang="fr_BE", to="currency", currency="FRF") == "un franc et zéro centime"

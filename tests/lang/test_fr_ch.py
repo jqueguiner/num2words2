@@ -26,19 +26,19 @@ TEST_CASES_CARDINAL = (
     (79, "septante-neuf"),
     (89, "huitante-neuf"),
     (95, "nonante-cinq"),
-    (729, "sept cents vingt-neuf"),
-    (894, "huit cents nonante-quatre"),
-    (999, "neuf cents nonante-neuf"),
-    (7232, "sept mille deux cents trente-deux"),
-    (8569, "huit mille cinq cents soixante-neuf"),
-    (9539, "neuf mille cinq cents trente-neuf"),
-    (1000000, "un millions"),
-    (1000001, "un millions un"),
+    (729, "sept cent vingt-neuf"),
+    (894, "huit cent nonante-quatre"),
+    (999, "neuf cent nonante-neuf"),
+    (7232, "sept mille deux cent trente-deux"),
+    (8569, "huit mille cinq cent soixante-neuf"),
+    (9539, "neuf mille cinq cent trente-neuf"),
+    (1000000, "un million"),
+    (1000001, "un million un"),
     (4000000, "quatre millions"),
     (10000000000000, "dix billions"),
     (100000000000000, "cent billions"),
-    (1000000000000000000, "un trillions"),
-    (1000000000000000000000, "un trilliards"),
+    (1000000000000000000, "un trillion"),
+    (1000000000000000000000, "un trilliard"),
     (10000000000000000000000000, "dix quadrillions"),
 )
 
@@ -50,9 +50,9 @@ TEST_CASES_ORDINAL = (
     (28, "vingt-huitième"),
     (100, "centième"),
     (1000, "millième"),
-    (1000000, "un millionsième"),
-    (1000000000000000, "un billiardsième"),
-    (1000000000000000000, "un trillionsième"),  # over 1e18 is not supported
+    (1000000, "millionième"),
+    (1000000000000000, "billiardième"),
+    (1000000000000000000, "trillionième"),  # over 1e18 is not supported
 )
 
 TEST_CASES_TO_CURRENCY_EUR = (
@@ -86,7 +86,7 @@ class Num2WordsENTest(TestCase):
         self.assertEqual(num2words(71, lang="fr_CH"), "septante et un")
         self.assertEqual(num2words(81, lang="fr_CH"), "huitante et un")
         self.assertEqual(num2words(80, lang="fr_CH"), "huitante")
-        self.assertEqual(num2words(880, lang="fr_CH"), "huit cents huitante")
+        self.assertEqual(num2words(880, lang="fr_CH"), "huit cent huitante")
         self.assertEqual(num2words(91, ordinal=True, lang="fr_CH"), "nonante et unième")
         self.assertEqual(num2words(53, lang="fr_CH"), "cinquante-trois")
 
