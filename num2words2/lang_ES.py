@@ -273,7 +273,9 @@ class Num2Word_ES(Num2Word_EUR):
         return super(Num2Word_ES, self).to_cardinal(value)
 
     def setup(self):
-        lows = ["cuatr", "tr", "b", "m"]
+        # Extend through 10^57 (nonillón). Issue #71 ports
+        # savoirfairelinux/num2words#501.
+        lows = ["non", "oct", "sept", "sext", "quint", "cuatr", "tr", "b", "m"]
         self.high_numwords = self.gen_high_numwords([], [], lows)
         self.negword = "menos "
         self.pointword = "punto"

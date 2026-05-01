@@ -364,3 +364,10 @@ class Num2WordsPTTest(TestCase):
         self.assertEqual(num2words(-0.04, lang="pt"), "menos zero vírgula zero quatro")
         self.assertEqual(num2words(-1.4, lang="pt"), "menos um vírgula quatro")
         self.assertEqual(num2words(-10.25, lang="pt"), "menos dez vírgula dois cinco")
+
+
+def test_pt_handles_10_27_and_above():
+    # Regression for num2words2#71 (ports savoirfairelinux/num2words#501).
+    from num2words2 import num2words
+    assert "quintilião" in num2words(10**30, lang="pt")
+    assert "nonilião" in num2words(10**54, lang="pt")
