@@ -3,23 +3,47 @@ num2words2 library - Convert numbers to words in multiple languages
 
 .. image:: https://img.shields.io/pypi/v/num2words2.svg
    :target: https://pypi.python.org/pypi/num2words2
+   :alt: PyPI version
 
-.. image:: https://github.com/jqueguiner/num2words/workflows/CI/badge.svg
-    :target: https://github.com/jqueguiner/num2words/actions
+.. image:: https://img.shields.io/pypi/pyversions/num2words2.svg
+   :target: https://pypi.python.org/pypi/num2words2
+   :alt: Python versions
 
-.. image:: https://coveralls.io/repos/github/jqueguiner/num2words/badge.svg?branch=master
-    :target: https://coveralls.io/github/jqueguiner/num2words?branch=master
+.. image:: https://img.shields.io/pypi/l/num2words2.svg
+   :target: https://pypi.python.org/pypi/num2words2
+   :alt: License
+
+.. image:: https://img.shields.io/pypi/dm/num2words2.svg
+   :target: https://pypi.python.org/pypi/num2words2
+   :alt: Monthly downloads
+
+.. image:: https://img.shields.io/aur/version/python-num2words2.svg
+   :target: https://aur.archlinux.org/packages/python-num2words2
+   :alt: AUR version
+
+.. image:: https://github.com/jqueguiner/num2words2/actions/workflows/ci.yml/badge.svg?branch=main
+   :target: https://github.com/jqueguiner/num2words2/actions/workflows/ci.yml
+   :alt: CI status
+
+.. image:: https://github.com/jqueguiner/num2words2/actions/workflows/lint.yml/badge.svg?branch=main
+   :target: https://github.com/jqueguiner/num2words2/actions/workflows/lint.yml
+   :alt: Lint status
+
+.. image:: https://coveralls.io/repos/github/jqueguiner/num2words2/badge.svg?branch=main
+   :target: https://coveralls.io/github/jqueguiner/num2words2?branch=main
+   :alt: Coverage
 
 
 ``num2words2`` is a modern, actively maintained fork of the original num2words library
-that converts numbers like ``42`` to words like ``forty-two``. It supports multiple
-languages (see the list below for full list of languages) and can even generate
-ordinal numbers like ``forty-second``. This fork was created to address the maintenance
-gap in the original project and optimize for modern AI/LLM/speech applications.
+that converts numbers like ``42`` to words like ``forty-two``. It supports 120+ languages
+and 170+ locale codes (see ``REFERENCE.md`` for the full table) and can produce
+cardinals, ordinals, currency, year, fractions, bank-cheque format, and aviation/ICAO
+digit-by-digit phraseology. This fork was created to address the maintenance gap in
+the original project and optimize for modern AI/LLM/speech applications.
 
 The project is hosted on GitHub_. Contributions are welcome.
 
-.. _GitHub: https://github.com/jqueguiner/num2words
+.. _GitHub: https://github.com/jqueguiner/num2words2
 
 Installation
 ------------
@@ -230,7 +254,7 @@ Wiki
 For additional information on some localization please check the Wiki_.
 And feel free to propose wiki enhancement.
 
-.. _Wiki: https://github.com/jqueguiner/num2words/wiki
+.. _Wiki: https://github.com/jqueguiner/num2words2/wiki
 
 History
 -------
