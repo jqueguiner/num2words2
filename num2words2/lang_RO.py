@@ -174,9 +174,13 @@ fi convertit în cuvinte (abs(%s) > %s)."
         if len(text) > 1:
             forms = [text[0], text[0][:-1] + text[1], "de " + text[0][:-1] + text[1]]
             result = self.pluralize(side_effect, forms)
-        # mega inflections are different
+        # mega inflections also need de/no-de pluralization
+        # (e.g. 33 milioane → 33 de milioane). The giga path is already
+        # handled above because GIGA_SUFFIX is declared with a "/" form.
         if side_effect > 1 and result.endswith(self.MEGA_SUFFIX):
-            result = result.replace(self.MEGA_SUFFIX, self.MEGA_SUFFIX_I)
+            inflected = result.replace(self.MEGA_SUFFIX, self.MEGA_SUFFIX_I)
+            forms = [result, inflected, "de " + inflected]
+            result = self.pluralize(side_effect, forms)
         elif side_effect > 1 and result.endswith("iliare"):
             result = result.replace("iliare", self.GIGA_SUFFIX_I)
         return result
