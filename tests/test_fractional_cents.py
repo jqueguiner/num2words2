@@ -275,14 +275,14 @@ class TestFractionalCentsCA:
     """Test fractional cents in Catalan."""
 
     def test_fractional_cents_eur(self):
-        """Test EUR with fractional cents."""
+        """Test EUR with fractional cents. Catalan pointword is 'coma' (#57)."""
         result = num2words(1234.653, lang="ca", to="currency", currency="EUR")
-        assert "punt tres" in result
+        assert "coma tres" in result
 
     def test_fractional_cents_usd(self):
         """Test USD with fractional cents."""
         result = num2words(100.123, lang="ca", to="currency", currency="USD")
-        assert "punt" in result
+        assert "coma" in result
 
 
 class TestFractionalCentsHE:
@@ -559,7 +559,7 @@ class TestFractionalCentsSQ:
         ("da", "DKK", "komma"),
         ("is", "ISK", "komma"),
         ("lv", "EUR", "komats"),
-        ("ca", "EUR", "punt"),
+        ("ca", "EUR", "coma"),
         ("he", "ILS", "נקודה"),
         #     ('hi', 'INR', 'दשमलव'),
         ("kz", "KZT", "бүтін"),

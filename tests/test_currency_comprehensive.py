@@ -186,7 +186,7 @@ class ComprehensiveCurrencyTests(unittest.TestCase):
             ("en", 0.99, "USD", "zero dollars, ninety-nine cents"),
             ("en", 1.01, "USD", "one dollar, one cent"),
             ("en", 10.10, "USD", "ten dollars, ten cents"),
-            ("fr", 0.01, "EUR", "zéro euros et un centime"),
+            ("fr", 0.01, "EUR", "zéro euro et un centime"),
             ("de", 0.50, "EUR", "null Euro und fünfzig Cent"),
             ("pl", 0.01, "PLN", "zero złotych, jeden grosz"),
             ("ru", 0.01, "RUB", "ноль рублей, одна копейка"),
