@@ -124,6 +124,10 @@ class Num2Word_FR(Num2Word_EUR):
         else:
             if word[-1] == "e":
                 word = word[:-1]
+            # Drop the trailing 's' of 'cents' / 'vingts' before -ième:
+            # 200 -> "deux centième" (not "deux centsième").
+            if word.endswith("ts") or word.endswith("ents"):
+                word = word[:-1]
             word = word + "ième"
         return word
 
