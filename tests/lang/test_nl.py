@@ -416,7 +416,7 @@ class Num2WordsNLTest(TestCase):
         self.assertEqual(
             num2words(2024, lang="nl", to="year"), "tweeduizend vierentwintig"
         )
-        self.assertEqual(num2words(2100, lang="nl", to="year"), "eenentwintig honderd")
+        self.assertEqual(num2words(2100, lang="nl", to="year"), "eenentwintighonderd")
 
     def test_string_input(self):
         """Test string input conversion."""
@@ -458,3 +458,13 @@ class Num2WordsNLTest(TestCase):
         # Test point word if exists
         if hasattr(converter, "pointword"):
             self.assertIsNotNone(converter.pointword)
+
+
+def test_nl_year_no_spaces_for_2100_plus():
+    # Regression for num2words2#60 (ports savoirfairelinux/num2words#519).
+    from num2words2 import num2words
+    assert num2words(2100, lang="nl", to="year") == "eenentwintighonderd"
+    assert num2words(2150, lang="nl", to="year") == "eenentwintighonderdvijftig"
+    assert num2words(2500, lang="nl", to="year") == "vijfentwintighonderd"
+    # 2000-2099 keeps tweeduizend form
+    assert num2words(2024, lang="nl", to="year") == "tweeduizend vierentwintig"
