@@ -26,10 +26,16 @@ class Num2Word_EN_IN(Num2Word_EN):
         self.CURRENCY_FORMS["INR"] = (("rupee", "rupees"), ("paisa", "paise"))
 
     def set_high_numwords(self, high):
-        self.cards[10**11] = "kharab"
-        self.cards[10**9] = "arab"
-        self.cards[10**7] = "crore"
-        self.cards[10**5] = "lakh"
+        # Indian numbering scale (Vedic). Issue #72 ports
+        # savoirfairelinux/num2words#414. Each step is 10^2 once past lakh.
+        self.cards[10 ** 19] = "mahashankh"
+        self.cards[10 ** 17] = "shankh"
+        self.cards[10 ** 15] = "padma"
+        self.cards[10 ** 13] = "neel"
+        self.cards[10 ** 11] = "kharab"
+        self.cards[10 ** 9] = "arab"
+        self.cards[10 ** 7] = "crore"
+        self.cards[10 ** 5] = "lakh"
 
     def to_currency(self, val, currency="INR", **kwargs):
         # Indian English defaults to INR (rupees/paise) instead of EUR.
