@@ -1,0 +1,73 @@
+name: Publish to AUR
+
+# Auto-bumps the python-num2words2 AUR package whenever a v* tag is pushed.
+#
+# Prerequisite (one-time):
+#   1. The AUR package python-num2words2 must already exist (see
+#      packaging/aur/python-num2words2/README.md for the initial publish).
+#   2. Add the maintainer's SSH private key to GitHub Secrets as AUR_SSH_KEY
+#      (the matching public key must be on the AUR account).
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  publish-aur:
+    name: Push PKGBUILD bump to AUR
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for PyPI release to land
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          # Strip leading 'v' from the tag.
+          version="${TAG#v}"
+          echo "Waiting for num2words2 ${version} on PyPI…"
+          for i in $(seq 1 30); do
+            if curl -fsSL "https://pypi.org/pypi/num2words2/${version}/json" >/dev/null; then
+              echo "PyPI has ${version}"
+              break
+            fi
+            echo "  attempt ${i}: not yet, sleeping 20s"
+            sleep 20
+          done
+
+      - name: Render PKGBUILD + .SRCINFO for new version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="${TAG#v}"
+          sha=$(curl -fsSL "https://pypi.org/pypi/num2words2/${version}/json" \
+                | python3 -c 'import json,sys; d=json.load(sys.stdin); \
+                  print(next(u["digests"]["sha256"] for u in d["urls"] if u["packagetype"]=="sdist"))')
+          echo "version=${version}  sha256=${sha}"
+
+          mkdir -p out
+          sed -e "s/^pkgver=.*/pkgver=${version}/" \
+              -e "s/^pkgrel=.*/pkgrel=1/" \
+              -e "s/^sha256sums=.*/sha256sums=('${sha}')/" \
+              packaging/aur/python-num2words2/PKGBUILD > out/PKGBUILD
+
+          # Re-render .SRCINFO from the new PKGBUILD using makepkg in an Arch container.
+          docker run --rm -v "$PWD/out:/pkg" archlinux:base-devel bash -c '
+            cd /pkg && \
+            sudo -u nobody makepkg --printsrcinfo > .SRCINFO
+          '
+
+      - name: Push to AUR
+        uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
+        with:
+          pkgname: python-num2words2
+          pkgbuild: out/PKGBUILD
+          assets: out/.SRCINFO
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_KEY }}
+          commit_message: "Bump to ${{ github.ref_name }}"
+          ssh_keyscan_types: rsa,ecdsa,ed25519
