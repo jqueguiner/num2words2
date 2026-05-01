@@ -46,9 +46,10 @@ num2words2 = "num2words2.__main__:main"
 
 [tool.setuptools]
 packages = ["num2words2", "num2words2.converters"]
+include-package-data = true
 
 [tool.setuptools.package-data]
-num2words2 = ["*.py"]
+num2words2 = ["*.py", "py.typed"]
 
 [tool.setuptools_scm]
 write_to = "num2words2/_version.py"
