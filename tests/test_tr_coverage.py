@@ -479,9 +479,10 @@ class TestTurkishCoverage(TestCase):
         self.assertIn("virgül", result)
         self.converter.precision = 2  # Reset
 
-        # Test very small decimals
+        # Test very small decimals — leading zero must be preserved (regression
+        # for savoirfairelinux/num2words#487, fixed in num2words2#45).
         result = self.converter.to_cardinal(0.01)
-        self.assertEqual(result, "sıfırvirgülbir")
+        self.assertEqual(result, "sıfırvirgülsıfırbir")
 
         result = self.converter.to_cardinal(0.10)
         self.assertEqual(result, "sıfırvirgülon")
