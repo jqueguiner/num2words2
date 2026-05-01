@@ -138,29 +138,37 @@ class Num2Word_Base(object):
 
         return pre, post
 
-    def to_cardinal_float(self, value):
+    def to_cardinal_float(self, value, precision=None):
         try:
             float(value) == value
         except (ValueError, TypeError, AssertionError, AttributeError):
             raise TypeError(self.errmsg_nonnum % value)
 
-        pre, post = self.float2tuple(float(value))
+        # Caller-supplied precision overrides the per-instance default.
+        # Issue #580 ports savoirfairelinux/num2words#580.
+        saved_precision = self.precision
+        if precision is not None:
+            self.precision = int(precision)
+        try:
+            pre, post = self.float2tuple(float(value))
 
-        post = str(post)
-        post = "0" * (self.precision - len(post)) + post
+            post = str(post)
+            post = "0" * (self.precision - len(post)) + post
 
-        out = [self.to_cardinal(pre)]
-        if value < 0 and pre == 0:
-            out = [self.negword.strip()] + out
+            out = [self.to_cardinal(pre)]
+            if value < 0 and pre == 0:
+                out = [self.negword.strip()] + out
 
-        if self.precision:
-            out.append(self.title(self.pointword))
+            if self.precision:
+                out.append(self.title(self.pointword))
 
-        for i in range(self.precision):
-            curr = int(post[i])
-            out.append(to_s(self.to_cardinal(curr)))
+            for i in range(self.precision):
+                curr = int(post[i])
+                out.append(to_s(self.to_cardinal(curr)))
 
-        return " ".join(out)
+            return " ".join(out)
+        finally:
+            self.precision = saved_precision
 
     def merge(self, curr, next):
         raise NotImplementedError
