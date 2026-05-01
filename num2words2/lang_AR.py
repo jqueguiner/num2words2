@@ -463,6 +463,10 @@ class Num2Word_AR(Num2Word_Base):
             elif 11 <= remaining100 <= 99:
                 formatted_number += self.currency_unit[3]
         if self._decimalValue != 0:
+            # Trim any trailing whitespace before injecting the separator,
+            # otherwise we get double spaces in the join. Issue #53 ports
+            # savoirfairelinux/num2words#265.
+            formatted_number = formatted_number.rstrip()
             if self.separator == "و":
                 formatted_number += " و"
             else:
@@ -551,7 +555,9 @@ class Num2Word_AR(Num2Word_Base):
         minus = ""
         if number < 0:
             minus = "سالب "
-        self.separator = ","
+        # Arabic uses an Arabic comma U+060C, not a Latin one. Issue #53
+        # ports savoirfairelinux/num2words#265.
+        self.separator = "،"
         self.currency_subunit = ("", "", "", "")
         self.currency_unit = ("", "", "", "")
         self.arabicPrefixText = ""

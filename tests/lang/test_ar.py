@@ -93,15 +93,15 @@ class TestAR(LangTest, TestCase):
 
     float_tests = [
         # From test_cardinal
-        (12.3, "اثنا عشر  , ثلاثون"),
-        (12.01, "اثنا عشر  , إحدى"),
-        (12.02, "اثنا عشر  , اثنتان"),
-        (12.03, "اثنا عشر  , ثلاث"),
-        (12.34, "اثنا عشر  , أربع وثلاثون"),
+        (12.3, "اثنا عشر ، ثلاثون"),
+        (12.01, "اثنا عشر ، إحدى"),
+        (12.02, "اثنا عشر ، اثنتان"),
+        (12.03, "اثنا عشر ، ثلاث"),
+        (12.34, "اثنا عشر ، أربع وثلاثون"),
         # From test_negative_decimals
-        (-0.4, "سالب , أربعون"),
-        (-0.5, "سالب , خمسون"),
-        (-1.4, "سالب واحد  , أربعون"),
+        (-0.4, "سالب ، أربعون"),
+        (-0.5, "سالب ، خمسون"),
+        (-1.4, "سالب واحد ، أربعون"),
     ]
 
     negative_tests = [
@@ -149,3 +149,12 @@ class TestAR(LangTest, TestCase):
             with self.assertRaises(OverflowError) as context:
                 num2words(number, lang="ar")
             self.assertTrue("must be less" in str(context.exception))
+
+
+def test_ar_decimal_uses_arabic_comma_no_double_space():
+    # Regression for num2words2#53 (ports savoirfairelinux/num2words#265).
+    from num2words2 import num2words
+    out = num2words(667851.14, lang="ar")
+    assert "،" in out  # Arabic comma U+060C
+    assert "," not in out  # no Latin comma
+    assert "  " not in out  # no double space
