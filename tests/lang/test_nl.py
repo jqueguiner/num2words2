@@ -107,73 +107,73 @@ class Num2WordsNLTest(TestCase):
     def test_cardinal_thousands(self):
         """Test cardinal numbers from 1000 to 999999."""
         self.assertEqual(num2words(1000, lang="nl"), "duizend")
-        self.assertEqual(num2words(1001, lang="nl"), "duizendéén")
-        self.assertEqual(num2words(1010, lang="nl"), "duizendtien")
-        self.assertEqual(num2words(1100, lang="nl"), "duizendhonderd")
-        self.assertEqual(num2words(1111, lang="nl"), "duizendhonderdelf")
-        self.assertEqual(num2words(1234, lang="nl"), "duizendtweehonderdvierendertig")
-        self.assertEqual(num2words(1500, lang="nl"), "duizendvijfhonderd")
+        self.assertEqual(num2words(1001, lang="nl"), "duizend één")
+        self.assertEqual(num2words(1010, lang="nl"), "duizend tien")
+        self.assertEqual(num2words(1100, lang="nl"), "duizend honderd")
+        self.assertEqual(num2words(1111, lang="nl"), "duizend honderdelf")
+        self.assertEqual(num2words(1234, lang="nl"), "duizend tweehonderdvierendertig")
+        self.assertEqual(num2words(1500, lang="nl"), "duizend vijfhonderd")
         self.assertEqual(
-            num2words(1999, lang="nl"), "duizendnegenhonderdnegenennegentig"
+            num2words(1999, lang="nl"), "duizend negenhonderdnegenennegentig"
         )
         self.assertEqual(num2words(2000, lang="nl"), "tweeduizend")
-        self.assertEqual(num2words(2001, lang="nl"), "tweeduizendéén")
-        self.assertEqual(num2words(2020, lang="nl"), "tweeduizendtwintig")
+        self.assertEqual(num2words(2001, lang="nl"), "tweeduizend één")
+        self.assertEqual(num2words(2020, lang="nl"), "tweeduizend twintig")
         self.assertEqual(
-            num2words(2222, lang="nl"), "tweeduizendtweehonderdtweeëntwintig"
+            num2words(2222, lang="nl"), "tweeduizend tweehonderdtweeëntwintig"
         )
         self.assertEqual(num2words(3000, lang="nl"), "drieduizend")
         self.assertEqual(
-            num2words(3333, lang="nl"), "drieduizenddriehonderddrieëndertig"
+            num2words(3333, lang="nl"), "drieduizend driehonderddrieëndertig"
         )
         self.assertEqual(num2words(4000, lang="nl"), "vierduizend")
         self.assertEqual(
-            num2words(4444, lang="nl"), "vierduizendvierhonderdvierenveertig"
+            num2words(4444, lang="nl"), "vierduizend vierhonderdvierenveertig"
         )
         self.assertEqual(num2words(5000, lang="nl"), "vijfduizend")
         self.assertEqual(
-            num2words(5555, lang="nl"), "vijfduizendvijfhonderdvijfenvijftig"
+            num2words(5555, lang="nl"), "vijfduizend vijfhonderdvijfenvijftig"
         )
         self.assertEqual(num2words(6000, lang="nl"), "zesduizend")
-        self.assertEqual(num2words(6666, lang="nl"), "zesduizendzeshonderdzesenzestig")
+        self.assertEqual(num2words(6666, lang="nl"), "zesduizend zeshonderdzesenzestig")
         self.assertEqual(num2words(7000, lang="nl"), "zevenduizend")
         self.assertEqual(
-            num2words(7777, lang="nl"), "zevenduizendzevenhonderdzevenenzeventig"
+            num2words(7777, lang="nl"), "zevenduizend zevenhonderdzevenenzeventig"
         )
         self.assertEqual(num2words(8000, lang="nl"), "achtduizend")
         self.assertEqual(
-            num2words(8888, lang="nl"), "achtduizendachthonderdachtentachtig"
+            num2words(8888, lang="nl"), "achtduizend achthonderdachtentachtig"
         )
         self.assertEqual(num2words(9000, lang="nl"), "negenduizend")
         self.assertEqual(
-            num2words(9999, lang="nl"), "negenduizendnegenhonderdnegenennegentig"
+            num2words(9999, lang="nl"), "negenduizend negenhonderdnegenennegentig"
         )
         self.assertEqual(num2words(10000, lang="nl"), "tienduizend")
-        self.assertEqual(num2words(10001, lang="nl"), "tienduizendéén")
-        self.assertEqual(num2words(11111, lang="nl"), "elfduizendhonderdelf")
+        self.assertEqual(num2words(10001, lang="nl"), "tienduizend één")
+        self.assertEqual(num2words(11111, lang="nl"), "elfduizend honderdelf")
         self.assertEqual(
-            num2words(12345, lang="nl"), "twaalfduizenddriehonderdvijfenveertig"
+            num2words(12345, lang="nl"), "twaalfduizend driehonderdvijfenveertig"
         )
         self.assertEqual(num2words(20000, lang="nl"), "twintigduizend")
         self.assertEqual(num2words(50000, lang="nl"), "vijftigduizend")
         self.assertEqual(
             num2words(99999, lang="nl"),
-            "negenennegentigduizendnegenhonderdnegenennegentig",
+            "negenennegentigduizend negenhonderdnegenennegentig",
         )
         self.assertEqual(num2words(100000, lang="nl"), "honderdduizend")
         self.assertEqual(
             num2words(123456, lang="nl"),
-            "honderddrieëntwintigduizendvierhonderdzesenvijftig",
+            "honderddrieëntwintigduizend vierhonderdzesenvijftig",
         )
         self.assertEqual(num2words(200000, lang="nl"), "tweehonderdduizend")
         self.assertEqual(num2words(500000, lang="nl"), "vijfhonderdduizend")
         self.assertEqual(
             num2words(654321, lang="nl"),
-            "zeshonderdvierenvijftigduizenddriehonderdeenentwintig",
+            "zeshonderdvierenvijftigduizend driehonderdeenentwintig",
         )
         self.assertEqual(
             num2words(999999, lang="nl"),
-            "negenhonderdnegenennegentigduizendnegenhonderdnegenennegentig",
+            "negenhonderdnegenennegentigduizend negenhonderdnegenennegentig",
         )
 
     def test_cardinal_large(self):
@@ -181,49 +181,49 @@ class Num2WordsNLTest(TestCase):
         self.assertEqual(num2words(1000000, lang="nl"), "een miljoen")
         self.assertEqual(num2words(1000001, lang="nl"), "een miljoen één")
         self.assertEqual(
-            num2words(1111111, lang="nl"), "een miljoen honderdelfduizendhonderdelf"
+            num2words(1111111, lang="nl"), "een miljoen honderdelfduizend honderdelf"
         )
         self.assertEqual(
             num2words(1234567, lang="nl"),
-            "een miljoen tweehonderdvierendertigduizendvijfhonderdzevenenzestig",
+            "een miljoen tweehonderdvierendertigduizend vijfhonderdzevenenzestig",
         )
         self.assertEqual(num2words(2000000, lang="nl"), "twee miljoen")
         self.assertEqual(num2words(5000000, lang="nl"), "vijf miljoen")
         self.assertEqual(
             num2words(9999999, lang="nl"),
-            "negen miljoen negenhonderdnegenennegentigduizendnegenhonderdnegenennegentig",
+            "negen miljoen negenhonderdnegenennegentigduizend negenhonderdnegenennegentig",
         )
         self.assertEqual(num2words(10000000, lang="nl"), "tien miljoen")
         self.assertEqual(
             num2words(12345678, lang="nl"),
-            "twaalf miljoen driehonderdvijfenveertigduizendzeshonderdachtenzeventig",
+            "twaalf miljoen driehonderdvijfenveertigduizend zeshonderdachtenzeventig",
         )
         self.assertEqual(
             num2words(99999999, lang="nl"),
-            "negenennegentig miljoen negenhonderdnegenennegentigduizendnegenhonderdnegenennegentig",
+            "negenennegentig miljoen negenhonderdnegenennegentigduizend negenhonderdnegenennegentig",
         )
         self.assertEqual(num2words(100000000, lang="nl"), "honderd miljoen")
         self.assertEqual(
             num2words(123456789, lang="nl"),
-            "honderddrieëntwintig miljoen vierhonderdzesenvijftigduizendzevenhonderdnegenentachtig",
+            "honderddrieëntwintig miljoen vierhonderdzesenvijftigduizend zevenhonderdnegenentachtig",
         )
         self.assertEqual(
             num2words(999999999, lang="nl"),
-            "negenhonderdnegenennegentig miljoen negenhonderdnegenennegentigduizendnegenhonderdnegenennegentig",
+            "negenhonderdnegenennegentig miljoen negenhonderdnegenennegentigduizend negenhonderdnegenennegentig",
         )
         self.assertEqual(num2words(1000000000, lang="nl"), "een miljard")
         self.assertEqual(
             num2words(1234567890, lang="nl"),
-            "een miljard tweehonderdvierendertig miljoen vijfhonderdzevenenzestigduizendachthonderdnegentig",
+            "een miljard tweehonderdvierendertig miljoen vijfhonderdzevenenzestigduizend achthonderdnegentig",
         )
         self.assertEqual(
             num2words(9999999999, lang="nl"),
-            "negen miljard negenhonderdnegenennegentig miljoen negenhonderdnegenennegentigduizendnegenhonderdnegenennegentig",
+            "negen miljard negenhonderdnegenennegentig miljoen negenhonderdnegenennegentigduizend negenhonderdnegenennegentig",
         )
         self.assertEqual(num2words(10000000000, lang="nl"), "tien miljard")
         self.assertEqual(
             num2words(99999999999, lang="nl"),
-            "negenennegentig miljard negenhonderdnegenennegentig miljoen negenhonderdnegenennegentigduizendnegenhonderdnegenennegentig",
+            "negenennegentig miljard negenhonderdnegenennegentig miljoen negenhonderdnegenennegentigduizend negenhonderdnegenennegentig",
         )
 
     def test_negative_numbers(self):
@@ -241,7 +241,7 @@ class Num2WordsNLTest(TestCase):
         self.assertEqual(num2words(-200, lang="nl"), "min tweehonderd")
         self.assertEqual(num2words(-999, lang="nl"), "min negenhonderdnegenennegentig")
         self.assertEqual(num2words(-1000, lang="nl"), "min duizend")
-        self.assertEqual(num2words(-1001, lang="nl"), "min duizendéén")
+        self.assertEqual(num2words(-1001, lang="nl"), "min duizend één")
         self.assertEqual(num2words(-10000, lang="nl"), "min tienduizend")
         self.assertEqual(num2words(-100000, lang="nl"), "min honderdduizend")
         self.assertEqual(num2words(-1000000, lang="nl"), "min een miljoen")
@@ -269,7 +269,7 @@ class Num2WordsNLTest(TestCase):
         self.assertEqual(num2words(1000.5, lang="nl"), "duizend komma vijf")
         self.assertEqual(
             num2words(1234.56, lang="nl"),
-            "duizendtweehonderdvierendertig komma vijf zes",
+            "duizend tweehonderdvierendertig komma vijf zes",
         )
         self.assertEqual(num2words(10000.01, lang="nl"), "tienduizend komma nul één")
         self.assertEqual(num2words(-0.5, lang="nl"), "min nul komma vijf")
@@ -313,7 +313,7 @@ class Num2WordsNLTest(TestCase):
         self.assertEqual(num2words(200, lang="nl", ordinal=True), "tweehonderdste")
         self.assertEqual(num2words(500, lang="nl", ordinal=True), "vijfhonderdste")
         self.assertEqual(num2words(1000, lang="nl", ordinal=True), "duizendste")
-        self.assertEqual(num2words(1001, lang="nl", ordinal=True), "duizendeerste")
+        self.assertEqual(num2words(1001, lang="nl", ordinal=True), "duizend eerste")
         self.assertEqual(num2words(10000, lang="nl", ordinal=True), "tienduizendste")
 
     def test_currency(self):
@@ -394,7 +394,7 @@ class Num2WordsNLTest(TestCase):
     def test_year(self):
         """Test year conversion."""
         self.assertEqual(num2words(1000, lang="nl", to="year"), "duizend")
-        self.assertEqual(num2words(1066, lang="nl", to="year"), "duizendzesenzestig")
+        self.assertEqual(num2words(1066, lang="nl", to="year"), "duizend zesenzestig")
         self.assertEqual(
             num2words(1492, lang="nl", to="year"), "veertienhonderdtweeënnegentig"
         )
@@ -410,11 +410,11 @@ class Num2WordsNLTest(TestCase):
             num2words(1999, lang="nl", to="year"), "negentienhonderdnegenennegentig"
         )
         self.assertEqual(num2words(2000, lang="nl", to="year"), "tweeduizend")
-        self.assertEqual(num2words(2001, lang="nl", to="year"), "tweeduizendéén")
-        self.assertEqual(num2words(2010, lang="nl", to="year"), "tweeduizendtien")
-        self.assertEqual(num2words(2020, lang="nl", to="year"), "tweeduizendtwintig")
+        self.assertEqual(num2words(2001, lang="nl", to="year"), "tweeduizend één")
+        self.assertEqual(num2words(2010, lang="nl", to="year"), "tweeduizend tien")
+        self.assertEqual(num2words(2020, lang="nl", to="year"), "tweeduizend twintig")
         self.assertEqual(
-            num2words(2024, lang="nl", to="year"), "tweeduizendvierentwintig"
+            num2words(2024, lang="nl", to="year"), "tweeduizend vierentwintig"
         )
         self.assertEqual(num2words(2100, lang="nl", to="year"), "eenentwintig honderd")
 
