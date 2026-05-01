@@ -191,6 +191,11 @@ class Num2Word_DE(Num2Word_EUR):
         # Ordinals involving "Million" etc. are written without a space.
         # see https://de.wikipedia.org/wiki/Million#Sprachliches
         res = re.sub(r" ([a-z]+(illion|illiard)ste)$", lambda m: m.group(1), res)
+        # German ordinals are written without spaces, even in compound
+        # forms like 'einemillionerste'. Issue #59 ports
+        # savoirfairelinux/num2words#357.
+        res = re.sub(r"eine (million|milliard|billion|billiard)", r"ein\1", res)
+        res = res.replace(" ", "")
 
         return res
 
