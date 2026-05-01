@@ -49,7 +49,7 @@ class Num2Word_SV(lang_EUR.Num2Word_EUR):
             (70, "sjuttio"),
             (60, "sextio"),
             (50, "femtio"),
-            (40, "förtio"),
+            (40, "fyrtio"),
             (30, "trettio"),
         ]
         self.low_numwords = [
