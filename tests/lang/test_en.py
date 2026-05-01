@@ -197,6 +197,7 @@ def test_en_mixed_text_and_numerals():
 def test_en_year_rejects_non_integer_float():
     # Regression for num2words2#67 (ports savoirfairelinux/num2words#316).
     import pytest
+
     from num2words2 import num2words
     with pytest.raises(TypeError):
         num2words(1980.6, lang="en", to="year")

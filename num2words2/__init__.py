@@ -174,25 +174,15 @@ from . import (
     lang_ZH_TW,
     lang_ZU,
 )
-
-# Version information
-try:
-    from ._version import __version__, __version_tuple__
-except ImportError:
-    # Package is not installed, provide defaults
-    __version__ = "unknown"
-    __version_tuple__ = (0, 0, 0, "unknown", 0)
-
-
-# Version information
-try:
-    from ._version import __version__, __version_tuple__
-except ImportError:
-    # Package is not installed, provide defaults
-    __version__ = "unknown"
-    __version_tuple__ = (0, 0, 0, "unknown", 0)
-
 from .grouping import group_digits  # noqa: E402
+
+# Version information
+try:
+    from ._version import __version__, __version_tuple__
+except ImportError:
+    # Package is not installed, provide defaults
+    __version__ = "unknown"
+    __version_tuple__ = (0, 0, 0, "unknown", 0)
 
 
 def maxval(lang="en"):
@@ -454,11 +444,9 @@ def num2words(number, ordinal=False, lang="en", to="cardinal", **kwargs):
     # legacy cents=True/False kwarg is kept as-is (False historically meant
     # "use digits instead of words"). Issue #554 ports
     # savoirfairelinux/num2words#554 / #190.
-    cents_mode = None
     if to == "currency":
         cents_kw = kwargs.get("cents")
         if cents_kw == "omit":
-            cents_mode = "omit"
             kwargs["cents"] = True  # let downstream see a valid bool
             if isinstance(number, float):
                 number = int(number)  # int path drops cents naturally

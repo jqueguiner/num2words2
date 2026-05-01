@@ -2777,6 +2777,7 @@ def test_es_veintiuno_elides_to_veintiun_before_mil_or_millones():
 
 def test_es_uno_intact_when_terminal():
     from num2words2 import num2words
+
     # The elision must not fire for terminal "uno" — these stay intact.
     assert num2words(1, lang="es") == "uno"
     assert num2words(21, lang="es") == "veintiuno"
