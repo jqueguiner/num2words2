@@ -153,6 +153,14 @@ class Num2Word_EN(lang_EUR.Num2Word_EUR):
         return "%s%s" % (value, self.to_ordinal(value)[-2:])
 
     def to_year(self, val, suffix=None, longval=True):
+        # Years are integers — refuse fractional input rather than emitting
+        # float-precision noise like 'nineteen eighty point five nine nine
+        # nine nine ...'. Issue #67; ports savoirfairelinux/num2words#316.
+        if isinstance(val, float) and not val.is_integer():
+            raise TypeError(
+                "to='year' expects an integer; got non-integer float %r" % val
+            )
+        val = int(val)
         if val < 0:
             val = abs(val)
             suffix = "BC" if not suffix else suffix
