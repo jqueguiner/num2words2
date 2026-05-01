@@ -467,6 +467,36 @@ class Num2Word_ES(Num2Word_EUR):
         self.verify_ordinal(value)
         return "%s%s" % (value, "º" if gender_stem == "o" else "ª")
 
+    def to_fraction(self, numerator, denominator):
+        """Spanish: 'medio/tercio/cuarto' for 2/3/4, ordinal-as-noun else.
+
+        Numerator 1 uses the apocopated 'un' rather than 'uno' (un medio,
+        un tercio, un quinto). Issue #584.
+        """
+        if denominator == 0:
+            raise ZeroDivisionError("denominator must not be zero")
+        if denominator == 1 or numerator == 0:
+            return self.to_cardinal(numerator)
+        is_negative = (numerator < 0) ^ (denominator < 0)
+        abs_n = abs(int(numerator))
+        abs_d = abs(int(denominator))
+        idiomatic = {
+            2: ("medio", "medios"),
+            3: ("tercio", "tercios"),
+            4: ("cuarto", "cuartos"),
+        }
+        if abs_d in idiomatic:
+            sing, plur = idiomatic[abs_d]
+            den_word = sing if abs_n == 1 else plur
+        else:
+            den_word = self.to_ordinal(abs_d)
+            if abs_n != 1 and not den_word.endswith("s"):
+                den_word = den_word + "s"
+        # Use 'un' rather than 'uno' for the apocopated form before nouns.
+        num_word = "un" if abs_n == 1 else self.to_cardinal(abs_n)
+        sign = "%s " % self.negword.strip() if is_negative else ""
+        return sign + num_word + " " + den_word
+
     def to_year(self, val, suffix=None, longval=True):
         """Convert number to year representation."""
         return self.to_cardinal(int(val))

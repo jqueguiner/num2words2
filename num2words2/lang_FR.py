@@ -165,6 +165,35 @@ class Num2Word_FR(Num2Word_EUR):
         out += "er" if value == 1 else "me"
         return out
 
+    def to_fraction(self, numerator, denominator):
+        """French fractions: idiomatic 'demi/tiers/quart' for 2/3/4.
+
+        Other denominators use ordinal-as-noun with the regular -s plural
+        (un cinquième, deux cinquièmes). Issue #584.
+        """
+        if denominator == 0:
+            raise ZeroDivisionError("denominator must not be zero")
+        if denominator == 1 or numerator == 0:
+            return self.to_cardinal(numerator)
+        is_negative = (numerator < 0) ^ (denominator < 0)
+        abs_n = abs(int(numerator))
+        abs_d = abs(int(denominator))
+        # 'tiers' is invariant in plural, 'demi' and 'quart' take -s.
+        idiomatic = {
+            2: ("demi", "demis"),
+            3: ("tiers", "tiers"),
+            4: ("quart", "quarts"),
+        }
+        if abs_d in idiomatic:
+            sing, plur = idiomatic[abs_d]
+            den_word = sing if abs_n == 1 else plur
+        else:
+            den_word = self.to_ordinal(abs_d)
+            if abs_n != 1 and not den_word.endswith("s"):
+                den_word = den_word + "s"
+        sign = "%s " % self.negword.strip() if is_negative else ""
+        return sign + self.to_cardinal(abs_n) + " " + den_word
+
     def to_year(self, val, suffix=None, longval=True):
         """Convert number to year representation."""
         return self.to_cardinal(int(val))

@@ -387,6 +387,7 @@ CONVERTER_CLASSES = {
 
 CONVERTES_TYPES = [
     "cardinal", "ordinal", "ordinal_num", "year", "currency", "cheque",
+    "fraction",
 ]
 CONVERTER_TYPES = CONVERTES_TYPES  # Alias for compatibility
 
@@ -415,6 +416,24 @@ def num2words(number, ordinal=False, lang="en", to="cardinal", **kwargs):
     converter = CONVERTER_CLASSES[lang]
 
     if isinstance(number, str):
+        # Recognize "n/d" fraction strings and route directly to the
+        # converter's to_fraction(). The pattern is strict: optional
+        # leading minus, integer numerator, single '/', integer
+        # denominator, no whitespace inside. Issue #75 ports
+        # savoirfairelinux/num2words#584.
+        stripped = number.strip()
+        if "/" in stripped and stripped.count("/") == 1:
+            num_part, den_part = stripped.split("/", 1)
+            num_part = num_part.strip()
+            den_part = den_part.strip()
+            try:
+                num_int = int(num_part)
+                den_int = int(den_part)
+            except ValueError:
+                pass
+            else:
+                return converter.to_fraction(num_int, den_int)
+
         # If the string is a mix of text and numerals (e.g. "text 1"),
         # route to num2words_sentence which extracts numerals and converts
         # each in place. A pure-text string like "hello" still raises so

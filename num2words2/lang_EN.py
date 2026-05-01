@@ -168,6 +168,37 @@ class Num2Word_EN(lang_EUR.Num2Word_EUR):
         self.verify_ordinal(value)
         return "%s%s" % (value, self.to_ordinal(value)[-2:])
 
+    def to_fraction(self, numerator, denominator):
+        """English fraction with idiomatic forms for 1/2 and 1/4.
+
+        ``1/2`` → "one half" (not "one secondth"); ``3/4`` → "three quarters"
+        (not "three fourths"). All other denominators use the ordinal-noun
+        rule: ``2/5`` → "two fifths", ``5/8`` → "five eighths".
+        Issue #584 ports savoirfairelinux/num2words#584.
+        """
+        if denominator == 0:
+            raise ZeroDivisionError("denominator must not be zero")
+        if denominator == 1 or numerator == 0:
+            return self.to_cardinal(numerator)
+        is_negative = (numerator < 0) ^ (denominator < 0)
+        abs_n = abs(int(numerator))
+        abs_d = abs(int(denominator))
+        # Idiomatic English forms for 1/2 and 1/4 — speakers say "half"
+        # and "quarter", not "secondth" or "fourth".
+        idiomatic = {
+            2: ("half", "halves"),
+            4: ("quarter", "quarters"),
+        }
+        if abs_d in idiomatic:
+            sing, plur = idiomatic[abs_d]
+            den_word = sing if abs_n == 1 else plur
+        else:
+            den_word = self.to_ordinal(abs_d)
+            if abs_n != 1:
+                den_word = den_word + "s"
+        sign = "minus " if is_negative else ""
+        return sign + self.to_cardinal(abs_n) + " " + den_word
+
     def to_year(self, val, suffix=None, longval=True):
         # Years are integers — refuse fractional input rather than emitting
         # float-precision noise like 'nineteen eighty point five nine nine

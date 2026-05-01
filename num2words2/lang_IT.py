@@ -299,6 +299,36 @@ class Num2Word_IT(Num2Word_EUR):
         self.verify_ordinal(value)
         return str(int(value))
 
+    def to_fraction(self, numerator, denominator):
+        """Italian fractions: 'mezzo/terzo/quarto/quinto...' with -i plural.
+
+        Italian pluralizes the masculine noun ending -o → -i (un terzo /
+        due terzi), not -s. Also uses 'un' rather than 'uno' as the
+        numerator article. Issue #584.
+        """
+        if denominator == 0:
+            raise ZeroDivisionError("denominator must not be zero")
+        if denominator == 1 or numerator == 0:
+            return self.to_cardinal(numerator)
+        is_negative = (numerator < 0) ^ (denominator < 0)
+        abs_n = abs(int(numerator))
+        abs_d = abs(int(denominator))
+        idiomatic = {
+            2: ("mezzo", "mezzi"),
+        }
+        if abs_d in idiomatic:
+            sing, plur = idiomatic[abs_d]
+            den_word = sing if abs_n == 1 else plur
+        else:
+            den_word = self.to_ordinal(abs_d)
+            # Italian -o → -i for plural masculine nouns. The ordinal
+            # suffix is already -o for 1-10 and -esimo above.
+            if abs_n != 1 and den_word.endswith("o"):
+                den_word = den_word[:-1] + "i"
+        num_word = "un" if abs_n == 1 else self.to_cardinal(abs_n)
+        sign = "%s " % self.negword.strip() if is_negative else ""
+        return sign + num_word + " " + den_word
+
     def to_currency(
         self, val, currency="EUR", cents=True, separator=" e", adjective=False
     ):
