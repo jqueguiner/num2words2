@@ -60,3 +60,12 @@ class Num2WordsIDTest(TestCase):
         self.assertEqual(num2words(-0.5, lang="id"), "min nol koma lima")
         self.assertEqual(num2words(-1.4, lang="id"), "min satu koma empat")
         self.assertEqual(num2words(-10.25, lang="id"), "min sepuluh koma dua lima")
+
+
+def test_id_str_to_number_does_not_raise():
+    # Regression for savoirfairelinux/num2words#476 — Num2Word_ID was
+    # missing str_to_number and crashed on string input.
+    from num2words2 import num2words
+    assert num2words("5", lang="id") == "lima"
+    assert num2words("1234", lang="id") == "seribu dua ratus tiga puluh empat"
+    assert num2words("5.5", lang="id") == "lima koma lima"
