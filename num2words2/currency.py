@@ -20,13 +20,24 @@ from __future__ import division
 from decimal import ROUND_HALF_UP, Decimal
 
 
-def parse_currency_parts(value, is_int_with_cents=True, keep_precision=False):
+def parse_currency_parts(
+    value, is_int_with_cents=True, keep_precision=False, divisor=100
+):
+    """Split ``value`` into integer-part, fractional-subunit-part, sign.
+
+    The default divisor of 100 corresponds to 2-decimal currencies
+    (USD/EUR cents). Pass ``divisor=1000`` for 3-decimal currencies
+    such as Tunisian/Bahraini/Kuwaiti/Omani/Jordanian/Libyan/Iraqi
+    dinars (1 dinar = 1000 millimes/fils). Pass ``divisor=1`` for
+    no-subunit currencies like JPY/KRW/VND. Issue #256 ports
+    savoirfairelinux/num2words#256.
+    """
     if isinstance(value, int):
         if is_int_with_cents:
-            # assume cents if value is integer
+            # assume cents (or whatever subunit divisor implies)
             negative = value < 0
             value = abs(value)
-            integer, cents = divmod(value, 100)
+            integer, cents = divmod(value, divisor) if divisor else (value, 0)
         else:
             negative = value < 0
             integer, cents = abs(value), 0
@@ -35,9 +46,11 @@ def parse_currency_parts(value, is_int_with_cents=True, keep_precision=False):
         # Convert to string first to avoid float precision issues
         value = Decimal(str(value))
 
-        if not keep_precision:
-            # Round to 2 decimal places
-            value = value.quantize(Decimal(".01"), rounding=ROUND_HALF_UP)
+        if not keep_precision and divisor > 1:
+            # Round to the precision implied by the divisor: 100 → .01,
+            # 1000 → .001, etc. quant must be a Decimal power-of-ten.
+            quant = Decimal(1) / Decimal(divisor)
+            value = value.quantize(quant, rounding=ROUND_HALF_UP)
 
         negative = value < 0
         value = abs(value)
@@ -45,10 +58,9 @@ def parse_currency_parts(value, is_int_with_cents=True, keep_precision=False):
         integer = int(integer)
 
         if keep_precision:
-            # Keep full precision for cents
-            cents = fraction * 100  # Keep as Decimal
+            cents = fraction * divisor  # keep as Decimal
         else:
-            cents = int(fraction * 100)
+            cents = int(fraction * divisor)
 
     return integer, cents, negative
 

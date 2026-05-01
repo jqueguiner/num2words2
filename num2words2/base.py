@@ -28,6 +28,11 @@ from .currency import parse_currency_parts, prefix_currency
 class Num2Word_Base(object):
     CURRENCY_FORMS = {}
     CURRENCY_ADJECTIVES = {}
+    # Number of fractional subunits per main unit. Default 100 (cents).
+    # Currencies with non-cent subdivisions override per-code: 3-decimal
+    # currencies use 1000 (mils); 0-decimal currencies use 1.
+    # Issue #256 ports savoirfairelinux/num2words#256.
+    CURRENCY_PRECISION = {}
 
     def __init__(self):
         self.is_title = False
@@ -299,7 +304,59 @@ class Num2Word_Base(object):
         return self.to_cardinal(number)
 
     def _cents_terse(self, number, currency):
-        return "%02d" % number
+        # Width follows the currency's subunit precision: 2 for cents
+        # (default), 3 for mils (TND/BHD/KWD/etc.). Issue #256.
+        divisor = self.CURRENCY_PRECISION.get(currency, 100)
+        if divisor <= 1:
+            return "%d" % int(number)
+        width = len(str(divisor)) - 1
+        return "%0*d" % (width, int(number))
+
+    def to_cheque(self, val, currency="USD"):
+        """Bank-cheque format: ``ONE THOUSAND AND 56/100 DOLLARS``.
+
+        Standard convention is the integer part written out as words, the
+        word "AND", the fractional part as digits over the divisor (e.g.
+        56/100 for cents, 005/1000 for mils), and the plural currency
+        name. The whole thing is upper-cased per banking style. Issue
+        #364 ports savoirfairelinux/num2words#364.
+        """
+        from decimal import Decimal
+
+        try:
+            cr1, _cr2 = self.CURRENCY_FORMS[currency]
+        except KeyError:
+            raise NotImplementedError(
+                'Currency code "%s" not implemented for "%s"'
+                % (currency, self.__class__.__name__)
+            )
+
+        divisor = self.CURRENCY_PRECISION.get(currency, 100)
+        decimal_val = Decimal(str(val))
+        is_negative = decimal_val < 0
+        abs_val = abs(decimal_val)
+
+        whole = int(abs_val)
+        # Pull the fractional subunit out at the currency's precision.
+        if divisor > 1:
+            sub = int((abs_val - whole) * divisor)
+            digits = len(str(divisor)) - 1
+            fraction_str = "%0*d/%d" % (digits, sub, divisor)
+        else:
+            fraction_str = ""
+
+        words = self._money_verbose(whole, currency)
+        # Cheque convention always uses the plural currency name
+        # ("ONE AND 00/100 DOLLARS", not "...DOLLAR"), so we take the
+        # plural form unconditionally.
+        unit = cr1[-1] if isinstance(cr1, tuple) else cr1
+
+        sign = "MINUS " if is_negative else ""
+        if fraction_str:
+            body = "%s AND %s %s" % (words, fraction_str, unit)
+        else:
+            body = "%s %s" % (words, unit)
+        return (sign + body).upper()
 
     def to_currency(
         self, val, currency="EUR", cents=True, separator=",", adjective=False
@@ -316,6 +373,13 @@ class Num2Word_Base(object):
 
         Handles whole numbers and decimal numbers differently
         """
+        # Zero-decimal currencies (JPY, KRW, ...) have no subunit, so any
+        # fractional input is rounded to a whole unit and the result skips
+        # the cents segment entirely. Issue #256.
+        if self.CURRENCY_PRECISION.get(currency, 100) == 1 and not isinstance(val, int):
+            from decimal import ROUND_HALF_UP, Decimal
+            val = int(Decimal(str(val)).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+
         # Handle integers separately - no cents shown
         # Only pure integers, NOT floats that happen to be whole numbers
         if isinstance(val, int):
@@ -336,15 +400,20 @@ class Num2Word_Base(object):
 
             return "%s%s %s" % (minus_str, money_str, self.pluralize(abs(val_int), cr1))
 
-        # For floats, show full currency with cents
-        # Check if value has more than 2 decimal places
+        # For floats, show full currency with subunits (cents/mils/etc.)
+        # The divisor is per-currency: 100 (cents) by default, 1000 (mils)
+        # for 3-decimal currencies, 1 for no-subunit currencies. Issue #256.
         from decimal import Decimal
 
+        divisor = self.CURRENCY_PRECISION.get(currency, 100)
         decimal_val = Decimal(str(val))
-        has_fractional_cents = (decimal_val * 100) % 1 != 0
+        has_fractional_cents = (decimal_val * divisor) % 1 != 0
 
         left, right, is_negative = parse_currency_parts(
-            val, is_int_with_cents=False, keep_precision=has_fractional_cents
+            val,
+            is_int_with_cents=False,
+            keep_precision=has_fractional_cents,
+            divisor=divisor,
         )
 
         try:
