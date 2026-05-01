@@ -60,7 +60,7 @@ class Num2WordsNOTest(TestCase):
         self.assertEqual(num2words(14, to="ordinal", lang="no"), "fjortende")
         self.assertEqual(num2words(30, to="ordinal", lang="no"), "trettiende")
         self.assertEqual(num2words(32, to="ordinal", lang="no"), "trettiandre")
-        self.assertEqual(num2words(100, to="ordinal", lang="no"), "en hundrede")
+        self.assertEqual(num2words(100, to="ordinal", lang="no"), "ett hundrede")
         self.assertEqual(num2words(1000, to="ordinal", lang="no"), "ett tusende")
         self.assertEqual(
             num2words(1435, to="ordinal", lang="no"),
@@ -88,11 +88,11 @@ class Num2WordsNOTest(TestCase):
             num2words(2.50, to="currency", lang="no"), "to kroner og femti øre"
         )
         self.assertEqual(
-            num2words(135, to="currency", lang="no"), "en hundre og trettifem kroner"
+            num2words(135, to="currency", lang="no"), "ett hundre og trettifem kroner"
         )
         self.assertEqual(
             num2words(135.59, to="currency", lang="no"),
-            "en hundre og trettifem kroner og femtini øre",
+            "ett hundre og trettifem kroner og femtini øre",
         )
 
     def test_negative_decimals(self):

@@ -116,11 +116,13 @@ class Num2Word_NO(lang_EUR.Num2Word_EUR):
         elif lnum >= 100 > rnum:
             return ("%s og %s" % (ltext, rtext), lnum + rnum)
         elif rnum > lnum:
-            # Special case for Norwegian: use "ett" before "tusen" but not "en" before "hundre"
-            if lnum == 1 and rnum == 1000:
+            # Norwegian Bokmål: 'hundre' and 'tusen' are neuter nouns, so the
+            # numeral 1 takes the neuter form 'ett' (not 'en'). Issue #58
+            # ports savoirfairelinux/num2words#485.
+            if lnum == 1 and rnum in (100, 1000):
                 return ("ett %s" % rtext, lnum * rnum)
             elif lnum == 100 and rnum == 1000:
-                # 100000 should be "hundre tusen" not "en hundre tusen"
+                # 100000 should be "hundre tusen" not "ett hundre tusen"
                 return ("hundre tusen", 100000)
             # Handle Norwegian plural forms for million and milliard
             if rnum == 10**6:
