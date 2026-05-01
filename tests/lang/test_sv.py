@@ -58,8 +58,8 @@ class Num2WordsSVTest(TestCase):
         self.assertEqual(num2words(30, lang="sv"), "trettio")
         self.assertEqual(num2words(31, lang="sv"), "trettioett")
         self.assertEqual(num2words(35, lang="sv"), "trettiofem")
-        self.assertEqual(num2words(40, lang="sv"), "förtio")
-        self.assertEqual(num2words(45, lang="sv"), "förtiofem")
+        self.assertEqual(num2words(40, lang="sv"), "fyrtio")
+        self.assertEqual(num2words(45, lang="sv"), "fyrtiofem")
         self.assertEqual(num2words(50, lang="sv"), "femtio")
         self.assertEqual(num2words(55, lang="sv"), "femtiofem")
         self.assertEqual(num2words(60, lang="sv"), "sextio")
@@ -92,7 +92,7 @@ class Num2WordsSVTest(TestCase):
         self.assertEqual(num2words(300, lang="sv"), "trehundra")
         self.assertEqual(num2words(333, lang="sv"), "trehundratrettiotre")
         self.assertEqual(num2words(400, lang="sv"), "fyrahundra")
-        self.assertEqual(num2words(444, lang="sv"), "fyrahundraförtiofyra")
+        self.assertEqual(num2words(444, lang="sv"), "fyrahundrafyrtiofyra")
         self.assertEqual(num2words(500, lang="sv"), "femhundra")
         self.assertEqual(num2words(555, lang="sv"), "femhundrafemtiofem")
         self.assertEqual(num2words(600, lang="sv"), "sexhundra")
@@ -121,7 +121,7 @@ class Num2WordsSVTest(TestCase):
         self.assertEqual(num2words(3000, lang="sv"), "tretusen")
         self.assertEqual(num2words(3333, lang="sv"), "tretusen trehundratrettiotre")
         self.assertEqual(num2words(4000, lang="sv"), "fyratusen")
-        self.assertEqual(num2words(4444, lang="sv"), "fyratusen fyrahundraförtiofyra")
+        self.assertEqual(num2words(4444, lang="sv"), "fyratusen fyrahundrafyrtiofyra")
         self.assertEqual(num2words(5000, lang="sv"), "femtusen")
         self.assertEqual(num2words(5555, lang="sv"), "femtusen femhundrafemtiofem")
         self.assertEqual(num2words(6000, lang="sv"), "sextusen")
@@ -135,7 +135,7 @@ class Num2WordsSVTest(TestCase):
         self.assertEqual(num2words(10000, lang="sv"), "tiotusen")
         self.assertEqual(num2words(10001, lang="sv"), "tiotusenett")
         self.assertEqual(num2words(11111, lang="sv"), "elvatusen etthundraelva")
-        self.assertEqual(num2words(12345, lang="sv"), "tolvtusen trehundraförtiofem")
+        self.assertEqual(num2words(12345, lang="sv"), "tolvtusen trehundrafyrtiofem")
         self.assertEqual(num2words(20000, lang="sv"), "tjugotusen")
         self.assertEqual(num2words(50000, lang="sv"), "femtiotusen")
         self.assertEqual(
@@ -174,7 +174,7 @@ class Num2WordsSVTest(TestCase):
         self.assertEqual(num2words(10000000, lang="sv"), "tio miljoner")
         self.assertEqual(
             num2words(12345678, lang="sv"),
-            "tolv miljoner trehundraförtiofemtusen sexhundrasjuttioåtta",
+            "tolv miljoner trehundrafyrtiofemtusen sexhundrasjuttioåtta",
         )
         self.assertEqual(
             num2words(99999999, lang="sv"),
@@ -277,7 +277,7 @@ class Num2WordsSVTest(TestCase):
         self.assertEqual(num2words(22, lang="sv", ordinal=True), "tjugoandra")
         self.assertEqual(num2words(25, lang="sv", ordinal=True), "tjugofemte")
         self.assertEqual(num2words(30, lang="sv", ordinal=True), "trettionde")
-        self.assertEqual(num2words(40, lang="sv", ordinal=True), "förtionde")
+        self.assertEqual(num2words(40, lang="sv", ordinal=True), "fyrtionde")
         self.assertEqual(num2words(50, lang="sv", ordinal=True), "femtionde")
         self.assertEqual(num2words(60, lang="sv", ordinal=True), "sextionde")
         self.assertEqual(num2words(70, lang="sv", ordinal=True), "sjuttionde")
