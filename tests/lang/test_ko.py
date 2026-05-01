@@ -137,12 +137,12 @@ class Num2WordsKOTest(TestCase):
     def test_ordinal(self):
         cases = [
             (1, "첫 번째"),
-            (101, "백 한 번째"),
+            (101, "백한 번째"),
             (2, "두 번째"),
             (5, "다섯 번째"),
             (10, "열 번째"),
             (25, "스물다섯 번째"),
-            (137, "백 서른일곱 번째"),
+            (137, "백서른일곱 번째"),
         ]
         for num, out in cases:
             self.assertEqual(n2k(num, to="ordinal"), out)

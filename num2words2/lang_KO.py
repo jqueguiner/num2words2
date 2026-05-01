@@ -17,6 +17,8 @@
 
 from __future__ import division, print_function, unicode_literals
 
+import re
+
 from .base import Num2Word_Base
 from .currency import parse_currency_parts
 
@@ -110,20 +112,22 @@ class Num2Word_KO(Num2Word_Base):
         if value == 1:
             return "첫 번째"
         outwords = self.to_cardinal(value).split(" ")
-        lastwords = outwords[-1].split("백")
-        if "십" in lastwords[-1]:
-            ten_one = lastwords[-1].split("십")
-            ten_one[0] = self.ords[ten_one[0] + "십"]
-            try:
-                ten_one[1] = self.ords[ten_one[1]]
-                ten_one[0] = ten_one[0].replace("스무", "스물")
-            except KeyError:
-                pass
-            lastwords[-1] = "".join(ten_one)
-        else:
-            lastwords[-1] = self.ords[lastwords[-1]]
-        outwords[-1] = "백 ".join(lastwords)
-        return " ".join(outwords) + " 번째"
+        if value % 100 != 0:
+            re_mid_words = "|".join(
+                "(?<={})".format(re.escape(d)) for d in ["천", "백"]
+            )
+            lastwords = re.split(re_mid_words, outwords[-1])
+            if "십" in lastwords[-1]:
+                ten_one = lastwords[-1].split("십")
+                ten_one[0] = self.ords.get(ten_one[0] + "십", ten_one[0] + "십")
+                ten_one[1] = self.ords.get(ten_one[1], ten_one[1])
+                if not ten_one[1]:
+                    ten_one[0] = ten_one[0].replace("스물", "스무")
+                lastwords[-1] = "".join(ten_one)
+            else:
+                lastwords[-1] = self.ords.get(lastwords[-1], lastwords[-1])
+            outwords[-1] = "".join(lastwords)
+        return " ".join(x.strip() for x in outwords if x.strip()) + " 번째"
 
     def to_ordinal_num(self, value):
         self.verify_ordinal(value)
