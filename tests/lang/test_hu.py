@@ -644,22 +644,22 @@ class Num2WordsHUTest(TestCase):
             "egy sum, ötven tiyins",
         )
         self.assertEqual(
-            num2words(0, lang="hu", to="currency", currency="SAR"), "nulla saudi riyals"
+            num2words(0, lang="hu", to="currency", currency="SAR"), "nulla riyals"
         )
         self.assertEqual(
             num2words(0.01, lang="hu", to="currency", currency="SAR"),
-            "nulla saudi riyals, egy halalah",
+            "nulla riyals, egy halalah",
         )
         self.assertEqual(
             num2words(0.5, lang="hu", to="currency", currency="SAR"),
-            "nulla saudi riyals, ötven halalas",
+            "nulla riyals, ötven halalas",
         )
         self.assertEqual(
-            num2words(1, lang="hu", to="currency", currency="SAR"), "egy saudi riyal"
+            num2words(1, lang="hu", to="currency", currency="SAR"), "egy riyal"
         )
         self.assertEqual(
             num2words(1.5, lang="hu", to="currency", currency="SAR"),
-            "egy saudi riyal, ötven halalas",
+            "egy riyal, ötven halalas",
         )
         self.assertEqual(
             num2words(0, lang="hu", to="currency", currency="JPY"), "nulla yen"

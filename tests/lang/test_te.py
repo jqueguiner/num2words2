@@ -656,22 +656,22 @@ class Num2WordsTETest(TestCase):
             "ఒకటి sum, యాభై  tiyins",
         )
         self.assertEqual(
-            num2words(0, lang="te", to="currency", currency="SAR"), "సున్న saudi riyals"
+            num2words(0, lang="te", to="currency", currency="SAR"), "సున్న riyals"
         )
         self.assertEqual(
             num2words(0.01, lang="te", to="currency", currency="SAR"),
-            "సున్న saudi riyals, ఒకటి halalah",
+            "సున్న riyals, ఒకటి halalah",
         )
         self.assertEqual(
             num2words(0.5, lang="te", to="currency", currency="SAR"),
-            "సున్న saudi riyals, యాభై  halalas",
+            "సున్న riyals, యాభై  halalas",
         )
         self.assertEqual(
-            num2words(1, lang="te", to="currency", currency="SAR"), "ఒకటి saudi riyal"
+            num2words(1, lang="te", to="currency", currency="SAR"), "ఒకటి riyal"
         )
         self.assertEqual(
             num2words(1.5, lang="te", to="currency", currency="SAR"),
-            "ఒకటి saudi riyal, యాభై  halalas",
+            "ఒకటి riyal, యాభై  halalas",
         )
         self.assertEqual(
             num2words(0, lang="te", to="currency", currency="JPY"), "సున్న yen"

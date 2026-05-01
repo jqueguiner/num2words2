@@ -636,22 +636,22 @@ class Num2WordsSVTest(TestCase):
             "ett sum, femtio tiyins",
         )
         self.assertEqual(
-            num2words(0, lang="sv", to="currency", currency="SAR"), "noll saudi riyals"
+            num2words(0, lang="sv", to="currency", currency="SAR"), "noll riyals"
         )
         self.assertEqual(
             num2words(0.01, lang="sv", to="currency", currency="SAR"),
-            "noll saudi riyals, ett halalah",
+            "noll riyals, ett halalah",
         )
         self.assertEqual(
             num2words(0.5, lang="sv", to="currency", currency="SAR"),
-            "noll saudi riyals, femtio halalas",
+            "noll riyals, femtio halalas",
         )
         self.assertEqual(
-            num2words(1, lang="sv", to="currency", currency="SAR"), "ett saudi riyal"
+            num2words(1, lang="sv", to="currency", currency="SAR"), "ett riyal"
         )
         self.assertEqual(
             num2words(1.5, lang="sv", to="currency", currency="SAR"),
-            "ett saudi riyal, femtio halalas",
+            "ett riyal, femtio halalas",
         )
         self.assertEqual(
             num2words(0, lang="sv", to="currency", currency="JPY"), "noll yen"

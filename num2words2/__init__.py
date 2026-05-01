@@ -191,8 +191,16 @@ except ImportError:
     __version__ = "unknown"
     __version_tuple__ = (0, 0, 0, "unknown", 0)
 
+from .grouping import group_digits  # noqa: E402
+
 # Export main functions
-__all__ = ["num2words", "num2words_sentence", "convert_sentence", "sentence_to_words"]
+__all__ = [
+    "num2words",
+    "num2words_sentence",
+    "convert_sentence",
+    "sentence_to_words",
+    "group_digits",
+]
 
 
 CONVERTER_CLASSES = {
@@ -390,13 +398,16 @@ def num2words(number, ordinal=False, lang="en", to="cardinal", **kwargs):
 
     if isinstance(number, str):
         # If the string is a mix of text and numerals (e.g. "text 1"),
-        # route to num2words_sentence which extracts numerals and
-        # converts each in place. Issue #61 ports
+        # route to num2words_sentence which extracts numerals and converts
+        # each in place. A pure-text string like "hello" still raises so
+        # we don't silently swallow caller errors. Issue #61 ports
         # savoirfairelinux/num2words#281.
         try:
             number = converter.str_to_number(number)
         except (decimal.InvalidOperation, ValueError):
-            return num2words_sentence(number, lang=lang, to=to, **kwargs)
+            if any(ch.isdigit() for ch in number):
+                return num2words_sentence(number, lang=lang, to=to, **kwargs)
+            raise
 
     # backwards compatible
     if ordinal:
