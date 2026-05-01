@@ -236,23 +236,19 @@ class Num2Word_NL(Num2Word_EUR):
         return forms[0]
 
     def to_year(self, val, longval=True):
-        # For years 1100-1999, use the "[number]honderd" form
-        # e.g. 1600 -> "zestienhonderd" not "duizendzeshonderd"
-        if 1100 <= val <= 1999:
+        # Years that fit the "[N]honderd[M]" shape (1100..9999, except the
+        # 2000..2099 'tweeduizend' window where the cardinal form is more
+        # natural). All written without spaces. Issue #60 ports
+        # savoirfairelinux/num2words#519.
+        if 1100 <= val <= 9999 and not 2000 <= val <= 2099:
             hundreds = val // 100
             remainder = val % 100
-
-            # Convert the hundreds part (11-19)
-            result = self.to_cardinal(hundreds) + "honderd"
-
-            # Add remainder if any
+            result = self.to_cardinal(hundreds).replace(" ", "") + "honderd"
             if remainder:
-                remainder_text = self.to_cardinal(remainder)
-                result = result + remainder_text
-
+                result = result + self.to_cardinal(remainder).replace(" ", "")
             return result
 
-        # For other years, use standard logic
+        # 2000-2099 keeps the 'tweeduizend X' form already in use.
         if not (val // 100) % 10:
             return self.to_cardinal(val)
         return self.to_splitnum(val, hightxt="honderd", longval=longval)
