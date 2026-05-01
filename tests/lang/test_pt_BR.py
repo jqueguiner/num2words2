@@ -688,6 +688,7 @@ class Num2WordsPT_BRTest(TestCase):
 def test_pt_br_dot_string_pronounced_as_ponto():
     # Regression for num2words2#63 (ports savoirfairelinux/num2words#300).
     from num2words2 import num2words
+
     # Dot-string is US notation; pronounce as 'ponto'.
     assert num2words("1.50", lang="pt_BR") == "um ponto cinco"
     # Comma-string and float are canonical pt-BR; pronounce as 'vírgula'.

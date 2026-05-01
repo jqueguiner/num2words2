@@ -15,7 +15,6 @@ from __future__ import unicode_literals
 
 from .lang_SR import Num2Word_SR
 
-
 # Two-character Cyrillic → Latin mappings must come BEFORE single-character
 # entries so they win during the longest-match scan.
 _CYRL_TO_LATN = [
