@@ -38,6 +38,11 @@ class Num2Word_FR(Num2Word_EUR):
         "MXN": (("peso", "pesos"), ("centavo", "centavos")),
     }
 
+    def pluralize(self, n, forms):
+        # French: 0 and 1 take the singular form. Issue #70 ports
+        # savoirfairelinux/num2words#532 ('zéro centime', not 'zéro centimes').
+        return forms[0] if abs(n) <= 1 else forms[1]
+
     def setup(self):
         Num2Word_EUR.setup(self)
 
@@ -112,11 +117,34 @@ class Num2Word_FR(Num2Word_EUR):
     # Is this right for such things as 1001 - "mille unième" instead of
     # "mille premier"??  "millième"??
 
+    _BIG_UNITS = (
+        "trilliard",
+        "trillion",
+        "billiard",
+        "billion",
+        "milliard",
+        "million",
+    )
+
     def to_ordinal(self, value):
         self.verify_ordinal(value)
         if value == 1:
             return "premier"
         word = self.to_cardinal(value)
+        # Big-unit ordinals (million / milliard / billion / trillion …) need
+        # special handling: drop a leading 'un ' (singular form is just
+        # 'millionième', not 'un millionième'), strip any trailing plural
+        # 's', and re-pluralize the -ième suffix when the count is > 1.
+        # Issue #70 ports savoirfairelinux/num2words#532.
+        for unit in self._BIG_UNITS:
+            if word == "un " + unit or word.endswith(" " + unit + "s"):
+                plural = word.endswith("s")
+                stripped = word.rstrip("s")
+                if stripped.startswith("un "):
+                    stripped = stripped[len("un ") :]
+                return stripped + "ième" + ("s" if plural else "")
+            if word == unit:
+                return unit + "ième"
         for src, repl in self.ords.items():
             if word.endswith(src):
                 word = word[: -len(src)] + repl

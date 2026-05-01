@@ -99,9 +99,9 @@ TEST_CASES_ORDINAL = (
     (28, "vingt-huitième"),
     (100, "centième"),
     (1000, "millième"),
-    (1000000, "un millionième"),
-    (1000000000000000, "un billiardième"),
-    (1000000000000000000, "un trillionième"),  # over 1e18 is not supported
+    (1000000, "millionième"),
+    (1000000000000000, "billiardième"),
+    (1000000000000000000, "trillionième"),  # over 1e18 is not supported
 )
 
 TEST_CASES_ORDINAL_NUM = (
