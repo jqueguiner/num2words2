@@ -106,14 +106,14 @@ class Num2WordsSVTest(TestCase):
 
     def test_cardinal_thousands(self):
         """Test cardinal numbers from 1000 to 999999."""
-        self.assertEqual(num2words(1000, lang="sv"), "etttusen")
-        self.assertEqual(num2words(1001, lang="sv"), "etttusenett")
-        self.assertEqual(num2words(1010, lang="sv"), "etttusentio")
-        self.assertEqual(num2words(1100, lang="sv"), "etttusen etthundra")
-        self.assertEqual(num2words(1111, lang="sv"), "etttusen etthundraelva")
-        self.assertEqual(num2words(1234, lang="sv"), "etttusen tvåhundratrettiofyra")
-        self.assertEqual(num2words(1500, lang="sv"), "etttusen femhundra")
-        self.assertEqual(num2words(1999, lang="sv"), "etttusen niohundranittionio")
+        self.assertEqual(num2words(1000, lang="sv"), "ettusen")
+        self.assertEqual(num2words(1001, lang="sv"), "ettusenett")
+        self.assertEqual(num2words(1010, lang="sv"), "ettusentio")
+        self.assertEqual(num2words(1100, lang="sv"), "ettusen etthundra")
+        self.assertEqual(num2words(1111, lang="sv"), "ettusen etthundraelva")
+        self.assertEqual(num2words(1234, lang="sv"), "ettusen tvåhundratrettiofyra")
+        self.assertEqual(num2words(1500, lang="sv"), "ettusen femhundra")
+        self.assertEqual(num2words(1999, lang="sv"), "ettusen niohundranittionio")
         self.assertEqual(num2words(2000, lang="sv"), "tvåtusen")
         self.assertEqual(num2words(2001, lang="sv"), "tvåtusenett")
         self.assertEqual(num2words(2020, lang="sv"), "tvåtusentjugo")
@@ -218,8 +218,8 @@ class Num2WordsSVTest(TestCase):
         self.assertEqual(num2words(-101, lang="sv"), "minus etthundraett")
         self.assertEqual(num2words(-200, lang="sv"), "minus tvåhundra")
         self.assertEqual(num2words(-999, lang="sv"), "minus niohundranittionio")
-        self.assertEqual(num2words(-1000, lang="sv"), "minus etttusen")
-        self.assertEqual(num2words(-1001, lang="sv"), "minus etttusenett")
+        self.assertEqual(num2words(-1000, lang="sv"), "minus ettusen")
+        self.assertEqual(num2words(-1001, lang="sv"), "minus ettusenett")
         self.assertEqual(num2words(-10000, lang="sv"), "minus tiotusen")
         self.assertEqual(num2words(-100000, lang="sv"), "minus hundratusen")
         self.assertEqual(num2words(-1000000, lang="sv"), "minus en miljon")
@@ -242,9 +242,9 @@ class Num2WordsSVTest(TestCase):
         self.assertEqual(
             num2words(123.45, lang="sv"), "etthundratjugotre komma fyra fem"
         )
-        self.assertEqual(num2words(1000.5, lang="sv"), "etttusen komma fem")
+        self.assertEqual(num2words(1000.5, lang="sv"), "ettusen komma fem")
         self.assertEqual(
-            num2words(1234.56, lang="sv"), "etttusen tvåhundratrettiofyra komma fem sex"
+            num2words(1234.56, lang="sv"), "ettusen tvåhundratrettiofyra komma fem sex"
         )
         self.assertEqual(num2words(10000.01, lang="sv"), "tiotusen komma noll ett")
         self.assertEqual(num2words(-0.5, lang="sv"), "minus noll komma fem")
@@ -287,8 +287,8 @@ class Num2WordsSVTest(TestCase):
         self.assertEqual(num2words(101, lang="sv", ordinal=True), "etthundraförsta")
         self.assertEqual(num2words(200, lang="sv", ordinal=True), "tvåhundrade")
         self.assertEqual(num2words(500, lang="sv", ordinal=True), "femhundrade")
-        self.assertEqual(num2words(1000, lang="sv", ordinal=True), "etttusende")
-        self.assertEqual(num2words(1001, lang="sv", ordinal=True), "etttusenförsta")
+        self.assertEqual(num2words(1000, lang="sv", ordinal=True), "ettusende")
+        self.assertEqual(num2words(1001, lang="sv", ordinal=True), "ettusenförsta")
         self.assertEqual(num2words(10000, lang="sv", ordinal=True), "tiotusende")
 
     def test_currency(self):
@@ -735,7 +735,7 @@ class Num2WordsSVTest(TestCase):
         self.assertEqual(num2words("1", lang="sv"), "ett")
         self.assertEqual(num2words("10", lang="sv"), "tio")
         self.assertEqual(num2words("100", lang="sv"), "etthundra")
-        self.assertEqual(num2words("1000", lang="sv"), "etttusen")
+        self.assertEqual(num2words("1000", lang="sv"), "ettusen")
         self.assertEqual(num2words("10000", lang="sv"), "tiotusen")
         self.assertEqual(num2words("100000", lang="sv"), "hundratusen")
         self.assertEqual(num2words("1000000", lang="sv"), "en miljon")

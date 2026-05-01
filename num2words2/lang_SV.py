@@ -109,7 +109,9 @@ class Num2Word_SV(lang_EUR.Num2Word_EUR):
             # Special case: Swedish doesn't use "ett" before "hundra" in compounds
             if lnum == 100 and rnum == 1000:
                 return ("hundratusen", 100000)
-            return ("%s%s" % (ltext, rtext), lnum * rnum)
+            # Swedish drops one 't' when "ett" meets "tusen" (no triple consonants):
+            # 1000 -> ettusen, 21000 -> tjugoettusen.
+            return (("%s%s" % (ltext, rtext)).replace("ttt", "tt"), lnum * rnum)
         return ("%s %s" % (ltext, rtext), lnum + rnum)
 
     def to_currency(
