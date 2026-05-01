@@ -486,6 +486,11 @@ def num2words(number, ordinal=False, lang="en", to="cardinal", **kwargs):
             if result.startswith(prefix) and len(result) > len(prefix):
                 result = result[len(prefix):]
                 break
+    if style == "us" and lang.startswith("en") and isinstance(result, str):
+        # American English drops 'and' between hundreds and tens
+        # ("two hundred fifty" not "two hundred and fifty"). Issue #562
+        # ports savoirfairelinux/num2words#562 by @granvillebarker.
+        result = result.replace(" and ", " ")
     return result
 
 
