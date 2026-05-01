@@ -48,7 +48,9 @@ class Num2Word_PT(Num2Word_EUR):
 
     def setup(self):
         super(Num2Word_PT, self).setup()
-        lows = ["quatr", "tr", "b", "m"]
+        # Extend through 10^57 (nonilião). Issue #71 ports
+        # savoirfairelinux/num2words#501.
+        lows = ["non", "oct", "sept", "sext", "quint", "quatr", "tr", "b", "m"]
         self.high_numwords = self.gen_high_numwords([], [], lows)
         self.negword = "menos "
         self.pointword = "vírgula"

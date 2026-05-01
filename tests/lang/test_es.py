@@ -2796,3 +2796,10 @@ def test_es_ordinal_suffix_parses_to_ordinal_form():
     # Plain numerics still work
     assert num2words("1", lang="es") == "uno"
     assert num2words("5", lang="es") == "cinco"
+
+
+def test_es_handles_10_27_and_above():
+    # Regression for num2words2#71 (ports savoirfairelinux/num2words#501).
+    from num2words2 import num2words
+    assert "quintillón" in num2words(10**30, lang="es")
+    assert "nonillón" in num2words(10**54, lang="es")
