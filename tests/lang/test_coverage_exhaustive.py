@@ -256,8 +256,10 @@ class TestSentenceConverterDeep(TestCase):
         ]
         for s in cases:
             with self.subTest(s=s):
-                try: num2words_sentence(s, lang="en")
-                except Exception: pass
+                try:
+                    num2words_sentence(s, lang="en")
+                except Exception:
+                    pass
 
     def test_ordinal_patterns(self):
         from num2words2 import num2words_sentence
@@ -268,8 +270,10 @@ class TestSentenceConverterDeep(TestCase):
         ]
         for s in cases:
             with self.subTest(s=s):
-                try: num2words_sentence(s, lang="en")
-                except Exception: pass
+                try:
+                    num2words_sentence(s, lang="en")
+                except Exception:
+                    pass
 
     def test_date_patterns(self):
         from num2words2 import num2words_sentence
@@ -281,8 +285,10 @@ class TestSentenceConverterDeep(TestCase):
         ]
         for s in cases:
             with self.subTest(s=s):
-                try: num2words_sentence(s, lang="en")
-                except Exception: pass
+                try:
+                    num2words_sentence(s, lang="en")
+                except Exception:
+                    pass
 
     def test_negative_temperature(self):
         from num2words2 import num2words_sentence
@@ -293,22 +299,28 @@ class TestSentenceConverterDeep(TestCase):
         ]
         for s in cases:
             with self.subTest(s=s):
-                try: num2words_sentence(s, lang="en")
-                except Exception: pass
+                try:
+                    num2words_sentence(s, lang="en")
+                except Exception:
+                    pass
 
     def test_to_param(self):
         from num2words2 import num2words_sentence
         for to in ["cardinal", "ordinal", "ordinal_num", "year", "currency"]:
             with self.subTest(to=to):
-                try: num2words_sentence("There are 5 apples", lang="en", to=to)
-                except Exception: pass
+                try:
+                    num2words_sentence("There are 5 apples", lang="en", to=to)
+                except Exception:
+                    pass
 
     def test_aliases(self):
         from num2words2 import convert_sentence, sentence_to_words
         for fn in [convert_sentence, sentence_to_words]:
             with self.subTest(fn=fn.__name__):
-                try: fn("I have 5 apples", lang="en")
-                except Exception: pass
+                try:
+                    fn("I have 5 apples", lang="en")
+                except Exception:
+                    pass
 
     def test_sentence_unicode(self):
         from num2words2 import num2words_sentence
@@ -322,8 +334,10 @@ class TestSentenceConverterDeep(TestCase):
         ]
         for s in cases:
             with self.subTest(s=s):
-                try: num2words_sentence(s, lang="en")
-                except Exception: pass
+                try:
+                    num2words_sentence(s, lang="en")
+                except Exception:
+                    pass
 
 
 class TestBaseEdgeCases(TestCase):
@@ -333,8 +347,10 @@ class TestBaseEdgeCases(TestCase):
         for code in ["en", "fr", "de", "es", "it", "pt"]:
             for v in ["-0.5", "-1.5", "-0.001", "-3.14159"]:
                 with self.subTest(code=code, v=v):
-                    try: num2words(v, lang=code)
-                    except Exception: pass
+                    try:
+                        num2words(v, lang=code)
+                    except Exception:
+                        pass
 
     def test_overflow(self):
         # Each language has its own MAXVAL; test very large values
@@ -362,14 +378,22 @@ class TestBaseEdgeCases(TestCase):
 
     def test_to_with_kwargs(self):
         # Hit converter-specific kwargs paths
-        try: num2words(1, lang="ru", gender="f")
-        except Exception: pass
-        try: num2words(1, lang="ru", gender="n")
-        except Exception: pass
-        try: num2words(1, lang="ru", gender="ж")
-        except Exception: pass
-        try: num2words(1, lang="ar", to="ordinal", prefix="al-")
-        except Exception: pass
+        try:
+            num2words(1, lang="ru", gender="f")
+        except Exception:
+            pass
+        try:
+            num2words(1, lang="ru", gender="n")
+        except Exception:
+            pass
+        try:
+            num2words(1, lang="ru", gender="ж")
+        except Exception:
+            pass
+        try:
+            num2words(1, lang="ar", to="ordinal", prefix="al-")
+        except Exception:
+            pass
 
 
 class TestSpecificLangBranches(TestCase):
@@ -380,95 +404,128 @@ class TestSpecificLangBranches(TestCase):
         for v in [1000, 2000, 3000, 4000, 5000, 11000, 21000, 100000,
                   200000, 300000, 400000, 500000, 1000000, 2000000,
                   10000, 99999, 999999, 1000000000]:
-            try: num2words(v, lang="el")
-            except Exception: pass
+            try:
+                num2words(v, lang="el")
+            except Exception:
+                pass
 
     def test_el_decimals_currency(self):
         for v in [0.5, 1.5, 12.34, 99.99, 100.00, -1.5, -100]:
             for to in ["cardinal", "ordinal", "year", "currency"]:
-                try: num2words(v, lang="el", to=to)
-                except Exception: pass
+                try:
+                    num2words(v, lang="el", to=to)
+                except Exception:
+                    pass
 
     def test_tr_edge_cases(self):
         # Turkish has lots of ordinal/year/currency branches
         for v in range(0, 100):
-            try: num2words(v, lang="tr", ordinal=True)
-            except Exception: pass
+            try:
+                num2words(v, lang="tr", ordinal=True)
+            except Exception:
+                pass
         for v in [100, 1000, 10000, 100000, 1000000, 1000000000]:
             for to in ["cardinal", "ordinal", "ordinal_num", "year", "currency"]:
-                try: num2words(v, lang="tr", to=to)
-                except Exception: pass
+                try:
+                    num2words(v, lang="tr", to=to)
+                except Exception:
+                    pass
 
     def test_sn_edge_cases(self):
         # Shona
         for v in [0, 1, 5, 10, 11, 19, 20, 50, 100, 1000, 10000, 1000000]:
             for to in ["cardinal", "ordinal", "year", "currency"]:
-                try: num2words(v, lang="sn", to=to)
-                except Exception: pass
+                try:
+                    num2words(v, lang="sn", to=to)
+                except Exception:
+                    pass
 
     def test_sl_edge_cases(self):
         # Slovenian dual/plural forms
         for v in [1, 2, 3, 4, 5, 11, 12, 21, 22, 100, 101, 1000, 10000]:
-            try: num2words(v, lang="sl")
-            except Exception: pass
-            try: num2words(v, lang="sl", ordinal=True)
-            except Exception: pass
+            try:
+                num2words(v, lang="sl")
+            except Exception:
+                pass
+            try:
+                num2words(v, lang="sl", ordinal=True)
+            except Exception:
+                pass
 
     def test_bg_edge_cases(self):
         for v in [1, 2, 5, 11, 21, 100, 1000, 10000, 1000000]:
-            try: num2words(v, lang="bg", gender="m")
-            except Exception: pass
-            try: num2words(v, lang="bg", gender="f")
-            except Exception: pass
-            try: num2words(v, lang="bg", gender="n")
-            except Exception: pass
+            try:
+                num2words(v, lang="bg", gender="m")
+            except Exception:
+                pass
+            try:
+                num2words(v, lang="bg", gender="f")
+            except Exception:
+                pass
+            try:
+                num2words(v, lang="bg", gender="n")
+            except Exception:
+                pass
 
     def test_ms_edge_cases(self):
         for v in [0, 1, 11, 100, 1000, 10000, 100000, 1000000, 1000000000]:
             for to in ["cardinal", "ordinal", "year", "currency"]:
-                try: num2words(v, lang="ms", to=to)
-                except Exception: pass
+                try:
+                    num2words(v, lang="ms", to=to)
+                except Exception:
+                    pass
 
     def test_et_edge_cases(self):
         # Estonian
         for v in [1, 2, 5, 11, 21, 100, 1000, 10000, 1000000]:
             for to in ["cardinal", "ordinal", "year", "currency"]:
-                try: num2words(v, lang="et", to=to)
-                except Exception: pass
+                try:
+                    num2words(v, lang="et", to=to)
+                except Exception:
+                    pass
 
     def test_ar_edge_cases(self):
         for v in [0, 1, 2, 11, 100, 1000, 1000000]:
             for currency in ["SAR", "EGP", "KWD", "TND", "LBP", "YER", "USD", "EUR"]:
-                try: num2words(v, lang="ar", to="currency", currency=currency)
-                except Exception: pass
+                try:
+                    num2words(v, lang="ar", to="currency", currency=currency)
+                except Exception:
+                    pass
 
     def test_dv_edge_cases(self):
         # Dhivehi has unique fractional/ordinal logic
         for v in [0, 1, 100, 1000, 0.5, 1.5, 100.99]:
             for to in ["cardinal", "ordinal", "ordinal_num", "currency", "year"]:
-                try: num2words(v, lang="dv", to=to)
-                except Exception: pass
+                try:
+                    num2words(v, lang="dv", to=to)
+                except Exception:
+                    pass
 
     def test_sq_edge_cases(self):
         # Albanian
         for v in [0, 1, 5, 11, 21, 100, 1000, 10000, 1000000]:
             for to in ["cardinal", "ordinal", "ordinal_num", "year", "currency"]:
-                try: num2words(v, lang="sq", to=to)
-                except Exception: pass
+                try:
+                    num2words(v, lang="sq", to=to)
+                except Exception:
+                    pass
 
     def test_ja_edge_cases(self):
         for v in [0, 1, 100, 10000, 100000000, 1000000000]:
             for to in ["cardinal", "ordinal", "year", "currency"]:
-                try: num2words(v, lang="ja", to=to)
-                except Exception: pass
+                try:
+                    num2words(v, lang="ja", to=to)
+                except Exception:
+                    pass
 
     def test_ru_genders_cases(self):
         for n in [1, 2, 5, 21, 100]:
             for gender in ["m", "f", "n", "p", "masculine", "feminine", "neuter", "plural"]:
                 for case in ["n", "g", "d", "a", "i", "p"]:
-                    try: num2words(n, lang="ru", gender=gender, case=case)
-                    except Exception: pass
-
+                    try:
+                        num2words(n, lang="ru", gender=gender, case=case)
+                    except Exception:
+                        pass
 
 
 class TestSentenceConverterTargeted(TestCase):
@@ -476,64 +533,86 @@ class TestSentenceConverterTargeted(TestCase):
 
     def test_french_ordinal_1er(self):
         from num2words2 import num2words_sentence
+
         # Hits the French "1er" branch (line 442 + premier line 492)
         for s in ["Le 1er janvier 2024", "Le 1er février", "1er prix", "1er mai"]:
-            try: num2words_sentence(s, lang="fr")
-            except Exception: pass
+            try:
+                num2words_sentence(s, lang="fr")
+            except Exception:
+                pass
 
     def test_german_period_dates(self):
         from num2words2 import num2words_sentence
         for s in ["Am 5. Mai 2024", "1. Januar", "31. Dezember 1999", "12. Februar"]:
-            try: num2words_sentence(s, lang="de")
-            except Exception: pass
+            try:
+                num2words_sentence(s, lang="de")
+            except Exception:
+                pass
 
     def test_ordinal_conversion_type(self):
         from num2words2 import num2words_sentence
+
         # Hit conversion_type='ordinal' paths (lines 482-498)
         for s in ["I have 5 apples", "1 + 2 = 3", "-5 things", "0 things", "3.14 things"]:
-            try: num2words_sentence(s, lang="en", to="ordinal")
-            except Exception: pass
+            try:
+                num2words_sentence(s, lang="en", to="ordinal")
+            except Exception:
+                pass
 
     def test_year_fallback(self):
         from num2words2 import num2words_sentence
+
         # Year fallback when language has no year support
         for s in ["The year 2024", "Born in 1990", "From 1066 to 1492"]:
             for lang in ["en", "fr", "de", "ja", "zh", "ar"]:
-                try: num2words_sentence(s, lang=lang)
-                except Exception: pass
+                try:
+                    num2words_sentence(s, lang=lang)
+                except Exception:
+                    pass
 
     def test_currency_unknown_symbol(self):
         from num2words2 import num2words_sentence
         for s in ["¥1000", "₹1000", "₽5000"]:
-            try: num2words_sentence(s, lang="en")
-            except Exception: pass
+            try:
+                num2words_sentence(s, lang="en")
+            except Exception:
+                pass
 
     def test_decimal_with_ordinal_to(self):
         from num2words2 import num2words_sentence
         for s in ["Result was 3.14", "Score: 99.5"]:
-            try: num2words_sentence(s, lang="en", to="ordinal")
-            except Exception: pass
+            try:
+                num2words_sentence(s, lang="en", to="ordinal")
+            except Exception:
+                pass
 
     def test_negative_ordinal(self):
         from num2words2 import num2words_sentence
         for s in ["At -10 degrees", "Score is -5"]:
-            try: num2words_sentence(s, lang="en", to="ordinal")
-            except Exception: pass
+            try:
+                num2words_sentence(s, lang="en", to="ordinal")
+            except Exception:
+                pass
 
     def test_lang_detection(self):
         from num2words2 import num2words_sentence
+
         # Force auto-detection by passing weird langs
         for s in ["I have 5 apples"]:
             for lang in ["en", "es", "fr", "auto"]:
-                try: num2words_sentence(s, lang=lang)
-                except Exception: pass
+                try:
+                    num2words_sentence(s, lang=lang)
+                except Exception:
+                    pass
 
     def test_currency_in_various_langs(self):
         from num2words2 import num2words_sentence
         for s in ["$100", "$5.99", "€10", "£25"]:
             for lang in ["en", "fr", "de", "es", "it"]:
-                try: num2words_sentence(s, lang=lang)
-                except Exception: pass
+                try:
+                    num2words_sentence(s, lang=lang)
+                except Exception:
+                    pass
 
 
 class TestELDeep(TestCase):
@@ -544,19 +623,25 @@ class TestELDeep(TestCase):
         for v in [200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000,
                   201000, 301000, 1234567, 11000, 21000, 41000, 51000,
                   100001, 200002, 999999, 1000001, 1234567890]:
-            try: num2words(v, lang="el")
-            except Exception: pass
+            try:
+                num2words(v, lang="el")
+            except Exception:
+                pass
 
     def test_ordinal_full_range(self):
         for v in [1, 2, 3, 4, 5, 10, 11, 19, 20, 21, 100, 101, 200, 1000, 1001, 1234]:
-            try: num2words(v, lang="el", ordinal=True)
-            except Exception: pass
+            try:
+                num2words(v, lang="el", ordinal=True)
+            except Exception:
+                pass
 
     def test_currency_variations(self):
         for v in [0, 0.01, 0.99, 1, 1.01, 1.99, 2, 12, 100, 1000, 1000000]:
             for c in ["EUR", "USD", "GBP"]:
-                try: num2words(v, lang="el", to="currency", currency=c)
-                except Exception: pass
+                try:
+                    num2words(v, lang="el", to="currency", currency=c)
+                except Exception:
+                    pass
 
 
 class TestTRDeep(TestCase):
@@ -564,24 +649,32 @@ class TestTRDeep(TestCase):
 
     def test_full_ordinal_range(self):
         for v in range(0, 200):
-            try: num2words(v, lang="tr", ordinal=True)
-            except Exception: pass
+            try:
+                num2words(v, lang="tr", ordinal=True)
+            except Exception:
+                pass
 
     def test_turkish_currency_full(self):
         for v in [0, 1, 1.5, 100, 1000, 10000, 100000, 1000000, 1234567890]:
             for c in ["TRY", "USD", "EUR", "GBP", "JPY"]:
-                try: num2words(v, lang="tr", to="currency", currency=c)
-                except Exception: pass
+                try:
+                    num2words(v, lang="tr", to="currency", currency=c)
+                except Exception:
+                    pass
 
     def test_turkish_year_range(self):
         for v in [1, 100, 999, 1000, 1066, 1492, 1999, 2000, 2024, -1, -100, -1000]:
-            try: num2words(v, lang="tr", to="year")
-            except Exception: pass
+            try:
+                num2words(v, lang="tr", to="year")
+            except Exception:
+                pass
 
     def test_turkish_string_decimals(self):
         for s in ["0.5", "1.234", "-0.99", "3.14", "100.001"]:
-            try: num2words(s, lang="tr")
-            except Exception: pass
+            try:
+                num2words(s, lang="tr")
+            except Exception:
+                pass
 
 
 class TestSNDeep(TestCase):
@@ -591,14 +684,18 @@ class TestSNDeep(TestCase):
         for v in [0, 1, 5, 11, 19, 21, 50, 100, 101, 200, 999, 1000, 1001,
                   1100, 9999, 10000, 99999, 100000, 1000000, 10000000, 1000000000]:
             for to in ["cardinal", "ordinal", "ordinal_num", "year", "currency"]:
-                try: num2words(v, lang="sn", to=to)
-                except Exception: pass
+                try:
+                    num2words(v, lang="sn", to=to)
+                except Exception:
+                    pass
 
     def test_decimals_negatives(self):
         for v in [-1, -100, -1000, 0.5, 1.5, 3.14, 99.99, -0.5, -1.5]:
             for to in ["cardinal", "currency"]:
-                try: num2words(v, lang="sn", to=to)
-                except Exception: pass
+                try:
+                    num2words(v, lang="sn", to=to)
+                except Exception:
+                    pass
 
 
 class TestBGDeep(TestCase):
@@ -607,8 +704,10 @@ class TestBGDeep(TestCase):
     def test_full_range(self):
         for v in [0, 1, 2, 5, 11, 21, 100, 1000, 10000, 1000000, 1000000000]:
             for gender in ["m", "f", "n", "masculine", "feminine", "neuter"]:
-                try: num2words(v, lang="bg", gender=gender)
-                except Exception: pass
+                try:
+                    num2words(v, lang="bg", gender=gender)
+                except Exception:
+                    pass
 
 
 class TestMSDeep(TestCase):
@@ -617,11 +716,15 @@ class TestMSDeep(TestCase):
     def test_full_range(self):
         for v in [0, 1, 11, 100, 1000, 10000, 100000, 1000000, 1000000000]:
             for to in ["cardinal", "ordinal", "ordinal_num", "year", "currency"]:
-                try: num2words(v, lang="ms", to=to)
-                except Exception: pass
+                try:
+                    num2words(v, lang="ms", to=to)
+                except Exception:
+                    pass
         for v in [-1, -100, 0.5, 3.14, "0", "10", "100", "1000"]:
-            try: num2words(v, lang="ms")
-            except Exception: pass
+            try:
+                num2words(v, lang="ms")
+            except Exception:
+                pass
 
 
 class TestSLDeep(TestCase):
@@ -630,12 +733,16 @@ class TestSLDeep(TestCase):
     def test_full_range(self):
         for v in range(0, 30):
             for to in ["cardinal", "ordinal"]:
-                try: num2words(v, lang="sl", to=to)
-                except Exception: pass
+                try:
+                    num2words(v, lang="sl", to=to)
+                except Exception:
+                    pass
         for v in [100, 200, 300, 1000, 2000, 10000, 1000000]:
             for to in ["cardinal", "ordinal", "year", "currency"]:
-                try: num2words(v, lang="sl", to=to)
-                except Exception: pass
+                try:
+                    num2words(v, lang="sl", to=to)
+                except Exception:
+                    pass
 
 
 class TestETDeep(TestCase):
@@ -644,8 +751,10 @@ class TestETDeep(TestCase):
     def test_full_range(self):
         for v in [0, 1, 2, 5, 10, 11, 21, 100, 200, 1000, 10000, 1000000, 1000000000]:
             for to in ["cardinal", "ordinal", "ordinal_num", "year", "currency"]:
-                try: num2words(v, lang="et", to=to)
-                except Exception: pass
+                try:
+                    num2words(v, lang="et", to=to)
+                except Exception:
+                    pass
 
 
 class TestSQDeep(TestCase):
@@ -654,13 +763,17 @@ class TestSQDeep(TestCase):
     def test_full_range(self):
         for v in [0, 1, 2, 5, 11, 19, 21, 100, 1000, 10000, 1000000]:
             for to in ["cardinal", "ordinal", "ordinal_num", "year", "currency"]:
-                try: num2words(v, lang="sq", to=to)
-                except Exception: pass
+                try:
+                    num2words(v, lang="sq", to=to)
+                except Exception:
+                    pass
 
     def test_decimals_negatives(self):
         for v in [-1, -10, -100, 0.5, 1.5, -0.5]:
-            try: num2words(v, lang="sq")
-            except Exception: pass
+            try:
+                num2words(v, lang="sq")
+            except Exception:
+                pass
 
 
 class TestDVDeep(TestCase):
@@ -669,15 +782,21 @@ class TestDVDeep(TestCase):
     def test_full_range(self):
         for v in [0, 1, 2, 5, 10, 100, 1000, 10000, 100000, 1000000]:
             for to in ["cardinal", "ordinal", "ordinal_num", "year", "currency"]:
-                try: num2words(v, lang="dv", to=to)
-                except Exception: pass
+                try:
+                    num2words(v, lang="dv", to=to)
+                except Exception:
+                    pass
 
     def test_decimals(self):
         for v in [0.1, 0.5, 1.5, 12.34, 100.99, "1.50", "10.001"]:
-            try: num2words(v, lang="dv")
-            except Exception: pass
+            try:
+                num2words(v, lang="dv")
+            except Exception:
+                pass
 
     def test_negatives(self):
         for v in [-1, -100, -1000, -1.5]:
-            try: num2words(v, lang="dv")
-            except Exception: pass
+            try:
+                num2words(v, lang="dv")
+            except Exception:
+                pass
