@@ -235,6 +235,43 @@ class Num2Word_ES(Num2Word_EUR):
     GIGA_SUFFIX = None
     MEGA_SUFFIX = "illón"
 
+    # Spanish ordinal-suffix tokens that callers send as strings:
+    # '1ro' -> 'primero', '1ra' -> 'primera', etc. Issue #62 ports
+    # savoirfairelinux/num2words#413.
+    _ORDINAL_SUFFIXES = {
+        "ro": ("ordinal", "m"),
+        "do": ("ordinal", "m"),
+        "mo": ("ordinal", "m"),
+        "to": ("ordinal", "m"),
+        "no": ("ordinal", "m"),
+        "vo": ("ordinal", "m"),
+        "ra": ("ordinal", "f"),
+        "da": ("ordinal", "f"),
+        "ma": ("ordinal", "f"),
+        "ta": ("ordinal", "f"),
+        "na": ("ordinal", "f"),
+        "va": ("ordinal", "f"),
+    }
+
+    def str_to_number(self, value):
+        s = str(value).strip()
+        if len(s) >= 3 and s[-2:] in self._ORDINAL_SUFFIXES:
+            digits = s[:-2]
+            if digits.isdigit():
+                # Stash gender hint for to_cardinal to pick up. We bypass
+                # that by directly returning the ordinal form here.
+                _, gender = self._ORDINAL_SUFFIXES[s[-2:]]
+                self._pending_ordinal = (int(digits), gender)
+                return int(digits)
+        return super(Num2Word_ES, self).str_to_number(value)
+
+    def to_cardinal(self, value):
+        pending = getattr(self, "_pending_ordinal", None)
+        if pending is not None and pending[0] == value:
+            self._pending_ordinal = None
+            return self.to_ordinal(value, gender=pending[1])
+        return super(Num2Word_ES, self).to_cardinal(value)
+
     def setup(self):
         lows = ["cuatr", "tr", "b", "m"]
         self.high_numwords = self.gen_high_numwords([], [], lows)

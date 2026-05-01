@@ -2782,3 +2782,17 @@ def test_es_uno_intact_when_terminal():
     assert num2words(21, lang="es") == "veintiuno"
     assert num2words(31, lang="es") == "treinta y uno"
     assert num2words(101, lang="es") == "ciento uno"
+
+
+def test_es_ordinal_suffix_parses_to_ordinal_form():
+    # Regression for num2words2#62 (ports savoirfairelinux/num2words#413).
+    from num2words2 import num2words
+    assert num2words("1ro", lang="es") == "primero"
+    assert num2words("1ra", lang="es") == "primera"
+    assert num2words("2do", lang="es") == "segundo"
+    assert num2words("2da", lang="es") == "segunda"
+    assert num2words("3ro", lang="es") == "tercero"
+    assert num2words("3ra", lang="es") == "tercera"
+    # Plain numerics still work
+    assert num2words("1", lang="es") == "uno"
+    assert num2words("5", lang="es") == "cinco"
