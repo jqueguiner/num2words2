@@ -22,9 +22,19 @@ from decimal import Decimal
 
 from .lang_EN import Num2Word_EN
 
-# ICAO standard digit pronunciations. The respellings are chosen to be
+# Per-profile digit pronunciations. The respellings are chosen to be
 # distinct under heavy radio static; speakers who hear "five" in noisy
 # audio can mistake it for "nine", but "fife"/"niner" pair cleanly.
+#
+# Modern services (ICAO / FAA / US Navy / US Army / NATO) have all
+# converged on the same number-pronunciation table — they all defer to
+# ICAO Annex 10 vol II for joint operations. Historical variants
+# (WW2-era US Army/Navy, RAF, ITU/IMO) used different respellings; the
+# scaffolding below makes it easy to add those as additional profiles
+# without rewriting the engine. Today the four profiles below are
+# intentionally identical — they exist as named entry points so users
+# can document *which* standard they're targeting.
+
 _ICAO_DIGITS = {
     "0": "zero",
     "1": "wun",
@@ -40,21 +50,50 @@ _ICAO_DIGITS = {
 _ICAO_DECIMAL = "decimal"
 _ICAO_MINUS = "minus"
 
+# Each profile is (digits-table, decimal-word, minus-word). Adding a
+# new profile is a one-line table addition.
+_PROFILES = {
+    "ICAO": (_ICAO_DIGITS, _ICAO_DECIMAL, _ICAO_MINUS),
+    "FAA": (_ICAO_DIGITS, _ICAO_DECIMAL, _ICAO_MINUS),
+    "USN": (_ICAO_DIGITS, _ICAO_DECIMAL, _ICAO_MINUS),
+    "US_ARMY": (_ICAO_DIGITS, _ICAO_DECIMAL, _ICAO_MINUS),
+    "NATO": (_ICAO_DIGITS, _ICAO_DECIMAL, _ICAO_MINUS),
+}
+
 
 class Num2Word_EN_AERO(Num2Word_EN):
-    """Digit-by-digit ICAO reading of any numeric input.
+    """Digit-by-digit aviation/military reading of any numeric input.
 
     The AERO variant only standardises cardinal/year reading. Higher-level
     modes that depend on cardinals internally (ordinals, fractions,
     currency) delegate to a sibling ``Num2Word_EN`` instance so they
     don't accidentally pick up the digit-by-digit cardinal form (which
     would turn "third" into "treeth" via vowel-substitution chaining).
+
+    The class accepts a ``profile=`` constructor argument selecting one
+    of the published standards. Today they all use the same digit table
+    (modern services have converged on ICAO); the parameter exists so
+    historical or service-specific variants can be added without
+    breaking back-compat.
     """
 
-    def __init__(self):
+    PROFILE = "ICAO"  # subclasses override
+
+    def __init__(self, profile=None):
         super(Num2Word_EN_AERO, self).__init__()
         # Hold a plain-English helper for modes ICAO doesn't standardise.
         self._english = Num2Word_EN()
+        chosen = profile or self.PROFILE
+        if chosen not in _PROFILES:
+            raise ValueError(
+                "Unknown aviation profile %r; valid: %s"
+                % (chosen, sorted(_PROFILES))
+            )
+        digits, decimal_word, minus_word = _PROFILES[chosen]
+        self._digit_table = digits
+        self._decimal_word = decimal_word
+        self._minus_word = minus_word
+        self.profile = chosen
 
     def _digits_of(self, value):
         # Normalise input to (sign, integer-part-string, fractional-part-string).
@@ -82,15 +121,15 @@ class Num2Word_EN_AERO(Num2Word_EN):
         is_negative, int_part, frac_part = self._digits_of(value)
         words = []
         if is_negative:
-            words.append(_ICAO_MINUS)
+            words.append(self._minus_word)
         for ch in int_part:
             if ch.isdigit():
-                words.append(_ICAO_DIGITS[ch])
+                words.append(self._digit_table[ch])
         if frac_part:
-            words.append(_ICAO_DECIMAL)
+            words.append(self._decimal_word)
             for ch in frac_part:
                 if ch.isdigit():
-                    words.append(_ICAO_DIGITS[ch])
+                    words.append(self._digit_table[ch])
         return " ".join(words)
 
     def to_year(self, value, **kwargs):
@@ -126,11 +165,11 @@ class Num2Word_EN_AERO(Num2Word_EN):
     # ------------------------------------------------------------------
 
     def _icao_digit(self, n):
-        """Return the ICAO respelling of a single decimal digit."""
-        return _ICAO_DIGITS[str(int(n))]
+        """Return the active profile's respelling of a single decimal digit."""
+        return self._digit_table[str(int(n))]
 
     def _icao_digits(self, s):
-        """Render every digit character of ``s`` as ICAO words."""
+        """Render every digit character of ``s`` as profile words."""
         return " ".join(self._icao_digit(ch) for ch in str(s) if ch.isdigit())
 
     def to_altitude(self, value, unit="feet"):
@@ -239,3 +278,33 @@ class Num2Word_EN_AERO(Num2Word_EN):
         if frac_part:
             out += " decimal " + self._icao_digits(frac_part)
         return out
+
+
+# ---------------------------------------------------------------------
+# Service-specific profile subclasses. Modern services have converged
+# on the ICAO digit table for joint operations, so these all produce
+# the same output today as the ICAO base — they exist as named entry
+# points so callers can document *which* standard they're targeting,
+# and so historical/tactical variants can diverge later without
+# breaking back-compat. Issue savoirfairelinux/num2words#478.
+# ---------------------------------------------------------------------
+
+
+class Num2Word_EN_AERO_FAA(Num2Word_EN_AERO):
+    """FAA AIM 4-2-9 phraseology — adopts ICAO digit pronunciation."""
+    PROFILE = "FAA"
+
+
+class Num2Word_EN_AERO_USN(Num2Word_EN_AERO):
+    """US Navy / Coast Guard — adopts ICAO digit pronunciation."""
+    PROFILE = "USN"
+
+
+class Num2Word_EN_AERO_US_Army(Num2Word_EN_AERO):
+    """US Army — adopts ICAO digit pronunciation for joint operations."""
+    PROFILE = "US_ARMY"
+
+
+class Num2Word_EN_AERO_NATO(Num2Word_EN_AERO):
+    """NATO STANAG 1059 — defers to ICAO for digit pronunciation."""
+    PROFILE = "NATO"
