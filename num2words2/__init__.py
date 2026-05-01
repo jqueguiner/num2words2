@@ -194,6 +194,28 @@ except ImportError:
 
 from .grouping import group_digits  # noqa: E402
 
+
+def maxval(lang="en"):
+    """Return the maximum integer ``num2words(..., lang=lang)`` can convert.
+
+    Issue #582 ports savoirfairelinux/num2words#582. Useful for input
+    validation in apps that need to know the per-language ceiling before
+    calling :func:`num2words`.
+    """
+    if lang not in CONVERTER_CLASSES:
+        # Reuse the same prefix-fallback the dispatcher does so callers
+        # don't have to know the canonical key.
+        nl = lang.replace("-", "_")
+        if nl in CONVERTER_CLASSES:
+            lang = nl
+        elif nl[:2] in CONVERTER_CLASSES:
+            lang = nl[:2]
+        else:
+            raise NotImplementedError("No MAXVAL for lang=%r" % lang)
+    converter = CONVERTER_CLASSES[lang]
+    return getattr(converter, "MAXVAL", None)
+
+
 # Export main functions
 __all__ = [
     "num2words",
@@ -201,6 +223,7 @@ __all__ = [
     "convert_sentence",
     "sentence_to_words",
     "group_digits",
+    "maxval",
 ]
 
 
@@ -419,7 +442,20 @@ def num2words(number, ordinal=False, lang="en", to="cardinal", **kwargs):
     if to not in CONVERTES_TYPES:
         raise NotImplementedError()
 
-    return getattr(converter, "to_{}".format(to))(number, **kwargs)
+    # precision= overrides the per-language fractional precision for this
+    # call. Issue #580 ports savoirfairelinux/num2words#580. Most language
+    # to_cardinal methods don't accept the kwarg, so apply it as a temporary
+    # attribute swap on the converter instead of forwarding.
+    precision_override = kwargs.pop("precision", None)
+    saved_precision = None
+    if precision_override is not None and hasattr(converter, "precision"):
+        saved_precision = converter.precision
+        converter.precision = int(precision_override)
+    try:
+        return getattr(converter, "to_{}".format(to))(number, **kwargs)
+    finally:
+        if saved_precision is not None:
+            converter.precision = saved_precision
 
 
 def num2words_sentence(sentence, lang="en", to="cardinal", **kwargs):
