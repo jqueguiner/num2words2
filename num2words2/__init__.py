@@ -245,6 +245,19 @@ CONVERTER_CLASSES = {
     "en_aero_icao": lang_EN_AERO.Num2Word_EN_AERO(),
     "en_x_aero_icao": lang_EN_AERO.Num2Word_EN_AERO(),
     "en_AERO": lang_EN_AERO.Num2Word_EN_AERO(),
+    # Service-specific aviation profiles (per the upstream issue's request
+    # to "implement the different variations depending on ICAO, FAA,
+    # US Navy, US Army"). Modern services have converged on the ICAO
+    # digit table for joint operations, so today these all produce the
+    # same output as the ICAO profile — they're separate entry points
+    # so callers can document *which* standard they're targeting and so
+    # historical/tactical variants can diverge later without breaking
+    # callers. Issue savoirfairelinux/num2words#478.
+    "en_Aero_FAA": lang_EN_AERO.Num2Word_EN_AERO_FAA(),
+    "en_Aero_USN": lang_EN_AERO.Num2Word_EN_AERO_USN(),
+    "en_Aero_US_Navy": lang_EN_AERO.Num2Word_EN_AERO_USN(),
+    "en_Aero_US_Army": lang_EN_AERO.Num2Word_EN_AERO_US_Army(),
+    "en_Aero_NATO": lang_EN_AERO.Num2Word_EN_AERO_NATO(),
     "en_IN": lang_EN_IN.Num2Word_EN_IN(),
     "en_NE": lang_EN_NE.Num2Word_EN_NE(),
     "en_NG": lang_EN_NG.Num2Word_EN_NG(),

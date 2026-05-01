@@ -280,5 +280,71 @@ class TestEnAeroAviationPhraseology(unittest.TestCase):
         )
 
 
+class TestEnAeroServiceProfiles(unittest.TestCase):
+    """Service-specific aviation profiles. Modern services (ICAO, FAA,
+    US Navy, US Army, NATO) have converged on the same ICAO digit
+    table for joint operations, so the variants currently produce
+    identical output. They're separate locale keys + classes so callers
+    can name *which* standard they're targeting, and so future divergent
+    profiles (historical respellings, ITU/IMO maritime variants, etc.)
+    can be added without breaking back-compat. Per the request on
+    savoirfairelinux/num2words#478.
+    """
+
+    REGISTERED = [
+        "en_Aero_ICAO",
+        "en_Aero_FAA",
+        "en_Aero_USN",
+        "en_Aero_US_Navy",
+        "en_Aero_US_Army",
+        "en_Aero_NATO",
+    ]
+
+    def test_all_variants_registered(self):
+        from num2words2 import CONVERTER_CLASSES
+        for code in self.REGISTERED:
+            self.assertIn(code, CONVERTER_CLASSES)
+
+    def test_all_variants_produce_icao_today(self):
+        # Modern services all defer to ICAO. Output should match exactly
+        # for an arbitrary input.
+        outputs = {
+            code: num2words(5739, lang=code) for code in self.REGISTERED
+        }
+        unique = set(outputs.values())
+        self.assertEqual(unique, {"fife seven tree niner"}, outputs)
+
+    def test_profile_attribute(self):
+        from num2words2 import CONVERTER_CLASSES
+        expected = {
+            "en_Aero_ICAO": "ICAO",
+            "en_Aero_FAA": "FAA",
+            "en_Aero_USN": "USN",
+            "en_Aero_US_Navy": "USN",
+            "en_Aero_US_Army": "US_ARMY",
+            "en_Aero_NATO": "NATO",
+        }
+        for code, profile in expected.items():
+            self.assertEqual(CONVERTER_CLASSES[code].profile, profile)
+
+    def test_aviation_methods_available_on_each_variant(self):
+        from num2words2 import CONVERTER_CLASSES
+        for code in self.REGISTERED:
+            c = CONVERTER_CLASSES[code]
+            self.assertEqual(c.to_altitude(5500), "fife thousand fife hundred feet")
+            self.assertEqual(c.to_squawk(7700), "squawk seven seven zero zero")
+
+    def test_explicit_profile_constructor_arg(self):
+        from num2words2.lang_EN_AERO import Num2Word_EN_AERO
+        c = Num2Word_EN_AERO(profile="FAA")
+        self.assertEqual(c.profile, "FAA")
+        self.assertEqual(c.to_cardinal(5739), "fife seven tree niner")
+
+    def test_unknown_profile_raises(self):
+        from num2words2.lang_EN_AERO import Num2Word_EN_AERO
+        with self.assertRaises(ValueError):
+            Num2Word_EN_AERO(profile="Klingon")
+
+
 if __name__ == "__main__":
     unittest.main()
