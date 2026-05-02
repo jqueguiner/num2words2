@@ -41,9 +41,11 @@ cardinals, ordinals, currency, year, fractions, bank-cheque format, and aviation
 digit-by-digit phraseology. This fork was created to address the maintenance gap in
 the original project and optimize for modern AI/LLM/speech applications.
 
-The project is hosted on GitHub_. Contributions are welcome.
+The project is hosted on GitHub_, and the full documentation is available in
+the Wiki_. Contributions are welcome.
 
 .. _GitHub: https://github.com/jqueguiner/num2words2
+.. _Wiki: https://github.com/jqueguiner/num2words2/wiki
 
 Installation
 ------------
@@ -251,10 +253,9 @@ that are needed to make the converter useful in practice.
 
 Wiki
 ----
-For additional information on some localization please check the Wiki_.
-And feel free to propose wiki enhancement.
-
-.. _Wiki: https://github.com/jqueguiner/num2words2/wiki
+For the full documentation, including installation, API details, CLI usage,
+supported locales, sentence conversion, currency handling, and migration
+guidance, please check the Wiki_. Feel free to propose wiki enhancements.
 
 History
 -------

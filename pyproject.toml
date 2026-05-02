@@ -37,9 +37,10 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/jqueguiner/num2words"
-Repository = "https://github.com/jqueguiner/num2words.git"
-"Bug Tracker" = "https://github.com/jqueguiner/num2words/issues"
+Homepage = "https://github.com/jqueguiner/num2words2"
+Documentation = "https://github.com/jqueguiner/num2words2/wiki"
+Repository = "https://github.com/jqueguiner/num2words2.git"
+"Bug Tracker" = "https://github.com/jqueguiner/num2words2/issues"
 
 [project.scripts]
 num2words2 = "num2words2.__main__:main"

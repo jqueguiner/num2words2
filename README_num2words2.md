@@ -11,7 +11,7 @@
 
 `num2words2` is a modern, actively maintained fork of the original `num2words` library, optimized for LLM/AI/speech applications. It converts numbers like `42` to words like `forty-two` across **120+ languages and 170+ locale codes** (including regional variants like `pt_BR`, `fr_BE`, `sr_Latn`, and aviation/ICAO). This fork was created because the original Savoir-faire Linux repository was no longer being maintained at the pace required for the rapidly evolving AI, machine learning, and speech synthesis ecosystem.
 
-> **API reference:** for the full list of conversion modes, per-call options, locale aliases, aviation phraseology, and utility functions, see [`REFERENCE.md`](REFERENCE.md).
+> **Documentation:** see the [GitHub Wiki](https://github.com/jqueguiner/num2words2/wiki) for installation, API, CLI, supported locales, sentence conversion, currency handling, and migration guidance. For the full in-repo API reference, see [`REFERENCE.md`](REFERENCE.md).
 
 ## Why num2words2?
 

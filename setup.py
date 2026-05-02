@@ -58,7 +58,12 @@ setup(
     keywords=" number word numbers words convert conversion i18n "
     "localisation localization internationalisation "
     "internationalization",
-    url="https://github.com/jqueguiner/num2words",
+    url="https://github.com/jqueguiner/num2words2",
+    project_urls={
+        "Documentation": "https://github.com/jqueguiner/num2words2/wiki",
+        "Repository": "https://github.com/jqueguiner/num2words2.git",
+        "Bug Tracker": "https://github.com/jqueguiner/num2words2/issues",
+    },
     packages=find_packages(exclude=["tests"]),
     package_data={"num2words2": ["py.typed"]},
     include_package_data=True,
