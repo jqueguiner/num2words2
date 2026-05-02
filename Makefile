@@ -1,9 +1,13 @@
 # Makefile for num2words2 development and testing
 
-.PHONY: help test test-all test-pyenv test-tox test-docker clean lint format install dev-install
+.PHONY: help test test-all test-pyenv test-tox test-docker clean lint format install dev-install wiki-publish
 
 # Default Python version for development
 PYTHON ?= python3
+WIKI_REMOTE ?= https://github.com/jqueguiner/num2words2.wiki.git
+WIKI_BRANCH ?= main
+WIKI_PUBLISH_BRANCH ?= wiki-publish
+WIKI_REMOTE_HEAD ?= $(shell git ls-remote $(WIKI_REMOTE) refs/heads/$(WIKI_BRANCH) | awk '{print $$1}')
 
 help:  ## Show this help message
 	@echo "🚀 num2words2 Development Commands"
@@ -102,6 +106,22 @@ migration-test:  ## Test the migration script
 	@echo "🔄 Testing migration script..."
 	$(PYTHON) migrate_to_num2words2.py --dry-run tests/
 	@echo "✅ Migration script test completed"
+
+wiki-publish:  ## Publish docs/wiki to the GitHub wiki repository
+	@test -z "$$(git status --porcelain docs/wiki)" || { \
+		echo "Commit docs/wiki changes before publishing."; \
+		exit 1; \
+	}
+	@if git show-ref --verify --quiet refs/heads/$(WIKI_PUBLISH_BRANCH); then \
+		git branch -D $(WIKI_PUBLISH_BRANCH); \
+	fi
+	git subtree split --prefix docs/wiki --branch $(WIKI_PUBLISH_BRANCH)
+	@if [ -n "$(WIKI_REMOTE_HEAD)" ]; then \
+		git push --force-with-lease=refs/heads/$(WIKI_BRANCH):$(WIKI_REMOTE_HEAD) $(WIKI_REMOTE) $(WIKI_PUBLISH_BRANCH):$(WIKI_BRANCH); \
+	else \
+		git push $(WIKI_REMOTE) $(WIKI_PUBLISH_BRANCH):$(WIKI_BRANCH); \
+	fi
+	git branch -D $(WIKI_PUBLISH_BRANCH)
 
 # Development workflow targets
 dev-setup: install-tools dev-install  ## Set up development environment
