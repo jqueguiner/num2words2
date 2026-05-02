@@ -1,0 +1,388 @@
+\documentclass{article}
+
+\usepackage{arxiv}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{cleveref}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage[numbers,square]{natbib}
+\usepackage{doi}
+
+\title{num2words2 and words2num2: a Bidirectional, Multilingual Number-Word Stack}
+
+\newif\ifuniqueAffiliation
+\uniqueAffiliationtrue
+
+\ifuniqueAffiliation
+\author{Jean-Louis Queguiner\\
+\texttt{jl@gladia.io}}
+\else
+\usepackage{authblk}
+\renewcommand\Authfont{\bfseries}
+\setlength{\affilsep}{0em}
+\newbox{\orcid}\sbox{\orcid}{\includegraphics[scale=0.06]{orcid.pdf}}
+\author[1]{Jean-Louis Queguiner\thanks{\texttt{jl@gladia.io}}}
+\affil[1]{Gladia}
+\fi
+
+\renewcommand{\shorttitle}{\textit{arXiv} Preprint}
+
+\hypersetup{
+pdftitle={num2words2 and words2num2: a Bidirectional, Multilingual Number-Word Stack},
+pdfsubject={software engineering, multilingual text normalization},
+pdfauthor={Jean-Louis Queguiner},
+pdfkeywords={number words, multilingual parsing, number-to-words, words-to-number, arxiv preprint},
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+`num2words2` and `words2num2` turn the old one-way `num2words` project into a
+bidirectional text-normalization stack. The forward fork keeps the familiar API
+while expanding the documented surface to more than 120 languages and 170+
+locale keys, including aviation/ICAO profiles, cheque formatting, fractions,
+string input handling, and per-call grammatical controls. The inverse fork
+parses spoken-form numbers back into numeric values, rewrites numbers inside
+sentences, and auto-parses mixed text that contains currencies, units, and
+locale-dependent separators. This paper states the concrete gains over the
+upstream library and makes the fork pair easier to evaluate as a production
+tool.
+\end{abstract}
+
+\keywords{number-to-words, words-to-number, multilingual parsing, speech,
+text normalization}
+
+\section{Introduction}
+The original `num2words` library is a mature Python package for rendering
+numeric values as words in many languages~\cite{num2words_upstream}. It is
+useful, but it is only half of the pipeline. Production systems often need the
+inverse operation too: parsing spoken numbers from transcripts, normalizing
+hybrid text from LLMs, or round-tripping a number through a human-readable
+format and back into a machine value.
+
+The fork pair presented here addresses that gap. `num2words2` preserves the
+forward API and extends the conversion surface. `words2num2` consumes the same
+locale model and converts words back into numbers. Together they give a single
+locale-aware abstraction for both generation and recovery.
+
+\section{What num2words2 Adds}
+`num2words2` is not just a repackaging of upstream. The documented surface is
+larger and more explicit.
+
+\subsection{Locale coverage}
+The repository documents more than 120 languages and 170+ locale keys,
+including regional variants and aliases~\cite{num2words2_reference}. The matrix
+below gives a side-by-side list of the locale surface as it is exposed by the
+forward fork and mirrored by the inverse fork.
+
+
+
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{2.0cm} >{\raggedright\arraybackslash}p{2.3cm} >{\raggedright\arraybackslash}p{1.2cm} >{\raggedright\arraybackslash}p{1.4cm} >{\raggedright\arraybackslash}p{1.4cm}}
+\caption{Detailed locale matrix. Each row is a single locale or alias. The table keeps the family alongside the exact code and a human-readable name so you can compare coverage across upstream \texttt{num2words}, \texttt{num2words2}, and \texttt{words2num2}.}
+\label{tab:locale-matrix}\\
+\toprule
+Family & Locale & Name & Upstream \texttt{num2words} & \texttt{num2words2} & \texttt{words2num2} \\
+\midrule
+\endfirsthead
+\toprule
+Family & Locale & Name & Upstream \texttt{num2words} & \texttt{num2words2} & \texttt{words2num2} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+English & \texttt{en} & English & yes & yes & yes \\
+English & \texttt{en\_GB} & English - Great Britain & yes & yes & yes \\
+English & \texttt{en\_IN} & English - India & yes & yes & yes \\
+English & \texttt{en\_NG} & English - Nigeria & yes & yes & yes \\
+English & \texttt{en\_NE} & English - Nepal & no & yes & yes \\
+English & \texttt{en\_NP} & English - Nepal & no & yes & yes \\
+English / aviation & \texttt{en\_Aero\_ICAO} & ICAO & no & yes & yes \\
+English / aviation & \texttt{en\_Aero\_FAA} & FAA & no & yes & yes \\
+English / aviation & \texttt{en\_Aero\_USN} & US Navy & no & yes & yes \\
+English / aviation & \texttt{en\_Aero\_US\_Navy} & US Navy alias & no & yes & yes \\
+English / aviation & \texttt{en\_Aero\_US\_Army} & US Army & no & yes & yes \\
+English / aviation & \texttt{en\_Aero\_NATO} & NATO & no & yes & yes \\
+Spanish & \texttt{es} & Spanish & yes & yes & yes \\
+Spanish & \texttt{es\_CO} & Spanish - Colombia & yes & yes & yes \\
+Spanish & \texttt{es\_CR} & Spanish - Costa Rica & yes & yes & yes \\
+Spanish & \texttt{es\_GT} & Spanish - Guatemala & yes & yes & yes \\
+Spanish & \texttt{es\_HN} & Spanish - Honduras & no & yes & yes \\
+Spanish & \texttt{es\_NI} & Spanish - Nicaragua & no & yes & yes \\
+Spanish & \texttt{es\_VE} & Spanish - Venezuela & yes & yes & yes \\
+French & \texttt{fr} & French & yes & yes & yes \\
+French & \texttt{fr\_BE} & French - Belgium & yes & yes & yes \\
+French & \texttt{fr\_CH} & French - Switzerland & yes & yes & yes \\
+French & \texttt{fr\_DZ} & French - Algeria & yes & yes & yes \\
+Portuguese & \texttt{pt} & Portuguese & yes & yes & yes \\
+Portuguese & \texttt{pt\_BR} & Brazilian Portuguese & yes & yes & yes \\
+Chinese & \texttt{zh} & Chinese & yes & yes & yes \\
+Chinese & \texttt{zh\_CN} & Chinese - Simplified / Mainland China & yes & yes & yes \\
+Chinese & \texttt{zh\_HK} & Chinese - Traditional / Hong Kong & yes & yes & yes \\
+Chinese & \texttt{zh\_TW} & Chinese - Traditional / Taiwan & yes & yes & yes \\
+Serbian & \texttt{sr} & Serbian & yes & yes & yes \\
+Serbian & \texttt{sr\_Cyrl} & Serbian - Cyrillic & no & yes & yes \\
+Serbian & \texttt{sr\_Latn} & Serbian - Latin & no & yes & yes \\
+Uzbek & \texttt{uz} & Uzbek & no & yes & yes \\
+Uzbek & \texttt{uz\_Cyrl} & Uzbek - Cyrillic & no & yes & yes \\
+Romansh & \texttt{rm} & Romansh & no & yes & yes \\
+Romansh & \texttt{rm\_puter} & Romansh - Puter & no & yes & yes \\
+Romansh & \texttt{rm\_surmiran} & Romansh - Surmiran & no & yes & yes \\
+Romansh & \texttt{rm\_sursilv} & Romansh - Sursilvan & no & yes & yes \\
+Romansh & \texttt{rm\_sutsilv} & Romansh - Sutsilvan & no & yes & yes \\
+Romansh & \texttt{rm\_vallader} & Romansh - Vallader & no & yes & yes \\
+Arabic & \texttt{ar} & Arabic & yes & yes & yes \\
+Amharic & \texttt{am} & Amharic & yes & yes & yes \\
+Azerbaijani & \texttt{az} & Azerbaijani & yes & yes & yes \\
+Belarusian & \texttt{be} & Belarusian & yes & yes & yes \\
+Bulgarian & \texttt{bg} & Bulgarian & no & yes & yes \\
+Bengali & \texttt{bn} & Bengali & yes & yes & yes \\
+Bosnian & \texttt{bs} & Bosnian & no & yes & yes \\
+Catalan & \texttt{ca} & Catalan & yes & yes & yes \\
+Chechen & \texttt{ce} & Chechen & yes & yes & yes \\
+Czech & \texttt{cs} & Czech & yes & yes & yes \\
+Welsh & \texttt{cy} & Welsh & yes & yes & yes \\
+Danish & \texttt{da} & Danish & yes & yes & yes \\
+German & \texttt{de} & German & yes & yes & yes \\
+Greek & \texttt{el} & Greek & no & yes & yes \\
+Esperanto & \texttt{eo} & Esperanto & no & yes & yes \\
+Estonian & \texttt{et} & Estonian & no & yes & yes \\
+Basque & \texttt{eu} & Basque & yes & yes & yes \\
+Persian & \texttt{fa} & Farsi & yes & yes & yes \\
+Finnish & \texttt{fi} & Finnish & yes & yes & yes \\
+Filipino & \texttt{fil} & Filipino & no & yes & yes \\
+Galician & \texttt{gl} & Galician & no & yes & yes \\
+Gujarati & \texttt{gu} & Gujarati & no & yes & yes \\
+Hausa & \texttt{ha} & Hausa & no & yes & yes \\
+Hebrew & \texttt{he} & Hebrew & yes & yes & yes \\
+Hindi & \texttt{hi} & Hindi & yes & yes & yes \\
+Croatian & \texttt{hr} & Croatian & no & yes & yes \\
+Hungarian & \texttt{hu} & Hungarian & yes & yes & yes \\
+Armenian & \texttt{hy} & Armenian & yes & yes & yes \\
+Indonesian & \texttt{id} & Indonesian & yes & yes & yes \\
+Icelandic & \texttt{is} & Icelandic & yes & yes & yes \\
+Italian & \texttt{it} & Italian & yes & yes & yes \\
+Japanese & \texttt{ja} & Japanese & yes & yes & yes \\
+Georgian & \texttt{ka} & Georgian & no & yes & yes \\
+Kazakh & \texttt{kk} & Kazakh & no & yes & yes \\
+Khmer & \texttt{km} & Khmer & no & yes & yes \\
+Kannada & \texttt{kn} & Kannada & yes & yes & yes \\
+Korean & \texttt{ko} & Korean & yes & yes & yes \\
+Kurdish & \texttt{ku} & Kurdish & no & yes & yes \\
+Kyrgyz & \texttt{ky} & Kyrgyz & no & yes & yes \\
+Latin & \texttt{la} & Latin & no & yes & yes \\
+Luxembourgish & \texttt{lb} & Luxembourgish & no & yes & yes \\
+Lao & \texttt{lo} & Lao & no & yes & yes \\
+Lithuanian & \texttt{lt} & Lithuanian & yes & yes & yes \\
+Latvian & \texttt{lv} & Latvian & yes & yes & yes \\
+Malagasy & \texttt{mg} & Malagasy & no & yes & yes \\
+Maori & \texttt{mi} & Maori & no & yes & yes \\
+Macedonian & \texttt{mk} & Macedonian & no & yes & yes \\
+Malayalam & \texttt{ml} & Malayalam & no & yes & yes \\
+Mongolian & \texttt{mn} & Mongolian & yes & yes & yes \\
+Marathi & \texttt{mr} & Marathi & no & yes & yes \\
+Malay & \texttt{ms} & Malay & no & yes & yes \\
+Maltese & \texttt{mt} & Maltese & no & yes & yes \\
+Burmese & \texttt{my} & Burmese & no & yes & yes \\
+Nepali & \texttt{ne} & Nepali & no & yes & yes \\
+Dutch & \texttt{nl} & Dutch & yes & yes & yes \\
+Norwegian & \texttt{no} & Norwegian & yes & yes & yes \\
+Norwegian & \texttt{nb} & Norwegian Bokmal alias & no & yes & yes \\
+Oromo & \texttt{om} & Oromo & no & yes & yes \\
+Odia & \texttt{or} & Odia & no & yes & yes \\
+Punjabi & \texttt{pa} & Punjabi & no & yes & yes \\
+Polish & \texttt{pl} & Polish & yes & yes & yes \\
+Pashto & \texttt{ps} & Pashto & no & yes & yes \\
+Romanian & \texttt{ro} & Romanian & yes & yes & yes \\
+Russian & \texttt{ru} & Russian & yes & yes & yes \\
+Kinyarwanda & \texttt{rw} & Kinyarwanda & no & yes & yes \\
+Sanskrit & \texttt{sa} & Sanskrit & no & yes & yes \\
+Sindhi & \texttt{sd} & Sindhi & no & yes & yes \\
+Sinhala & \texttt{si} & Sinhala & no & yes & yes \\
+Slovak & \texttt{sk} & Slovak & yes & yes & yes \\
+Slovenian & \texttt{sl} & Slovenian & yes & yes & yes \\
+Shona & \texttt{sn} & Shona & no & yes & yes \\
+Somali & \texttt{so} & Somali & no & yes & yes \\
+Albanian & \texttt{sq} & Albanian & no & yes & yes \\
+Swedish & \texttt{sv} & Swedish & yes & yes & yes \\
+Swahili & \texttt{sw} & Swahili & no & yes & yes \\
+Tamil & \texttt{ta} & Tamil & no & yes & yes \\
+Telugu & \texttt{te} & Telugu & yes & yes & yes \\
+Tetum & \texttt{tet} & Tetum & yes & yes & yes \\
+Tajik & \texttt{tg} & Tajik & yes & yes & yes \\
+Thai & \texttt{th} & Thai & yes & yes & yes \\
+Tigrinya & \texttt{ti} & Tigrinya & no & yes & yes \\
+Turkmen & \texttt{tk} & Turkmen & no & yes & yes \\
+Tagalog & \texttt{tl} & Tagalog & no & yes & yes \\
+Turkish & \texttt{tr} & Turkish & yes & yes & yes \\
+Tatar & \texttt{tt} & Tatar & no & yes & yes \\
+Ukrainian & \texttt{uk} & Ukrainian & yes & yes & yes \\
+Urdu & \texttt{ur} & Urdu & no & yes & yes \\
+Vietnamese & \texttt{vi} & Vietnamese & yes & yes & yes \\
+Wolof & \texttt{wo} & Wolof & no & yes & yes \\
+Xhosa & \texttt{xh} & Xhosa & no & yes & yes \\
+Yiddish & \texttt{yi} & Yiddish & no & yes & yes \\
+Yoruba & \texttt{yo} & Yoruba & no & yes & yes \\
+Zulu & \texttt{zu} & Zulu & no & yes & yes \\
+Alias & \texttt{cz} & Czech alias & no & yes & yes \\
+Alias & \texttt{dk} & Danish alias & no & yes & yes \\
+Alias & \texttt{cn} & Chinese alias & no & yes & yes \\
+Alias & \texttt{jp} & Japanese alias & no & yes & yes \\
+Alias & \texttt{jw} & Javanese alias & no & yes & yes \\
+Alias & \texttt{miz} & Mizo alias & no & yes & yes \\
+Alias & \texttt{uz\_cyr} & Uzbek Cyrillic alias & no & yes & yes \\
+Alias & \texttt{en\_AERO} & Aviation alias & no & yes & yes \\
+Alias & \texttt{en\_aero\_icao} & Aviation alias & no & yes & yes \\
+Alias & \texttt{en\_x\_aero\_icao} & Aviation alias & no & yes & yes \\
+\end{longtable}
+
+\noindent\textbf{Note.} The reference file and wiki still carry the live code-by-code list and the full per-locale notes. The table above is the paper version of that inventory, optimized for side-by-side comparison.
+
+\medskip
+\noindent\textbf{Summary.} This matrix covers 143 locale rows. Upstream \texttt{num2words} provides the forward baseline, \texttt{num2words2} expands and documents that surface, and \texttt{words2num2} mirrors the same locale model for reverse parsing, sentence rewriting, and auto-parse workflows.
+
+\subsection{Conversion modes}
+Beyond cardinal and ordinal output, `num2words2` documents currency, year,
+fraction, and cheque modes. It also accepts string input, so sentence-level
+workflows do not need to pre-normalize every token.
+
+\subsection{Aviation and radio phraseology}
+The aviation stack is a real differentiator. The \texttt{en\_Aero\_*} family supports
+digit-by-digit reading for ICAO, FAA, US Navy, US Army, and NATO profiles,
+with explicit phraseology rules for altitude, flight level, heading, squawk,
+runway, and frequency handling~\cite{num2words2_reference}. That is more
+specific than a generic locale mapping; it is a domain-oriented rendering mode.
+
+\subsection{Bug fixes and quality-of-life changes}
+Compared with upstream, the fork is explicit about the fixes it carries:
+\begin{itemize}
+  \item string input preservation for exact `Decimal`-style values
+  \item better handling of negative numbers and floating-point edge cases
+  \item more currency coverage, including three-decimal currencies
+  \item cheque-style output for bank and accounting use cases
+  \item support for fractions as first-class input
+  \item per-call options such as \texttt{style=}, \texttt{precision=}, \texttt{cents=},
+        \texttt{gender=}, \texttt{case=}, \texttt{spaced=}, and \texttt{decimal\_word=}
+\end{itemize}
+
+\section{What words2num2 Adds}
+`\texttt{words2num2}` is the inverse library. It parses spoken numbers and can also walk
+complete sentences. Its implementation is designed for two different cases:
+clean grammar-based parsing for English, and reverse lookup for every other
+locale that \texttt{num2words2} exposes~\cite{words2num2_readme}.
+
+\subsection{Reverse conversion}
+The core call turns phrases like \texttt{forty-two}, \texttt{nineteen ninety nine}, or
+\texttt{twenty-first} into numeric values. That makes the library directly useful for
+capturing speech, cleaning form fields, and normalizing generated text.
+
+\subsection{Sentence rewriting}
+\texttt{words2num\_sentence} and \texttt{auto\_parse\_sentence} go further. They rewrite mixed
+text in place, handling numbers inside sentences instead of only isolated
+tokens. That matters for ASR transcripts and LLM output, where digits and words
+are usually mixed together.
+
+\subsection{Auto-parse mode}
+The auto-parse layer recognizes currencies, units, and locale-specific number
+formats. It handles symbols like dollar, euro, pound, yen, rupee, won, and lira, plus
+scale shortcuts like \texttt{\$5m}, and it normalizes separators according to locale
+defaults and heuristics. The docs describe this as a structured quantity parser,
+not just a text replacement helper.
+
+\section{Comparison with Upstream}
+Table~\ref{tab:compare} makes the delta explicit.
+
+\begin{table}[!ht]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{2.7cm} p{2.25cm} p{2.25cm}}
+\toprule
+Capability & Upstream \texttt{num2words} & Fork pair \\
+\midrule
+Forward number-to-words & Yes & Yes, preserved in `num2words2` \\
+Words-to-number & No & Yes, in `words2num2` \\
+Sentence rewriting & No & Yes, both directions \\
+Auto-parse of mixed text & No & Yes, `words2num2` \\
+Explicit aviation profiles & No & Yes, `num2words2` \\
+Cheque and fraction modes & Limited & Yes, explicit in `num2words2` \\
+Locale breadth & Broad, but less explicit in docs & Explicit 120+ languages / 170+ keys \\
+Maintenance posture & Upstream baseline & Actively maintained forks \\
+\bottomrule
+\end{tabular}
+\caption{The main difference is not one feature, but the shape of the stack:
+the fork pair supports both generation and recovery, with explicit locale and
+domain coverage.}
+\label{tab:compare}
+\end{table}
+
+\section{Why This Matters}
+The practical gain is round-trippable text normalization.
+
+\paragraph{For speech}
+Transcripts often contain long-form numbers, currency values, and units that
+need to become machine-readable. `words2num2` parses those forms directly, and
+`num2words2` can generate the spoken output again when needed.
+
+\paragraph{For AI and LLM workflows}
+Generated text often mixes words, digits, currencies, and units. Sentence-level
+rewriting and auto-parse mode make the normalization step local to the library
+instead of being spread across ad hoc regexes in application code.
+
+\paragraph{For locale-sensitive applications}
+The locale coverage is not an afterthought. Regional variants, aliases, and
+aviation-specific profiles are called out explicitly, which makes it easier to
+use the same locale identifier across generation and parsing.
+
+\paragraph{For correctness}
+The fork pair does not only add features. It also removes pain points that are
+common in production: exact decimal handling, negative-number behavior, scale
+words, and handling of currencies and fractions that upstream either does not
+cover or does not document as clearly.
+
+\section{Discussion}
+The main engineering tradeoff is that the fork pair intentionally specializes
+the original library. Upstream `num2words` remains a strong baseline for
+forward rendering. `num2words2` improves the same domain with stronger
+documentation, more explicit locales, and more conversion modes. `words2num2`
+adds the missing reverse direction and makes the system useful for real-world
+normalization pipelines.
+
+That is the core message: the fork pair is attractive because it is not just a
+reimplementation. It is a complete text-normalization stack that covers both
+human-readable generation and structured recovery.
+
+\section{Conclusion}
+`num2words2` and `words2num2` convert the upstream library into a practical
+bidirectional system. The gains are concrete: more explicit locale support,
+aviation and radio profiles, sentence and auto-parse handling, stronger
+currency and fraction support, and a reverse parser that closes the loop.
+Those are the features that make the stack credible for production AI, speech,
+and multilingual data-processing workflows.
+
+\begin{thebibliography}{9}
+
+\bibitem{num2words_upstream}
+`\texttt{num2words}` upstream repository and README. GitHub:
+\url{https://github.com/savoirfairelinux/num2words}
+
+\bibitem{num2words2_reference}
+\texttt{num2words2} README and API reference. GitHub:
+\url{https://github.com/jqueguiner/num2words2}
+
+\bibitem{words2num2_readme}
+\texttt{words2num2} README, reference, and changelog. GitHub:
+\url{https://github.com/jqueguiner/words2num2}
+
+\end{thebibliography}
+
+\end{document}
