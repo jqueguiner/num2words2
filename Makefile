@@ -6,8 +6,10 @@
 PYTHON ?= python3
 WIKI_REMOTE ?= https://github.com/jqueguiner/num2words2.wiki.git
 WIKI_BRANCH ?= main
+WIKI_RENDER_BRANCH ?= master
 WIKI_PUBLISH_BRANCH ?= wiki-publish
 WIKI_REMOTE_HEAD ?= $(shell git ls-remote $(WIKI_REMOTE) refs/heads/$(WIKI_BRANCH) | awk '{print $$1}')
+WIKI_RENDER_REMOTE_HEAD ?= $(shell git ls-remote $(WIKI_REMOTE) refs/heads/$(WIKI_RENDER_BRANCH) | awk '{print $$1}')
 
 help:  ## Show this help message
 	@echo "🚀 num2words2 Development Commands"
@@ -120,6 +122,13 @@ wiki-publish:  ## Publish docs/wiki to the GitHub wiki repository
 		git push --force-with-lease=refs/heads/$(WIKI_BRANCH):$(WIKI_REMOTE_HEAD) $(WIKI_REMOTE) $(WIKI_PUBLISH_BRANCH):$(WIKI_BRANCH); \
 	else \
 		git push $(WIKI_REMOTE) $(WIKI_PUBLISH_BRANCH):$(WIKI_BRANCH); \
+	fi
+	@if [ "$(WIKI_RENDER_BRANCH)" != "$(WIKI_BRANCH)" ]; then \
+		if [ -n "$(WIKI_RENDER_REMOTE_HEAD)" ]; then \
+			git push --force-with-lease=refs/heads/$(WIKI_RENDER_BRANCH):$(WIKI_RENDER_REMOTE_HEAD) $(WIKI_REMOTE) $(WIKI_PUBLISH_BRANCH):$(WIKI_RENDER_BRANCH); \
+		else \
+			git push $(WIKI_REMOTE) $(WIKI_PUBLISH_BRANCH):$(WIKI_RENDER_BRANCH); \
+		fi; \
 	fi
 	git branch -D $(WIKI_PUBLISH_BRANCH)
 
