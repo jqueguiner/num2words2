@@ -18,12 +18,15 @@
 
 from __future__ import unicode_literals
 
+import collections
 import os
+import subprocess
+import sys
 import unittest
 
-import delegator
-
 import num2words2 as num2words
+
+CliResult = collections.namedtuple("CliResult", ["return_code", "out", "err"])
 
 
 class CliCaller(object):
@@ -31,12 +34,24 @@ class CliCaller(object):
         self.cmd = os.path.realpath(
             os.path.join(os.path.dirname(__file__), "..", "bin", "num2words2")
         )
-        self.cmd_list = ["python", self.cmd]
+        self.cmd_list = [sys.executable, self.cmd]
 
     def run_cmd(self, *args):
         cmd_list = self.cmd_list + [str(arg) for arg in args]
-        cmd = " ".join(cmd_list)
-        return delegator.run(cmd)
+        env = os.environ.copy()
+        env["PYTHONIOENCODING"] = "utf-8"
+        env["PYTHONUTF8"] = "1"
+        proc = subprocess.run(
+            cmd_list,
+            capture_output=True,
+            encoding="utf-8",
+            env=env,
+        )
+        return CliResult(
+            return_code=proc.returncode,
+            out=proc.stdout,
+            err=proc.stderr,
+        )
 
 
 class CliTestCase(unittest.TestCase):
