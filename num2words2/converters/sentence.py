@@ -176,6 +176,10 @@ class SentenceConverter:
         # lang_registry: each language exposes a list of (pattern, is_ordinal)
         # tuples with month-name regex pre-substituted in.
         date_patterns_for_lang = get_date_patterns(self.lang)
+        # Languages where the written day token includes a trailing period
+        # ("5." in German). The post-detection extender consumes that
+        # period so replacement leaves no orphaned punctuation.
+        DAY_TOKEN_TRAILS_PERIOD = {"de", "cs", "sk", "fi", "hu", "is", "no", "da"}
         for pattern, is_ordinal in date_patterns_for_lang:
             for match in re.finditer(pattern, sentence, re.I):
                 # Auto-locate the day (numeric capture) vs month (alpha capture).
@@ -189,6 +193,17 @@ class SentenceConverter:
 
                 num_start = match.start(day_idx)
                 num_end = match.end(day_idx)
+                # Extend span to consume a trailing period for langs whose
+                # ordinal day form is "<n>." rather than "<n>".
+                day_text = match.group(day_idx)
+                if (
+                    self.lang in DAY_TOKEN_TRAILS_PERIOD
+                    and num_end < len(sentence)
+                    and sentence[num_end] == "."
+                ):
+                    num_end += 1
+                    day_text = day_text + "."
+
                 if any(p in used_positions for p in range(num_start, num_end)):
                     continue
                 try:
@@ -198,7 +213,7 @@ class SentenceConverter:
 
                 dtype = "ordinal_date" if is_ordinal else "date_number"
                 extractions.append(
-                    (num_start, num_end, match.group(day_idx), value, dtype)
+                    (num_start, num_end, day_text, value, dtype)
                 )
                 used_positions.update(range(num_start, num_end))
 

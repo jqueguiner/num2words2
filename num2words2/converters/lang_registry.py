@@ -11,7 +11,6 @@ contributors should add them with a citation.
 """
 from __future__ import annotations
 
-import re
 from typing import Optional
 
 
@@ -23,86 +22,57 @@ from typing import Optional
 # the whole span with the spelled-out ordinal.
 # ---------------------------------------------------------------------------
 ORDINAL_PATTERNS: dict[str, str] = {
-    # Germanic
+    # Germanic — original 6-lang set kept byte-identical to the 1.0.x
+    # SentenceConverter so existing CSV-canon outputs do not shift.
     "en": r"(\d+)(?:st|nd|rd|th)\b",
-    "de": r"(\d+)(?:te[rnms]?|\.)",
+    "de": r"(\d+)(?:\.|te|er)\b",
     "nl": r"(\d+)(?:ste|de|e)\b",
     "sv": r"(\d+):(?:a|e)\b",
-    "da": r"(\d+)\.",
-    "no": r"(\d+)\.",
-    "is": r"(\d+)\.",
     "af": r"(\d+)(?:ste|de)\b",
 
-    # Romance
-    "fr": r"(\d+)(?:ers?|ères?|res?|èmes?|emes?|es?)\b",
-    "es": r"(\d+)(?:º|ª|°)",
-    "pt": r"(\d+)(?:º|ª|°)",
-    "it": r"(\d+)(?:º|ª|°)",
-    "ro": r"(\d+)(?:[-‐](?:l?ea|a))\b",
+    # Romance — same byte-identical match for the legacy 6.
+    "fr": r"(\d+)(?:er|ère|e|ème)\b",
+    "es": r"(\d+)(?:º|°|ª)\b",
+    "pt": r"(\d+)(?:º|°|ª)\b",
+    "it": r"(\d+)(?:º|°|ª)\b",
     "ca": r"(\d+)(?:r|n|t|è|a)\b",
-    "rm": r"(\d+)(?:avel|evel)\b",
-
-    # Slavic
-    "ru": r"(\d+)[-‐](?:й|я|е|ое|ой|го|му|ый|ии)\b",
-    "uk": r"(\d+)[-‐](?:й|а|е|ий|ого)\b",
-    "be": r"(\d+)[-‐](?:ы|і|я|е)\b",
-    "bg": r"(\d+)[-‐](?:ти|ри|ви|ма|и)\b",
-    "pl": r"(\d+)\.",
-    "cs": r"(\d+)\.",
-    "sk": r"(\d+)\.",
-    "sl": r"(\d+)\.",
-    "hr": r"(\d+)\.",
-    "sr": r"(\d+)\.",
-    "mk": r"(\d+)[-‐](?:ти|ри|ви|ма)\b",
-
-    # Baltic
-    "lt": r"(\d+)[-‐](?:as|oji|asis|toji)\b",
-    "lv": r"(\d+)\.",
-    "et": r"(\d+)\.",
 
     # Greek
     "el": r"(\d+)(?:ος|η|ο|ός)\b",
 
-    # Finno-Ugric
-    "fi": r"(\d+)\.",
-    "hu": r"(\d+)\.",
-
     # Turkic / Caucasian
-    "tr": r"(\d+)(?:\.|inci|ıncı|uncu|üncü)\b",
+    "tr": r"(\d+)(?:inci|ıncı|uncu|üncü)\b",
     "az": r"(\d+)[-‐](?:ci|cu|cü|cı)\b",
 
-    # Semitic
-    "ar": r"(\d+)\b",  # Arabic: dot suffix or none; conservative match
-    "he": r"(\d+)\b",  # Hebrew: ordinal often left as digit + context
-
-    # Indo-Aryan / Dravidian
+    # Indo-Aryan / Dravidian — symbolic suffixes well-established.
     "hi": r"(\d+)(?:वां|वीं|वें)\b",
     "bn": r"(\d+)(?:তম|ম|য়|র্থ)\b",
     "ta": r"(\d+)(?:வது|ஆம்)\b",
-    "te": r"(\d+)(?:వ)\b",
 
     # Iranian
-    "fa": r"(\d+)(?:م|مین|ام)\b",
+    "fa": r"(\d+)(?:مین|ام|م)\b",
 
-    # CJK
+    # CJK — prefixed forms only; no conflict with date-form input "5月".
     "zh": r"第(\d+)",
     "ja": r"第(\d+)|(\d+)番目",
     "ko": r"제(\d+)|(\d+)번째",
 
-    # Vietnamese
+    # SE Asia
     "vi": r"thứ\s*(\d+)",
-
-    # Thai
     "th": r"ที่\s*(\d+)",
-
-    # Indonesian / Malay (shared "ke-" prefix)
     "id": r"ke[-‐](\d+)",
     "ms": r"ke[-‐](\d+)",
 
-    # Esperanto / Interlingua / Latin
-    "eo": r"(\d+)\.?-?a\b",
+    # Constructed / Classical
     "ia": r"(\d+)me\b",
-    "la": r"(\d+)\.",
+
+    # Languages where the written ordinal surface form is just a trailing
+    # "." or hyphenated suffix shared with cardinal contexts (Slavic,
+    # Baltic, Finno-Ugric, RO, IS, DA, NO, AR, HE) are intentionally
+    # absent — the ambiguity makes a pure-regex registry unsafe without
+    # the converter-level case logic those languages need. Contributors
+    # with native fluency are welcome to add them with disambiguation
+    # rules.
 }
 
 
@@ -274,107 +244,59 @@ MONTH_NAMES: dict[str, str] = {
 # the target language; False means it stays cardinal.
 # ---------------------------------------------------------------------------
 DATE_PATTERNS_TEMPLATE: dict[str, list[tuple[str, bool]]] = {
+    # Legacy 6 — byte-identical to the 1.0.x SentenceConverter.
     "en": [
+        # Explicit ordinal day with month: "5th April".
         (r"(\d+)(?:st|nd|rd|th)\s+({month})", True),
-        (r"({month})\s+(\d+)(?:st|nd|rd|th)?", True),  # "December 5" / "December 5th"
-        (r"(\d+)\s+({month})", True),  # "5 December"
+        # Month-first form, day always rendered ordinal: "April 5".
+        (r"({month})\s+(\d+)", True),
+        # Day-first form: "5 April".
+        (r"(\d+)\s+({month})", True),
     ],
     "fr": [
-        (r"(\d+)(?:er|ère|e|ème)?\s+({month})", True),  # "1er mai", "5 mai"
+        (r"(\d+)er\s+({month})", True),
+        (r"(\d+)e\s+({month})", False),
     ],
     "es": [
-        (r"(\d+)\s+de\s+({month})", False),  # "5 de mayo"
-    ],
-    "pt": [
         (r"(\d+)\s+de\s+({month})", False),
     ],
-    "it": [
-        (r"(\d+)\s+({month})", False),
-    ],
     "de": [
-        (r"(\d+)\.\s+({month})", True),  # "5. März"
-        (r"(\d+)\s+({month})", True),
+        # Match "<digit>. <Capitalized noun>" — covers both
+        # "5. April" (month) and "30. Geburtstag" (any noun); German
+        # ordinal-context written form is uniformly "<n>. Noun".
+        (r"(\d+)\.\s+([A-ZÄÖÜ][a-zäöüß]+)", True),
     ],
-    "nl": [
-        (r"(\d+)\s+({month})", True),  # "5 mei"
-    ],
-    "sv": [
-        (r"(\d+)\s+({month})", True),
-    ],
-    "da": [
-        (r"(\d+)\.\s+({month})", True),
-    ],
-    "no": [
-        (r"(\d+)\.\s+({month})", True),
-    ],
-    "fi": [
-        (r"(\d+)\.\s+({month})", True),
-    ],
-    "ru": [
-        (r"(\d+)\s+({month})", False),
-    ],
-    "uk": [
-        (r"(\d+)\s+({month})", False),
-    ],
-    "pl": [
-        (r"(\d+)\s+({month})", False),
-    ],
-    "cs": [
-        (r"(\d+)\.\s+({month})", True),
-    ],
-    "sk": [
-        (r"(\d+)\.\s+({month})", True),
-    ],
-    "ro": [
-        (r"(\d+)\s+({month})", False),
-    ],
-    "el": [
-        (r"(\d+)\s+({month})", False),
-    ],
-    "tr": [
-        (r"(\d+)\s+({month})", False),
-    ],
-    "hu": [
-        (r"({month})\s+(\d+)\.?", True),  # "május 5." (Hungarian ordinal-after-month)
-    ],
-    "ar": [
-        (r"(\d+)\s+({month})", False),
-    ],
-    "he": [
-        (r"(\d+)\s+({month})", False),
-    ],
+
+    # New language coverage — conservative cardinal day for langs where
+    # the written form leaves the day un-inflected.
+    "pt": [(r"(\d+)\s+de\s+({month})", False)],
+    "it": [(r"(\d+)\s+({month})", False)],
+    "nl": [(r"(\d+)\s+({month})", True)],
+    "sv": [(r"(\d+)\s+({month})", True)],
+    "da": [(r"(\d+)\.\s+({month})", False)],
+    "no": [(r"(\d+)\.\s+({month})", False)],
+    "fi": [(r"(\d+)\.\s+({month})", False)],
+    "is": [(r"(\d+)\.\s+({month})", False)],
+    "ro": [(r"(\d+)\s+({month})", False)],
+    "el": [(r"(\d+)\s+({month})", False)],
+    "tr": [(r"(\d+)\s+({month})", False)],
+    "hu": [(r"({month})\s+(\d+)\.?", False)],
     "ja": [
-        (r"({month})\s*(\d+)日", False),  # "5月3日" form
+        (r"({month})\s*(\d+)日", False),
         (r"(\d+)月\s*(\d+)日", False),
     ],
     "zh": [
         (r"({month})\s*(\d+)日?", False),
         (r"(\d+)月\s*(\d+)日?", False),
     ],
-    "ko": [
-        (r"({month})\s*(\d+)일", False),
-    ],
-    "vi": [
-        (r"(\d+)\s+({month})", False),
-    ],
-    "th": [
-        (r"(\d+)\s+({month})", False),
-    ],
-    "id": [
-        (r"(\d+)\s+({month})", False),
-    ],
-    "ms": [
-        (r"(\d+)\s+({month})", False),
-    ],
-    "hi": [
-        (r"(\d+)\s+({month})", False),
-    ],
-    "bn": [
-        (r"(\d+)\s+({month})", False),
-    ],
-    "fa": [
-        (r"(\d+)\s+({month})", False),
-    ],
+    "ko": [(r"({month})\s*(\d+)일", False)],
+    "vi": [(r"(\d+)\s+({month})", False)],
+    "th": [(r"(\d+)\s+({month})", False)],
+    "id": [(r"(\d+)\s+({month})", False)],
+    "ms": [(r"(\d+)\s+({month})", False)],
+    "hi": [(r"(\d+)\s+({month})", False)],
+    "bn": [(r"(\d+)\s+({month})", False)],
+    "fa": [(r"(\d+)\s+({month})", False)],
 }
 
 
