@@ -11,6 +11,13 @@ import sys
 from typing import List, Optional, Tuple
 
 from .. import CONVERTER_CLASSES, num2words
+from .lang_registry import (
+    NEGATIVE_WORDS,
+    TEMP_PATTERNS,
+    get_date_patterns,
+    get_month_names,
+    get_ordinal_pattern,
+)
 
 try:
     import langdetect
@@ -56,83 +63,10 @@ class SentenceConverter:
     def __init__(self):
         self.lang = None
 
-        # Temperature patterns for major languages
-        self.temp_patterns = {
-            "fr": (
-                r"(-?\d+(?:[.,]\d+)?)\s+degrés?(?:\s+[Cc]elsius)?",
-                "degrés",
-                "Celsius",
-            ),
-            "es": (
-                r"(-?\d+(?:[.,]\d+)?)\s+grados?(?:\s+[Cc]elsius)?",
-                "grados",
-                "Celsius",
-            ),
-            "it": (
-                r"(-?\d+(?:[.,]\d+)?)\s+gradi?(?:\s+[Cc]elsius)?",
-                "gradi",
-                "Celsius",
-            ),
-            "pt": (
-                r"(-?\d+(?:[.,]\d+)?)\s+graus?(?:\s+[Cc]elsius)?",
-                "graus",
-                "Celsius",
-            ),
-            "de": (
-                r"(-?\d+(?:[.,]\d+)?)\s+[Gg]rad(?:\s+[Cc]elsius)?",
-                "Grad",
-                "Celsius",
-            ),
-            "en": (
-                r"(-?\d+(?:[.,]\d+)?)\s+degrees?(?:\s+[Ff]ahrenheit)?",
-                "degrees",
-                "Fahrenheit",
-            ),
-            "nl": (
-                r"(-?\d+(?:[.,]\d+)?)\s+graden?(?:\s+[Cc]elsius)?",
-                "graden",
-                "Celsius",
-            ),
-            "ru": (r"(-?\d+(?:[.,]\d+)?)\s+градус(?:а|ов)?", "градусов", "Цельсия"),
-            "pl": (r"(-?\d+(?:[.,]\d+)?)\s+stopni(?:e|i)?", "stopni", "Celsjusza"),
-        }
-
-        # Negative word mapping
-        self.negative_words = {
-            "fr": "moins",
-            "es": "menos",
-            "it": "meno",
-            "pt": "menos",
-            "de": "minus",
-            "en": "minus",
-            "nl": "min",
-            "ru": "минус",
-            "pl": "minus",
-            "sv": "minus",
-            "da": "minus",
-            "no": "minus",
-            "ja": "マイナス",
-            "ar": "سالب",
-            "zh": "负",
-            "zh-cn": "负",
-            "ko": "마이너스",
-            "hi": "माइनस",
-            "tr": "eksi",
-            "hu": "mínusz",
-            "cs": "mínus",
-            "sk": "mínus",
-            "he": "מינוס",
-            "th": "ติดลบ",
-            "vi": "âm",
-            "uk": "мінус",
-            "bg": "минус",
-            "hr": "minus",
-            "lt": "minus",
-            "lv": "mīnus",
-            "et": "miinus",
-            "fi": "miinus",
-            "is": "mínus",
-        }
+        # Sourced from converters.lang_registry. Wider language coverage —
+        # see that module to extend or override per-lang surface forms.
+        self.temp_patterns = TEMP_PATTERNS
+        self.negative_words = NEGATIVE_WORDS
 
     def detect_language(self, text: str) -> str:
         """
@@ -217,154 +151,87 @@ class SentenceConverter:
                     )
                     used_positions.update(range(start, end))
 
-        # 3. Standalone ordinal numbers (1st, 2nd, 3rd, 4th, etc.) - must come before dates
-        ordinal_patterns = {
-            "en": r"(\d+)(?:st|nd|rd|th)\b",
-            "fr": r"(\d+)(?:er|ère|e|ème)\b",
-            "es": r"(\d+)(?:º|°|ª)\b",
-            "de": r"(\d+)(?:\.|te|er)\b",
-            "it": r"(\d+)(?:º|°|ª)\b",
-            "pt": r"(\d+)(?:º|°|ª)\b",
-        }
-
-        if self.lang in ordinal_patterns:
-            pattern = ordinal_patterns[self.lang]
-            for match in re.finditer(pattern, sentence):
-                # For English, check if it's followed by a month name (if so, skip - will be handled as date)
-                if self.lang == "en":
-                    after_text = (
-                        sentence[match.end() : match.end() + 20]
-                        if match.end() < len(sentence)
-                        else ""
-                    )
-                    if re.match(
-                        r"\s*(?:January|February|March|April|May|June|July|August|September|October|November|December)",
-                        after_text,
-                        re.I,
-                    ):
-                        continue
-
+        # 3. Standalone ordinal numbers - must come before dates.
+        # Multi-language ordinal surface forms drive off lang_registry.
+        # Standalone ordinals own the full surface span (digit + suffix);
+        # the date pass only fires when no ordinal surface form is present.
+        ordinal_pattern = get_ordinal_pattern(self.lang)
+        month_names_re = get_month_names(self.lang)
+        if ordinal_pattern:
+            for match in re.finditer(ordinal_pattern, sentence):
                 start, end = match.span()
-                if not any(p in used_positions for p in range(start, end)):
-                    value = int(match.group(1))
-                    extractions.append((start, end, match.group(0), value, "ordinal"))
-                    used_positions.update(range(start, end))
+                if any(p in used_positions for p in range(start, end)):
+                    continue
+                groups = [g for g in match.groups() if g]
+                if not groups:
+                    continue
+                try:
+                    value = int(groups[0])
+                except ValueError:
+                    continue
+                extractions.append((start, end, match.group(0), value, "ordinal"))
+                used_positions.update(range(start, end))
 
-        # 4. Dates with ordinals (language-specific)
-        # Month names for date detection
-        months_en = r"(?:January|February|March|April|May|June|July|August|September|October|November|December)"
+        # 4. Dates with ordinals (language-specific). Driven by
+        # lang_registry: each language exposes a list of (pattern, is_ordinal)
+        # tuples with month-name regex pre-substituted in.
+        date_patterns_for_lang = get_date_patterns(self.lang)
+        # Languages where the written day token includes a trailing period
+        # ("5." in German). The post-detection extender consumes that
+        # period so replacement leaves no orphaned punctuation.
+        DAY_TOKEN_TRAILS_PERIOD = {"de", "cs", "sk", "fi", "hu", "is", "no", "da"}
+        for pattern, is_ordinal in date_patterns_for_lang:
+            for match in re.finditer(pattern, sentence, re.I):
+                # Auto-locate the day (numeric capture) vs month (alpha capture).
+                day_idx = None
+                for gi, g in enumerate(match.groups(), start=1):
+                    if g and g.isdigit():
+                        day_idx = gi
+                        break
+                if day_idx is None:
+                    continue
 
-        date_patterns = {
-            "fr": [(r"(\d+)er\s+([a-zéû]+)", True), (r"(\d+)e\s+([a-zéû]+)", False)],
-            "de": [(r"(\d+)\.\s+([A-ZÄÖÜ][a-zäöüß]+)", True)],
-            "es": [(r"(\d+)\s+de\s+([a-z]+)", False)],
-            "en": [
-                (
-                    r"(\d+)(?:st|nd|rd|th)\s+(" + months_en + ")",
-                    True,
-                ),  # Explicit ordinal with month
-                (
-                    r"(" + months_en + r")\s+(\d+)",
-                    True,
-                    "month_first",
-                ),  # Month Day -> ordinal
-                (
-                    r"(\d+)\s+(" + months_en + ")",
-                    True,
-                    "day_first",
-                ),  # Day Month -> ordinal
-            ],
-        }
-
-        if self.lang in date_patterns:
-            for pattern_info in date_patterns[self.lang]:
-                if len(pattern_info) == 3:
-                    pattern, is_ordinal, format_type = pattern_info
-                else:
-                    pattern, is_ordinal = pattern_info
-                    format_type = None
-
-                for match in re.finditer(pattern, sentence, re.I):
-                    # Handle English month+day patterns specially
-                    if self.lang == "en" and format_type in [
-                        "month_first",
-                        "day_first",
-                    ]:
-                        if format_type == "month_first":
-                            # "April 5" - number is in group 2
-                            num_start = match.start(2)
-                            num_end = match.end(2)
-                            num_text = match.group(2)
-                        else:  # day_first
-                            # "5 April" - number is in group 1
-                            num_start = match.start(1)
-                            num_end = match.end(1)
-                            num_text = match.group(1)
-
-                        if not any(
-                            p in used_positions for p in range(num_start, num_end)
-                        ):
-                            value = int(num_text)
-                            extractions.append(
-                                (num_start, num_end, num_text, value, "ordinal_date")
-                            )
-                            used_positions.update(range(num_start, num_end))
-                    else:
-                        # Original handling for other patterns
-                        num_start = match.start(1)
-                        num_end = match.end(1)
-                        if not any(
-                            p in used_positions for p in range(num_start, num_end)
-                        ):
-                            value = int(match.group(1))
-
-                            if self.lang == "fr" and "er" in match.group(0):
-                                # French "1er"
-                                extractions.append(
-                                    (
-                                        num_start,
-                                        num_end + 2,
-                                        match.group(1) + "er",
-                                        value,
-                                        "ordinal_date",
-                                    )
-                                )
-                                used_positions.update(range(num_start, num_end + 2))
-                            elif self.lang == "de":
-                                # German with period
-                                extractions.append(
-                                    (
-                                        num_start,
-                                        num_end + 1,
-                                        match.group(1) + ".",
-                                        value,
-                                        "ordinal_date",
-                                    )
-                                )
-                                used_positions.update(range(num_start, num_end + 1))
-                            else:
-                                dtype = "ordinal_date" if is_ordinal else "date_number"
-                                extractions.append(
-                                    (num_start, num_end, match.group(1), value, dtype)
-                                )
-                                used_positions.update(range(num_start, num_end))
-
-        # 5. Years (1900-2100) ONLY in actual date contexts with month names
-        # Look for years after month names with a comma and day
-        for match in re.finditer(r"\b(19\d{2}|20\d{2}|2100)\b", sentence):
-            start, end = match.span()
-            if not any(p in used_positions for p in range(start, end)):
-                value = int(match.group(0))
-                # Check if this looks like a year in a date context
-                before_text = sentence[:start].strip()
-                # Only treat as year if preceded by "month day," pattern
-                # This ensures we only get dates like "April 5, 2022"
-                if re.search(
-                    r"(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+\d+,\s*$",
-                    before_text.lower(),
+                num_start = match.start(day_idx)
+                num_end = match.end(day_idx)
+                # Extend span to consume a trailing period for langs whose
+                # ordinal day form is "<n>." rather than "<n>".
+                day_text = match.group(day_idx)
+                if (
+                    self.lang in DAY_TOKEN_TRAILS_PERIOD
+                    and num_end < len(sentence)
+                    and sentence[num_end] == "."
                 ):
-                    # This looks like a year in a date
-                    extractions.append((start, end, match.group(0), value, "year"))
+                    num_end += 1
+                    day_text = day_text + "."
+
+                if any(p in used_positions for p in range(num_start, num_end)):
+                    continue
+                try:
+                    value = int(match.group(day_idx))
+                except ValueError:
+                    continue
+
+                dtype = "ordinal_date" if is_ordinal else "date_number"
+                extractions.append(
+                    (num_start, num_end, day_text, value, dtype)
+                )
+                used_positions.update(range(num_start, num_end))
+
+        # 5. Years (1900-2100) — only when preceded by a recognised
+        # month-name in the active language. Uses lang_registry month list
+        # so year detection extends with each new language.
+        if month_names_re:
+            year_context_re = re.compile(
+                month_names_re + r"\s+\d+,\s*$", re.IGNORECASE
+            )
+            for match in re.finditer(r"\b(19\d{2}|20\d{2}|2100)\b", sentence):
+                start, end = match.span()
+                if any(p in used_positions for p in range(start, end)):
+                    continue
+                if year_context_re.search(sentence[:start].strip()):
+                    extractions.append(
+                        (start, end, match.group(0), int(match.group(0)), "year")
+                    )
                     used_positions.update(range(start, end))
 
         # 6. Currency
