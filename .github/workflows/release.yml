@@ -16,7 +16,6 @@ on:
 
 permissions:
   contents: write   # create the GitHub Release + upload assets
-  id-token: write   # PyPI Trusted Publishing (OIDC)
 
 jobs:
   # ---------------------------------------------------------------------------
@@ -125,6 +124,7 @@ jobs:
         with:
           packages-dir: dist
           skip-existing: true
+          password: ${{ secrets.PYPI_API_TOKEN }}
 
   # ---------------------------------------------------------------------------
   github-release:
