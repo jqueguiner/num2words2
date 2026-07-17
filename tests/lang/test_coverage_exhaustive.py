@@ -8,8 +8,8 @@ language codes so a single test method covers ~150 languages.
 """
 from unittest import TestCase
 
-from num2words2 import num2words
 from num2words2 import _rust as _RUST
+from num2words2 import num2words
 
 # All registered language codes
 ALL_LANGS = sorted(_RUST.supported_langs())

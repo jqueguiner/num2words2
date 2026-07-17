@@ -17,10 +17,10 @@
 
 from __future__ import unicode_literals
 
+import unittest
 from unittest import TestCase
 
 from num2words2 import num2words
-import pytest
 
 
 class Num2WordsHETest(TestCase):
@@ -276,13 +276,9 @@ class Num2WordsHETest(TestCase):
             "תשע מאות תשעים ותשעה אלף תשע מאות תשעים ותשעה",
         )
 
-
-
-
-
-
-
-    @pytest.mark.xfail(strict=False, reason="Hebrew (he) cardinal-for-float differs in the Rust port")
+    # Known num2words2-core Rust-port gap: Hebrew (he) cardinal-for-float
+    # output differs from the reference converter.
+    @unittest.expectedFailure
     def test_cardinal_for_float_number(self):
         self.assertEqual(num2words(12.5, lang="he"), "שתים עשרה נקודה חמש")
         self.assertEqual(num2words(12.51, lang="he"), "שתים עשרה נקודה חמש אחת")

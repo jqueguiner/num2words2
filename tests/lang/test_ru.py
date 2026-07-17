@@ -17,10 +17,10 @@
 
 from __future__ import unicode_literals
 
+import unittest
 from unittest import TestCase
 
 from num2words2 import num2words
-import pytest
 
 
 class Num2WordsRUTest(TestCase):
@@ -75,7 +75,9 @@ class Num2WordsRUTest(TestCase):
         self.assertEqual(num2words(-15, lang="ru"), "минус пятнадцать")
         self.assertEqual(num2words(-100, lang="ru"), "минус сто")
 
-    @pytest.mark.xfail(strict=False, reason="Russian (ru) feminine/neuter gender not implemented in the Rust port")
+    # Known num2words2-core Rust-port gap: Russian (ru) feminine gender
+    # forms are not ported.
+    @unittest.expectedFailure
     def test_cardinal_feminine(self):
         self.assertEqual(num2words(1, lang="ru", gender="f"), "одна")
         self.assertEqual(num2words(2, lang="ru", gender="f"), "две")
@@ -92,7 +94,9 @@ class Num2WordsRUTest(TestCase):
         self.assertEqual(num2words(-1, lang="ru", gender="f"), "минус одна")
         self.assertEqual(num2words(-100, lang="ru", gender="f"), "минус сто")
 
-    @pytest.mark.xfail(strict=False, reason="Russian (ru) feminine/neuter gender not implemented in the Rust port")
+    # Known num2words2-core Rust-port gap: Russian (ru) neuter gender
+    # forms are not ported.
+    @unittest.expectedFailure
     def test_cardinal_neuter(self):
         self.assertEqual(num2words(1, lang="ru", gender="n"), "одно")
         self.assertEqual(num2words(2, lang="ru", gender="n"), "два")

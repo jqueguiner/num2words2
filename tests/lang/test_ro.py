@@ -15,10 +15,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301 USA
 
+import unittest
 from unittest import TestCase
 
 from num2words2 import num2words
-import pytest
 
 
 class Num2WordsROTest(TestCase):
@@ -103,7 +103,9 @@ class Num2WordsROTest(TestCase):
             "de mii șapte sute optzeci și nouă de lei",
         )
 
-    @pytest.mark.xfail(strict=False, reason="Romanian (ro) year not implemented in the Rust port")
+    # Known num2words2-core Rust-port gap: Romanian (ro) year
+    # (to="year") is not ported.
+    @unittest.expectedFailure
     def test_to_year(self):
         self.assertEqual(
             num2words(1989, lang="ro", to="year"), "o mie nouă sute optzeci și nouă"

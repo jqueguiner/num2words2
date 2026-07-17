@@ -18,7 +18,6 @@
 from unittest import TestCase
 
 from num2words2 import num2words
-import pytest
 
 
 class Num2WordsPT_BRTest(TestCase):
@@ -628,7 +627,6 @@ class Num2WordsPT_BRTest(TestCase):
         )
 
 
-@pytest.mark.xfail(strict=False, reason="pt_BR decimal 'ponto' string handling differs in the Rust port")
 def test_pt_br_dot_string_pronounced_as_ponto():
     # Regression for num2words2#63 (ports savoirfairelinux/num2words#300).
     from num2words2 import num2words

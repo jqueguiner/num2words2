@@ -15,10 +15,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301 USA
 
+import unittest
 from unittest import TestCase
 
 from num2words2 import num2words
-import pytest
 
 
 class Num2WordsENNGTest(TestCase):
@@ -28,7 +28,9 @@ class Num2WordsENNGTest(TestCase):
     # test test_en which tests the parent class
     # upon which this class inherits
 
-    @pytest.mark.xfail(strict=False, reason="en_NG currency not implemented in the Rust port")
+    # Known num2words2-core Rust-port gap: en_NG currency (to="currency")
+    # is not ported.
+    @unittest.expectedFailure
     def test_to_currency(self):
         language = "en_NG"
         separator = " and"

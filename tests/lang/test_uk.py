@@ -17,10 +17,10 @@
 
 from __future__ import unicode_literals
 
+import unittest
 from unittest import TestCase
 
 from num2words2 import num2words
-import pytest
 
 TEST_CASES_CARDINAL = (
     (1, "один"),
@@ -2788,46 +2788,60 @@ class Num2WordsUKTest(TestCase):
         for test in TEST_CASES_CARDINAL:
             self.assertEqual(num2words(test[0], lang="uk"), test[1])
 
-    @pytest.mark.xfail(strict=False, reason="Ukrainian (uk) grammatical-case forms not implemented in the Rust port")
+    # Known num2words2-core Rust-port gap: Ukrainian (uk) grammatical-case
+    # forms are not ported.
+    @unittest.expectedFailure
     def test_to_cardinal_feminine(self):
         for test in TEST_CASES_CARDINAL_FEMININE:
             word = num2words(test[0], lang="uk", gender="feminine")
             self.assertEqual(word, test[1])
 
-    @pytest.mark.xfail(strict=False, reason="Ukrainian (uk) grammatical-case forms not implemented in the Rust port")
+    # Known num2words2-core Rust-port gap: Ukrainian (uk) grammatical-case
+    # forms are not ported.
+    @unittest.expectedFailure
     def test_to_cardinal_nominative(self):
         for test in TEST_CASES_CARDINAL:
             word = num2words(test[0], lang="uk", case="nominative")
             self.assertEqual(word, test[1])
 
-    @pytest.mark.xfail(strict=False, reason="Ukrainian (uk) grammatical-case forms not implemented in the Rust port")
+    # Known num2words2-core Rust-port gap: Ukrainian (uk) grammatical-case
+    # forms are not ported.
+    @unittest.expectedFailure
     def test_to_cardinal_genitive(self):
         for test in TEST_CASES_CARDINAL_GENITIVE:
             word = num2words(test[0], lang="uk", case="genitive")
             self.assertEqual(word, test[1])
 
-    @pytest.mark.xfail(strict=False, reason="Ukrainian (uk) grammatical-case forms not implemented in the Rust port")
+    # Known num2words2-core Rust-port gap: Ukrainian (uk) grammatical-case
+    # forms are not ported.
+    @unittest.expectedFailure
     def test_to_cardinal_dative(self):
         self.maxDiff = None
         for test in TEST_CASES_CARDINAL_DATIVE:
             word = num2words(test[0], lang="uk", case="dative")
             self.assertEqual(word, test[1])
 
-    @pytest.mark.xfail(strict=False, reason="Ukrainian (uk) grammatical-case forms not implemented in the Rust port")
+    # Known num2words2-core Rust-port gap: Ukrainian (uk) grammatical-case
+    # forms are not ported.
+    @unittest.expectedFailure
     def test_to_cardinal_accusative(self):
         self.maxDiff = None
         for test in TEST_CASES_CARDINAL_ACCUSATIVE:
             word = num2words(test[0], lang="uk", case="accusative")
             self.assertEqual(word, test[1])
 
-    @pytest.mark.xfail(strict=False, reason="Ukrainian (uk) grammatical-case forms not implemented in the Rust port")
+    # Known num2words2-core Rust-port gap: Ukrainian (uk) grammatical-case
+    # forms are not ported.
+    @unittest.expectedFailure
     def test_to_cardinal_instrumental(self):
         self.maxDiff = None
         for test in TEST_CASES_CARDINAL_INSTRUMENTAL:
             word = num2words(test[0], lang="uk", case="instrumental")
             self.assertEqual(word, test[1])
 
-    @pytest.mark.xfail(strict=False, reason="Ukrainian (uk) grammatical-case forms not implemented in the Rust port")
+    # Known num2words2-core Rust-port gap: Ukrainian (uk) grammatical-case
+    # forms are not ported.
+    @unittest.expectedFailure
     def test_to_cardinal_locative(self):
         self.maxDiff = None
         for test in TEST_CASES_CARDINAL_LOCATIVE:
@@ -3454,7 +3468,6 @@ class UkrainianGenderAliasTest:
     pass
 
 
-@pytest.mark.xfail(strict=False, reason="Ukrainian (uk) grammatical-case forms not implemented in the Rust port")
 def test_uk_gender_short_alias_feminine():
     # Regression for savoirfairelinux/num2words#560 — gender='f' was ignored.
     from num2words2 import num2words

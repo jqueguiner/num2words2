@@ -18,7 +18,6 @@ def test_maxval_helper():
         num2words2.maxval("zzz_unknown")
 
 
-@pytest.mark.xfail(strict=False, reason="num2words2 CLI entry point (num2words2/__main__.py) not yet ported to the Rust binder")
 def test_runpy_invocation():
     # Issue #348 — python -m num2words2 N -l X
     out = subprocess.check_output(
@@ -27,7 +26,6 @@ def test_runpy_invocation():
     assert out == "mille deux cent trente-quatre"
 
 
-@pytest.mark.xfail(strict=False, reason="num2words2 CLI entry point (num2words2/__main__.py) not yet ported to the Rust binder")
 def test_runpy_list_languages():
     out = subprocess.check_output(
         [sys.executable, "-m", "num2words2", "--list-languages"]
