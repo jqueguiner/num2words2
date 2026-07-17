@@ -2,22 +2,13 @@
 Advanced test suite for sentence converter module.
 """
 
-import os
-import sys
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
 
 from num2words2 import num2words_sentence
 
 
 class TestSentenceConverterAdvanced(TestCase):
     """Advanced tests for SentenceConverter class."""
-
-
-
-
-
-
 
     def test_sentence_capitalization_rules(self):
         """Test sentence capitalization rules."""
@@ -67,7 +58,6 @@ class TestSentenceConverterAdvanced(TestCase):
         result = num2words_sentence("&lt;5&gt;", lang="en")
         self.assertIn("&lt;", result)
         self.assertIn("&gt;", result)
-
 
     def test_contextual_number_conversion(self):
         """Test that numbers are converted based on context."""

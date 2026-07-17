@@ -486,4 +486,3 @@ class Num2WordsDATest(TestCase):
         # Test that the converter handles various input types
         self.assertEqual(num2words(100, lang="da"), num2words("100", lang="da"))
         self.assertEqual(num2words(1000, lang="da"), num2words("1000", lang="da"))
-

@@ -414,4 +414,3 @@ class Num2WordsSATest(TestCase):
         # Test that the converter handles various input types
         self.assertEqual(num2words(100, lang="sa"), num2words("100", lang="sa"))
         self.assertEqual(num2words(1000, lang="sa"), num2words("1000", lang="sa"))
-

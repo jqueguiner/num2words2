@@ -423,12 +423,6 @@ class Num2WordsELTest(TestCase):
         with self.assertRaises(TypeError):
             num2words(3.14, lang="el", ordinal=True)
 
-
-
-
-
-
-
     def test_more_ordinals(self):
         """Test additional ordinal numbers."""
         # Test special ordinals that follow the converter's logic

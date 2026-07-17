@@ -445,7 +445,6 @@ class Num2WordsPT_BRTest(TestCase):
         result = num2words(3.14, lang="pt-br", ordinal=True)
         self.assertIsNotNone(result)
 
-
     def test_more_currency_cases(self):
         """Test additional currency cases."""
         # Test various amounts
@@ -541,7 +540,6 @@ class Num2WordsPT_BRTest(TestCase):
             num2words(-1.50, lang="pt-br", to="currency", currency="BRL"),
             "menos um real e cinquenta centavos",
         )
-
 
     def test_trillion_scale(self):
         """Test Brazilian short scale for trillions."""

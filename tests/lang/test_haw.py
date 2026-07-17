@@ -430,4 +430,3 @@ class Num2WordsHAWTest(TestCase):
         # Test that the converter handles various input types
         self.assertEqual(num2words(100, lang="haw"), num2words("100", lang="haw"))
         self.assertEqual(num2words(1000, lang="haw"), num2words("1000", lang="haw"))
-

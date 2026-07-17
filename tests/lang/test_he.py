@@ -299,9 +299,6 @@ class Num2WordsHETest(TestCase):
             "שנים עשר נקודה חמש תשע ארבע אחת שלוש שתיים",
         )
 
-
-
-
     def test_negative_decimals(self):
         # Comprehensive test for negative decimals including -0.4
         self.assertEqual(num2words(-0.4, lang="he"), "מינוס אפס נקודה ארבע")

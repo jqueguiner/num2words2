@@ -418,4 +418,3 @@ class Num2WordsKATest(TestCase):
         # Test that the converter handles various input types
         self.assertEqual(num2words(100, lang="ka"), num2words("100", lang="ka"))
         self.assertEqual(num2words(1000, lang="ka"), num2words("1000", lang="ka"))
-

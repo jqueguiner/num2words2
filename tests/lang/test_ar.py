@@ -192,8 +192,6 @@ def test_ar_ordinals_use_definite_article_form():
     assert num2words(999, lang="ar", to="ordinal") == "التاسع والتسعون بعد التسعمائة"
 
 
-
-
 def test_ar_dual_endings_switch_with_case_kwarg():
     # Regression for num2words2#55 (ports savoirfairelinux/num2words#557).
     from num2words2 import num2words

@@ -71,7 +71,7 @@ class TestNum2WordsSentencesE2E(unittest.TestCase):
             input_sentence = case["input_sentence"]
             expected_output = case["expected_output"]
             case.get("english_translation", "")
-            description = case.get("description", f"Test {i+1}")
+            description = case.get("description", f"Test {i + 1}")
             test_type = case.get("test_type", "unknown")
 
             try:
@@ -108,12 +108,12 @@ class TestNum2WordsSentencesE2E(unittest.TestCase):
 
         # Report results
         total = len(self.test_cases)
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Test Results: {successes}/{total} passed")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         if failures:
-            print(f"\nFailed tests ({len(failures)}):")
+            print(f"\nFailed tests ({len(failures)}): ")
             print("-" * 60)
 
             # Group failures by language
@@ -125,29 +125,29 @@ class TestNum2WordsSentencesE2E(unittest.TestCase):
                 by_lang[lang].append(fail)
 
             for lang in sorted(by_lang.keys()):
-                print(f"\n{lang} ({len(by_lang[lang])} failures):")
+                print(f"\n{lang} ({len(by_lang[lang])} failures): ")
                 for fail in by_lang[lang][:3]:  # Show first 3 failures per language
                     print(
                         f"  Test #{fail['index']}: {fail['description']} [{fail['test_type']}]"
                     )
-                    print(f"    Input:    {fail['input']}")
+                    print(f"    Input: {fail['input']}")
                     if "error" in fail:
-                        print(f"    Error:    {fail['error']}")
+                        print(f"    Error: {fail['error']}")
                     else:
                         print(f"    Expected: {fail['expected']}")
-                        print(f"    Actual:   {fail['actual']}")
+                        print(f"    Actual: {fail['actual']}")
 
                 if len(by_lang[lang]) > 3:
                     print(f"  ... and {len(by_lang[lang]) - 3} more")
 
         # Assert that we have a good success rate
         success_rate = successes / total if total > 0 else 0
-        print(f"\nSuccess rate: {success_rate:.1%}")
+        print(f"\nSuccess rate: {success_rate: .1%}")
 
         # We expect at least 80% success rate for generated tests
         # (some may fail due to language-specific quirks or AI generation issues)
         if success_rate < 0.8:
-            self.fail(f"Success rate {success_rate:.1%} is below 80% threshold")
+            self.fail(f"Success rate {success_rate: .1%} is below 80% threshold")
 
     def test_specific_languages(self):
         """Test specific high-priority languages"""

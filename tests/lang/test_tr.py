@@ -392,7 +392,6 @@ class Num2WordsTRTest(TestCase):
         self.assertEqual(num2words(1000, lang="tr"), num2words("1000", lang="tr"))
 
 
-
 def test_tr_bir_inserted_between_hundred_and_thousand_in_6_digit_numbers():
     # Regression for num2words2#64 (ports savoirfairelinux/num2words#621/#564).
     from num2words2 import num2words

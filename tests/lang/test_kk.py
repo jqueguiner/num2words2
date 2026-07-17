@@ -385,4 +385,3 @@ class Num2WordsKKTest(TestCase):
         # Test that the converter handles various input types
         self.assertEqual(num2words(100, lang="kk"), num2words("100", lang="kk"))
         self.assertEqual(num2words(1000, lang="kk"), num2words("1000", lang="kk"))
-

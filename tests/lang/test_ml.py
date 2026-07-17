@@ -429,4 +429,3 @@ class Num2WordsMLTest(TestCase):
         # Test that the converter handles various input types
         self.assertEqual(num2words(100, lang="ml"), num2words("100", lang="ml"))
         self.assertEqual(num2words(1000, lang="ml"), num2words("1000", lang="ml"))
-

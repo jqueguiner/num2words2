@@ -778,4 +778,3 @@ class Num2WordsTETest(TestCase):
         # Test that the converter handles various input types
         self.assertEqual(num2words(100, lang="te"), num2words("100", lang="te"))
         self.assertEqual(num2words(1000, lang="te"), num2words("1000", lang="te"))
-

@@ -404,4 +404,3 @@ class Num2WordsMITest(TestCase):
         # Test that the converter handles various input types
         self.assertEqual(num2words(100, lang="mi"), num2words("100", lang="mi"))
         self.assertEqual(num2words(1000, lang="mi"), num2words("1000", lang="mi"))
-

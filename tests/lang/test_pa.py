@@ -377,4 +377,3 @@ class Num2WordsPATest(TestCase):
         # Test that the converter handles various input types
         self.assertEqual(num2words(100, lang="pa"), num2words("100", lang="pa"))
         self.assertEqual(num2words(1000, lang="pa"), num2words("1000", lang="pa"))
-

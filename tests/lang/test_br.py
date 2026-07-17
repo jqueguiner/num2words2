@@ -398,4 +398,3 @@ class Num2WordsBRTest(TestCase):
         # Test that the converter handles various input types
         self.assertEqual(num2words(100, lang="br"), num2words("100", lang="br"))
         self.assertEqual(num2words(1000, lang="br"), num2words("1000", lang="br"))
-

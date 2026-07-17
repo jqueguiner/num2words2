@@ -366,4 +366,3 @@ class Num2WordsSDTest(TestCase):
         # Test that the converter handles various input types
         self.assertEqual(num2words(100, lang="sd"), num2words("100", lang="sd"))
         self.assertEqual(num2words(1000, lang="sd"), num2words("1000", lang="sd"))
-

@@ -404,4 +404,3 @@ class Num2WordsGUTest(TestCase):
         # Test that the converter handles various input types
         self.assertEqual(num2words(100, lang="gu"), num2words("100", lang="gu"))
         self.assertEqual(num2words(1000, lang="gu"), num2words("1000", lang="gu"))
-
