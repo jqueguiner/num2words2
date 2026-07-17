@@ -11,6 +11,7 @@ mod sentencepath;
 
 use bigdecimal::BigDecimal;
 use num2words2_core::base::{Kwargs, KwVal, Lang};
+use num2words2_core::presentation::{self, CentsArg};
 use num2words2_core::strnum::{
     has_py_digit, python_decimal_str, python_int_parse, ParsedNumber,
 };
@@ -22,7 +23,27 @@ use pyo3::exceptions::{
     PyOverflowError, PyRuntimeError, PyTypeError, PyValueError, PyZeroDivisionError,
 };
 use pyo3::prelude::*;
+use pyo3::types::{PyBool, PyDict, PyFloat, PyInt, PyList, PyString, PyStringMethods, PyTuple};
 use std::str::FromStr;
+
+/// Modes that map to a value-type entry point (`_RUST_TYPES` in the old shim).
+const RUST_TYPES: [&str; 4] = ["cardinal", "ordinal", "ordinal_num", "year"];
+/// Every `to=` the dispatcher accepts (`CONVERTES_TYPES` in the old shim).
+const CONVERTER_TYPES: [&str; 7] = [
+    "cardinal",
+    "ordinal",
+    "ordinal_num",
+    "year",
+    "currency",
+    "cheque",
+    "fraction",
+];
+
+/// The empty-message `NotImplementedError` the old Python shim raised
+/// (`raise NotImplementedError()`), reproduced exactly.
+fn not_implemented() -> PyErr {
+    PyNotImplementedError::new_err("")
+}
 
 // The Rust-core-declines signal. NOT a NotImplementedError subclass: the
 // shim catches THIS to fall back to the original Python converter, while a
@@ -126,14 +147,22 @@ fn kwbag(kwargs: PyKwargs) -> Kwargs {
     )
 }
 
-/// Unwrap a conversion result the way every entry point must: lang_VI's
-/// bare-`None` return becomes Python None, everything else maps through.
-fn finish(r: Result<String, N2WError>) -> PyResult<Option<String>> {
+/// lang_VI's bare-`None` return becomes `Ok(None)`; every other error stays an
+/// error. Kept in `N2WError` space so the caller decides how to map it (the
+/// unified `num2words` entry turns `Fallback` into `NotImplementedError`, while
+/// the standalone entry points surface it as `RustFallback`).
+fn opt(r: Result<String, N2WError>) -> Result<Option<String>, N2WError> {
     match r {
         Ok(s) => Ok(Some(s)),
         Err(N2WError::ReturnsNone) => Ok(None),
-        Err(e) => Err(map_err(e)),
+        Err(e) => Err(e),
     }
+}
+
+/// Unwrap a conversion result the way every entry point must: lang_VI's
+/// bare-`None` return becomes Python None, everything else maps through.
+fn finish(r: Result<String, N2WError>) -> PyResult<Option<String>> {
+    opt(r).map_err(map_err)
 }
 
 #[pyfunction]
@@ -208,7 +237,7 @@ fn to_cardinal_float(
     precision_override: Option<u32>,
 ) -> PyResult<Option<String>> {
     let l = need_lang(lang)?;
-    let v = float_value(l, value, precision, decimal_str)?;
+    let v = float_value(value, precision, decimal_str).map_err(map_err)?;
     finish(l.cardinal_float_entry(&v, precision_override))
 }
 
@@ -225,21 +254,15 @@ fn to_cardinal_float_raw(
     precision_override: Option<u32>,
 ) -> PyResult<Option<String>> {
     let l = need_lang(lang)?;
-    let v = float_value(l, value, precision, decimal_str)?;
+    let v = float_value(value, precision, decimal_str).map_err(map_err)?;
     finish(l.to_cardinal_float(&v, precision_override))
 }
 
-fn float_value(
-    l: &'static (dyn Lang + Sync),
-    value: f64,
-    precision: u32,
-    decimal_str: &str,
-) -> PyResult<FloatValue> {
+fn float_value(value: f64, precision: u32, decimal_str: &str) -> Result<FloatValue, N2WError> {
     if decimal_str.is_empty() {
         Ok(FloatValue::Float { value, precision })
     } else {
-        let d = BigDecimal::from_str(decimal_str)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+        let d = BigDecimal::from_str(decimal_str).map_err(|e| N2WError::Value(e.to_string()))?;
         use bigdecimal::num_traits::Zero;
         // BigDecimal cannot carry Decimal("-0.0")'s sign. For zero, both
         // float2tuple arms produce pre=0/post=0, so demoting to the float
@@ -279,21 +302,46 @@ fn to_float(
     kwargs: PyKwargs,
 ) -> PyResult<Option<String>> {
     let l = need_lang(lang)?;
-    let kw = kwbag(kwargs);
+    to_float_core(
+        l,
+        to,
+        value,
+        precision,
+        decimal_str,
+        repr_str,
+        precision_override,
+        &kwbag(kwargs),
+    )
+    .map_err(map_err)
+}
+
+/// The float/Decimal router, factored so both the `to_float` entry point and
+/// the unified `num2words` dispatcher share one implementation.
+#[allow(clippy::too_many_arguments)]
+fn to_float_core(
+    l: &'static (dyn Lang + Sync),
+    to: &str,
+    value: f64,
+    precision: u32,
+    decimal_str: &str,
+    repr_str: &str,
+    precision_override: Option<u32>,
+    kw: &Kwargs,
+) -> Result<Option<String>, N2WError> {
     // Decimal('-0.0') the language renders specially (BigDecimal can't hold
     // the sign) — serve it natively before the demotion to Float{-0.0}.
     if is_neg_zero_decimal(decimal_str, value) && kw.is_empty() {
         if let Some(res) = l.neg_zero_decimal(to) {
-            return finish(res);
+            return opt(res);
         }
     }
-    let v = float_value(l, value, precision, decimal_str)?;
+    let v = float_value(value, precision, decimal_str)?;
     let r = match to {
         "cardinal" => {
             if kw.is_empty() {
                 l.cardinal_float_entry(&v, precision_override)
             } else {
-                l.to_cardinal_float_kw(&v, precision_override, &kw)
+                l.to_cardinal_float_kw(&v, precision_override, kw)
             }
         }
         // kwargs on the non-cardinal float modes stay on the Python side.
@@ -315,7 +363,7 @@ fn to_float(
         "year" => l.year_float_entry(&v),
         other => Err(N2WError::Fallback(other.to_string())),
     };
-    finish(r)
+    opt(r)
 }
 
 #[pyfunction]
@@ -386,8 +434,33 @@ fn from_string(
     kwargs: PyKwargs,
 ) -> PyResult<(u8, Option<String>)> {
     let l = need_lang(lang)?;
-    let kw = kwbag(kwargs);
+    from_string_core(
+        l,
+        lang,
+        s,
+        to,
+        currency,
+        cents,
+        separator,
+        adjective,
+        &kwbag(kwargs),
+    )
+}
 
+/// The string-input router, factored so both the `from_string` entry point and
+/// the unified `num2words` dispatcher share one implementation.
+#[allow(clippy::too_many_arguments)]
+fn from_string_core(
+    l: &'static (dyn Lang + Sync),
+    lang: &str,
+    s: &str,
+    to: &str,
+    currency: Option<&str>,
+    cents: bool,
+    separator: Option<&str>,
+    adjective: Option<bool>,
+    kw: &Kwargs,
+) -> PyResult<(u8, Option<String>)> {
     // "n/d" fraction strings route straight to to_fraction, whatever `to`
     // says — mirroring the dispatcher, where this check precedes the mode
     // dispatch entirely.
@@ -492,7 +565,7 @@ fn from_string(
                 }
                 // fraction: getattr TypeError (missing denominator), same as
                 // any int -> int_mode reproduces it.
-                _ => int_mode(l, to, &n, &kw, currency, cents, separator, adjective),
+                _ => int_mode(l, to, &n, kw, currency, cents, separator, adjective),
             }
         }
         ParsedNumber::DecPoint { value, pointword } => {
@@ -500,11 +573,11 @@ fn from_string(
             let fv = FloatValue::Decimal { value: value.clone(), precision: prec };
             match to {
                 "cardinal" if kw.is_empty() => l.cardinal_with_pointword(&fv, pointword, None),
-                _ => dec_mode(l, to, &value, &kw, currency, cents, separator, adjective),
+                _ => dec_mode(l, to, &value, kw, currency, cents, separator, adjective),
             }
         }
         ParsedNumber::Dec(value) => {
-            dec_mode(l, to, &value, &kw, currency, cents, separator, adjective)
+            dec_mode(l, to, &value, kw, currency, cents, separator, adjective)
         }
         // Inf/NaN behaviour is per-language: base raises OverflowError /
         // ValueError, but the self-contained converters that int() the raw
@@ -622,12 +695,443 @@ fn dec_mode(
 }
 
 #[pyfunction]
+#[pyo3(signature = (lang, value, currency=None))]
 fn to_cheque(lang: &str, value: &str, currency: Option<&str>) -> PyResult<Option<String>> {
-    let l = need_lang(lang)?;
+    cheque_core(need_lang(lang)?, value, currency).map_err(map_err)
+}
+
+/// The cheque router, shared by the `to_cheque` entry point and `num2words`.
+fn cheque_core(
+    l: &'static (dyn Lang + Sync),
+    value: &str,
+    currency: Option<&str>,
+) -> Result<Option<String>, N2WError> {
     let currency = currency.unwrap_or(l.default_currency());
-    let d = BigDecimal::from_str(value)
-        .map_err(|e| PyValueError::new_err(e.to_string()))?;
-    finish(l.to_cheque(&d, currency))
+    let d = BigDecimal::from_str(value).map_err(|e| N2WError::Value(e.to_string()))?;
+    opt(l.to_cheque(&d, currency))
+}
+
+/// The whole-number int modes (`_RUST_TYPES`), shared by `num2words`. Mirrors
+/// the shim's `getattr(_RUST, "to_%s[_kw]" % to)(...)`: the `_kw` variant only
+/// when kwargs are present.
+fn int_int_mode(
+    l: &'static (dyn Lang + Sync),
+    to: &str,
+    n: &BigInt,
+    kw: &Kwargs,
+) -> Result<Option<String>, N2WError> {
+    let r = match to {
+        "cardinal" if kw.is_empty() => l.to_cardinal(n),
+        "cardinal" => l.to_cardinal_kw(n, kw),
+        "ordinal" if kw.is_empty() => l.to_ordinal(n),
+        "ordinal" => l.to_ordinal_kw(n, kw),
+        "ordinal_num" if kw.is_empty() => l.to_ordinal_num(n),
+        "ordinal_num" => l.to_ordinal_num_kw(n, kw),
+        "year" if kw.is_empty() => l.to_year(n),
+        "year" => l.to_year_kw(n, kw),
+        // int_int_mode is only ever called with `to` in RUST_TYPES.
+        other => Err(N2WError::Fallback(other.to_string())),
+    };
+    opt(r)
+}
+
+/// The currency router, shared by `num2words`. Mirrors the shim's
+/// `to_currency[_kw]` selection (the `_kw` variant only when kwargs present).
+#[allow(clippy::too_many_arguments)]
+fn currency_core(
+    l: &'static (dyn Lang + Sync),
+    value: &str,
+    is_int: bool,
+    has_decimal: bool,
+    is_float: bool,
+    currency: Option<&str>,
+    cents: bool,
+    separator: Option<&str>,
+    adjective: Option<bool>,
+    kw: &Kwargs,
+) -> Result<Option<String>, N2WError> {
+    let v = CurrencyValue::parse(value, is_int, has_decimal, is_float)?;
+    let adjective = adjective.unwrap_or(l.default_adjective());
+    let currency = currency.unwrap_or(l.default_currency());
+    let r = if kw.is_empty() {
+        l.to_currency(&v, currency, cents, separator, adjective)
+    } else {
+        l.to_currency_kw(&v, currency, cents, separator, adjective, kw)
+    };
+    opt(r)
+}
+
+/// `to='fraction'` with a non-string number. The shim probed
+/// `_RUST.to_fraction(lang, 1, 1)`: an `AttributeError` (BN/ID/DV have no
+/// `to_fraction`) re-raises, anything else becomes the missing-`denominator`
+/// `TypeError`.
+fn fraction_probe(l: &'static (dyn Lang + Sync)) -> N2WError {
+    match l.to_fraction(&BigInt::from(1), &BigInt::from(1)) {
+        Err(e @ N2WError::Attribute(_)) => e,
+        _ => N2WError::Type(
+            "to_fraction() missing 1 required positional argument: 'denominator'".into(),
+        ),
+    }
+}
+
+// --- Argument classification for the unified `num2words` entry -------------
+
+/// `str(obj)` as a Rust `String`.
+fn pystr(obj: &Bound<'_, PyAny>) -> PyResult<String> {
+    Ok(obj.str()?.to_cow()?.into_owned())
+}
+
+/// `kwargs.get(key)` — `None` for a missing key.
+fn dict_get<'py>(
+    kwargs: Option<&Bound<'py, PyDict>>,
+    key: &str,
+) -> PyResult<Option<Bound<'py, PyAny>>> {
+    match kwargs {
+        Some(d) => d.get_item(key),
+        None => Ok(None),
+    }
+}
+
+/// `kwargs.get("style")` reduced to the string the post-processor compares
+/// against ("terse"/"us"); a non-str value can never match and becomes None.
+fn get_style(kwargs: Option<&Bound<'_, PyDict>>) -> PyResult<Option<String>> {
+    Ok(dict_get(kwargs, "style")?.and_then(|v| v.extract::<String>().ok()))
+}
+
+/// An `Option<&str>` kwarg (`currency`/`separator`): missing or explicit `None`
+/// -> None; a str -> Some; anything else raises TypeError exactly as passing it
+/// to the old pyfunction did.
+fn get_opt_str(kwargs: Option<&Bound<'_, PyDict>>, key: &str) -> PyResult<Option<String>> {
+    match dict_get(kwargs, key)? {
+        Some(v) if !v.is_none() => Ok(Some(v.extract::<String>()?)),
+        _ => Ok(None),
+    }
+}
+
+/// `adjective` — an `Option<bool>` kwarg with the same rules as `get_opt_str`.
+fn get_opt_bool(kwargs: Option<&Bound<'_, PyDict>>, key: &str) -> PyResult<Option<bool>> {
+    match dict_get(kwargs, key)? {
+        Some(v) if !v.is_none() => Ok(Some(v.extract::<bool>()?)),
+        _ => Ok(None),
+    }
+}
+
+/// `precision` — an `Option<u32>` kwarg.
+fn get_precision(kwargs: Option<&Bound<'_, PyDict>>) -> PyResult<Option<u32>> {
+    match dict_get(kwargs, "precision")? {
+        Some(v) if !v.is_none() => Ok(Some(v.extract::<u32>()?)),
+        _ => Ok(None),
+    }
+}
+
+/// Classify the `cents=` object and run the core's normalisation + guard.
+fn classify_cents(kwargs: Option<&Bound<'_, PyDict>>) -> PyResult<Option<(bool, bool)>> {
+    Ok(match dict_get(kwargs, "cents")? {
+        None => presentation::normalize_cents(CentsArg::Absent),
+        Some(v) => {
+            if v.is_none() {
+                presentation::normalize_cents(CentsArg::Other)
+            } else if let Ok(b) = v.downcast::<PyBool>() {
+                presentation::normalize_cents(CentsArg::Bool(b.is_true()))
+            } else if let Ok(s) = v.extract::<String>() {
+                presentation::normalize_cents(CentsArg::Str(&s))
+            } else {
+                presentation::normalize_cents(CentsArg::Other)
+            }
+        }
+    })
+}
+
+/// Marshal the caller's kwargs into a `Kwargs` bag, skipping `skip` keys.
+/// Returns `None` when a value has a type the core cannot carry — the shim's
+/// `_rust_kw_items` returning None, which makes the caller decline the branch.
+fn extras_to_kwargs(
+    kwargs: Option<&Bound<'_, PyDict>>,
+    skip: &[&str],
+) -> PyResult<Option<Kwargs>> {
+    let dict = match kwargs {
+        Some(d) => d,
+        None => return Ok(Some(Kwargs::default())),
+    };
+    let mut out: Vec<(String, KwVal)> = Vec::new();
+    for (k, v) in dict.iter() {
+        let key: String = k.extract()?;
+        if skip.contains(&key.as_str()) {
+            continue;
+        }
+        // Order mirrors `isinstance(v, (bool, int, str))` then `(list, tuple)`:
+        // bool before int (a Python bool is an int).
+        let val = if v.is_none() {
+            KwVal::None
+        } else if let Ok(b) = v.downcast::<PyBool>() {
+            KwVal::Bool(b.is_true())
+        } else if v.is_instance_of::<PyInt>() {
+            match v.extract::<i64>() {
+                Ok(i) => KwVal::Int(i),
+                // A plain int the core cannot carry -> decline the whole bag.
+                Err(_) => return Ok(None),
+            }
+        } else if let Ok(s) = v.extract::<String>() {
+            KwVal::Str(s)
+        } else if v.is_instance_of::<PyList>() || v.is_instance_of::<PyTuple>() {
+            let mut items: Vec<String> = Vec::new();
+            let mut all_str = true;
+            for x in v.try_iter()? {
+                match x?.extract::<String>() {
+                    Ok(s) => items.push(s),
+                    Err(_) => {
+                        all_str = false;
+                        break;
+                    }
+                }
+            }
+            if all_str {
+                KwVal::List(items)
+            } else {
+                return Ok(None);
+            }
+        } else {
+            return Ok(None);
+        };
+        out.push((key, val));
+    }
+    Ok(Some(Kwargs(out)))
+}
+
+/// abs(exponent) of `Decimal(str(number))` — the shim's fractional-precision
+/// computation. BigDecimal parses the same repr forms (`"1.5"`, `"1e-05"`, ...)
+/// and yields the identical scale.
+fn decimal_scale(s: &str) -> u32 {
+    BigDecimal::from_str(s)
+        .map(|d| d.as_bigint_and_exponent().1.unsigned_abs() as u32)
+        .unwrap_or(0)
+}
+
+/// The whole of the old `num2words2.__init__.num2words` pipeline: number-type
+/// classification, language resolution, mode dispatch and the `style=`
+/// post-processing — so the Python surface is a straight pass-through.
+#[pyfunction]
+#[pyo3(signature = (number, ordinal=false, lang="en", to="cardinal", **kwargs))]
+fn num2words(
+    py: Python<'_>,
+    number: &Bound<'_, PyAny>,
+    ordinal: bool,
+    lang: &str,
+    to: &str,
+    kwargs: Option<&Bound<'_, PyDict>>,
+) -> PyResult<Option<String>> {
+    // Captured before any normalisation: the core keys off the *arrival* type
+    // (a plain int vs a float/Decimal vs a str), not a post-parse value.
+    let is_str = number.is_instance_of::<PyString>();
+    let plain_int = number.is_exact_instance_of::<PyInt>(); // type(number) is int
+    let intish = number.is_instance_of::<PyInt>(); // isinstance(number, int) — incl. bool
+    let is_float = number.is_instance_of::<PyFloat>();
+    // Only import `decimal` for objects that could actually be a Decimal.
+    let is_decimal = if is_str || is_float || intish {
+        false
+    } else {
+        let decimal_cls = py.import("decimal")?.getattr("Decimal")?;
+        number.is_instance(&decimal_cls)?
+    };
+    let plain_num = is_float || is_decimal;
+
+    let resolved = presentation::resolve_lang(lang).ok_or_else(not_implemented)?;
+    let lang = resolved.as_str();
+    let l = need_lang(lang)?;
+    let style = get_style(kwargs)?;
+
+    // ---- string input: from_string owns the whole pipeline.
+    if is_str {
+        let s: String = number.extract()?;
+        let to_final = if ordinal { "ordinal" } else { to };
+        if !CONVERTER_TYPES.contains(&to_final) {
+            return Err(not_implemented());
+        }
+        let cents = classify_cents(kwargs)?;
+        let extras = extras_to_kwargs(
+            kwargs,
+            &[
+                "currency",
+                "cents",
+                "separator",
+                "adjective",
+                "style",
+                "precision",
+            ],
+        )?;
+        let (cents_bool, kw) = match (cents, extras) {
+            (Some((c, _drop)), Some(kw)) => (c, kw),
+            _ => return Err(not_implemented()),
+        };
+        let currency = get_opt_str(kwargs, "currency")?;
+        let separator = get_opt_str(kwargs, "separator")?;
+        let adjective = get_opt_bool(kwargs, "adjective")?;
+        return match from_string_core(
+            l,
+            lang,
+            &s,
+            to_final,
+            currency.as_deref(),
+            cents_bool,
+            separator.as_deref(),
+            adjective,
+            &kw,
+        )? {
+            (0, out) => Ok(out
+                .map(|o| presentation::apply_style(&o, style.as_deref(), to_final, lang))),
+            _ => Err(not_implemented()),
+        };
+    }
+
+    // ---- non-string input.
+    let to = if ordinal { "ordinal" } else { to };
+    if !CONVERTER_TYPES.contains(&to) {
+        return Err(not_implemented());
+    }
+
+    // integer modes with a plain int
+    if plain_int && RUST_TYPES.contains(&to) {
+        if let Some(kw) = extras_to_kwargs(kwargs, &["style", "precision"])? {
+            let n: BigInt = number.extract()?;
+            return match int_int_mode(l, to, &n, &kw) {
+                Ok(out) => {
+                    Ok(out.map(|o| presentation::apply_style(&o, style.as_deref(), to, lang)))
+                }
+                Err(N2WError::Fallback(_)) => Err(not_implemented()),
+                Err(e) => Err(map_err(e)),
+            };
+        }
+        // items None -> fall through
+    }
+
+    // float / Decimal, all four integer modes
+    if plain_num && RUST_TYPES.contains(&to) {
+        let finite = matches!(number.extract::<f64>(), Ok(f) if f.is_finite());
+        let items = extras_to_kwargs(
+            kwargs,
+            &[
+                "style",
+                "precision",
+                "currency",
+                "cents",
+                "separator",
+                "adjective",
+            ],
+        )?;
+        if let (true, Some(kw)) = (finite, items) {
+            let value = number.extract::<f64>()?;
+            let repr_str = pystr(number)?;
+            let prec = decimal_scale(&repr_str);
+            let decimal_str = if is_decimal {
+                repr_str.clone()
+            } else {
+                String::new()
+            };
+            let precision_override = get_precision(kwargs)?;
+            return match to_float_core(
+                l,
+                to,
+                value,
+                prec,
+                &decimal_str,
+                &repr_str,
+                precision_override,
+                &kw,
+            ) {
+                Ok(out) => {
+                    Ok(out.map(|o| presentation::apply_style(&o, style.as_deref(), to, lang)))
+                }
+                Err(N2WError::Fallback(_)) => Err(not_implemented()),
+                Err(e) => Err(map_err(e)),
+            };
+        }
+        // not finite or items None -> fall through
+    }
+
+    // currency
+    if to == "currency" && (intish || is_float || is_decimal) {
+        if let Some((cents_bool, drop)) = classify_cents(kwargs)? {
+            // cents='omit' on a float truncates to an int so no cents segment
+            // appears (the int path drops cents naturally).
+            let num_obj: Bound<'_, PyAny> = if drop && is_float {
+                py.import("builtins")?.getattr("int")?.call1((number,))?
+            } else {
+                number.clone()
+            };
+            if let Some(kw) = extras_to_kwargs(
+                kwargs,
+                &[
+                    "style",
+                    "precision",
+                    "currency",
+                    "cents",
+                    "separator",
+                    "adjective",
+                ],
+            )? {
+                let value_str = pystr(&num_obj)?;
+                let is_int_arg = num_obj.is_exact_instance_of::<PyInt>();
+                let is_float_arg = num_obj.is_instance_of::<PyFloat>();
+                let has_decimal_arg = is_float_arg || value_str.contains('.');
+                let currency = get_opt_str(kwargs, "currency")?;
+                let separator = get_opt_str(kwargs, "separator")?;
+                let adjective = get_opt_bool(kwargs, "adjective")?;
+                return match currency_core(
+                    l,
+                    &value_str,
+                    is_int_arg,
+                    has_decimal_arg,
+                    is_float_arg,
+                    currency.as_deref(),
+                    cents_bool,
+                    separator.as_deref(),
+                    adjective,
+                    &kw,
+                ) {
+                    Err(N2WError::Fallback(_)) => Err(not_implemented()),
+                    Err(e) => Err(map_err(e)),
+                    Ok(out) => Ok(out),
+                };
+            }
+            // items None -> fall through
+        }
+        // cents guard fail -> fall through
+    }
+
+    // cheque
+    if to == "cheque" && (intish || is_float || is_decimal) {
+        let value_str = pystr(number)?;
+        let currency = get_opt_str(kwargs, "currency")?;
+        return match cheque_core(l, &value_str, currency.as_deref()) {
+            Err(N2WError::Fallback(_)) => Err(not_implemented()),
+            Err(e) => Err(map_err(e)),
+            Ok(out) => Ok(out),
+        };
+    }
+
+    // fraction
+    if to == "fraction" {
+        return Err(map_err(fraction_probe(l)));
+    }
+
+    Err(not_implemented())
+}
+
+/// `num2words_sentence` — dispatches on `lang=None` (auto-detect) vs a fixed
+/// language, so the Python surface is a pass-through. `**kwargs` are accepted
+/// and ignored, matching the historic signature.
+#[pyfunction]
+#[pyo3(signature = (sentence, lang=Some("en".to_string()), to="cardinal", **_kwargs))]
+fn num2words_sentence(
+    sentence: &str,
+    lang: Option<String>,
+    to: &str,
+    _kwargs: Option<&Bound<'_, PyDict>>,
+) -> PyResult<String> {
+    match lang.as_deref() {
+        None => sentencepath::convert_auto(sentence, to).map_err(map_err),
+        Some(l) => sentencepath::convert(sentence, l, to).map_err(map_err),
+    }
 }
 
 /// `num2words2.grouping.group_digits`. The shim keeps the isinstance check
@@ -732,6 +1236,8 @@ fn _rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(to_year_kw, m)?)?;
     m.add_function(wrap_pyfunction!(to_currency_kw, m)?)?;
     m.add_function(wrap_pyfunction!(from_string, m)?)?;
+    m.add_function(wrap_pyfunction!(num2words, m)?)?;
+    m.add_function(wrap_pyfunction!(num2words_sentence, m)?)?;
     m.add_function(wrap_pyfunction!(group_digits, m)?)?;
     m.add_function(wrap_pyfunction!(maxval, m)?)?;
     m.add_function(wrap_pyfunction!(sentence, m)?)?;

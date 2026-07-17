@@ -4,6 +4,7 @@
 pub mod base;
 pub mod currency;
 pub mod floatpath;
+pub mod presentation;
 pub mod strnum;
 pub mod lang_af;
 pub mod lang_am;
