@@ -1,0 +1,40 @@
+name: Publish crate
+
+# Publishes num2words2-core to crates.io. Idempotent: skips when the manifest
+# version is already published, so re-runs and tag pushes are safe. Requires a
+# repository secret CARGO_REGISTRY_TOKEN (crates.io API token, publish-update
+# scope; publish-new for the first release).
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: publish num2words2-core to crates.io
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rust
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: publish (skip if version already on crates.io)
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: |
+          set -euo pipefail
+          CRATE=num2words2-core
+          VER=$(cargo metadata --no-deps --format-version 1 \
+            | python3 -c "import json,sys;print(next(p['version'] for p in json.load(sys.stdin)['packages'] if p['name']=='$CRATE'))")
+          echo "resolved $CRATE $VER"
+          code=$(curl -s -o /dev/null -w '%{http_code}' -H 'User-Agent: gh-actions-publish' \
+            "https://crates.io/api/v1/crates/$CRATE/$VER")
+          if [ "$code" = "200" ]; then
+            echo "$CRATE $VER already published — skipping."
+          else
+            cargo publish -p "$CRATE"
+          fi
