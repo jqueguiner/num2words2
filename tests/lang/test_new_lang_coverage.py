@@ -46,3 +46,4 @@ class TestCurrencyWithCents(TestCase):
 
 class TestPluralizeEdgeCases(TestCase):
     """Hit the pluralize() edge cases."""
+

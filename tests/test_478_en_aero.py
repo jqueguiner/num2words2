@@ -94,6 +94,7 @@ class TestEnAeroStringInput(unittest.TestCase):
         )
 
 
+
 class TestEnAeroLookup(unittest.TestCase):
     """The canonical key is ``en_Aero_ICAO``. Aliases keep older
     callers working: ``en_aero_icao``, ``en-x-aero-icao`` (BCP 47
@@ -150,17 +151,29 @@ class TestEnAeroAviationPhraseology(unittest.TestCase):
         aero.to_altitude(5500)   # "fife thousand fife hundred feet"
     """
 
+
     # ---- altitude ----
+
+
+
 
     # ---- flight level ----
 
+
     # ---- heading ----
+
 
     # ---- squawk ----
 
+
     # ---- runway ----
 
+
+
+
     # ---- frequency ----
+
+
 
 
 class TestEnAeroServiceProfiles(unittest.TestCase):
@@ -183,6 +196,7 @@ class TestEnAeroServiceProfiles(unittest.TestCase):
         "en_Aero_NATO",
     ]
 
+
     def test_all_variants_produce_icao_today(self):
         # Modern services all defer to ICAO. Output should match exactly
         # for an arbitrary input.
@@ -191,6 +205,10 @@ class TestEnAeroServiceProfiles(unittest.TestCase):
         }
         unique = set(outputs.values())
         self.assertEqual(unique, {"fife seven tree niner"}, outputs)
+
+
+
+
 
 
 if __name__ == "__main__":

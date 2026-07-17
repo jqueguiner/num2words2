@@ -413,3 +413,4 @@ class Num2WordsSOTest(TestCase):
         # Test that the converter handles various input types
         self.assertEqual(num2words(100, lang="so"), num2words("100", lang="so"))
         self.assertEqual(num2words(1000, lang="so"), num2words("1000", lang="so"))
+

@@ -404,3 +404,4 @@ class Num2WordsUZTest(TestCase):
         # Test that the converter handles various input types
         self.assertEqual(num2words(100, lang="uz"), num2words("100", lang="uz"))
         self.assertEqual(num2words(1000, lang="uz"), num2words("1000", lang="uz"))
+

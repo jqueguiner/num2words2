@@ -54,6 +54,7 @@ class TestEnglishFractions(unittest.TestCase):
         self.assertEqual(num2words(" 1 / 3 ", lang="en"), "one third")
 
 
+
 class TestRomanceLanguageFractions(unittest.TestCase):
 
     def test_french_idiomatic(self):

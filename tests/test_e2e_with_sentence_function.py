@@ -102,11 +102,11 @@ def run_csv_file(csv_path):
                 elif similarity >= 0.95:
                     results["passed"] += 1
                     results["by_language"][lang_code]["passed"] += 1
-                    status = f"[PASS] CLOSE ({similarity: .1%})"
+                    status = f"[PASS] CLOSE ({similarity:.1%})"
                 elif similarity >= 0.8:
                     results["failed"] += 1
                     results["by_language"][lang_code]["failed"] += 1
-                    status = f"[WARN] PARTIAL ({similarity: .1%})"
+                    status = f"[WARN] PARTIAL ({similarity:.1%})"
                     failures.append(
                         {
                             "row": row_num,
@@ -120,7 +120,7 @@ def run_csv_file(csv_path):
                 else:
                     results["failed"] += 1
                     results["by_language"][lang_code]["failed"] += 1
-                    status = f"[FAIL] FAIL ({similarity: .1%})"
+                    status = f"[FAIL] FAIL ({similarity:.1%})"
                     failures.append(
                         {
                             "row": row_num,
@@ -132,18 +132,18 @@ def run_csv_file(csv_path):
                         }
                     )
 
-                print(f"Row {row_num: 3} [{lang_code}]: {status}")
+                print(f"Row {row_num:3} [{lang_code}]: {status}")
 
                 # Show details for failures
                 if similarity < 0.95:
-                    print(f"  Original: {original[:60]}...")
-                    print(f"  Expected: {expected[:60]}...")
-                    print(f"  Got: {actual[:60]}...")
+                    print(f"  Original:  {original[:60]}...")
+                    print(f"  Expected:  {expected[:60]}...")
+                    print(f"  Got:       {actual[:60]}...")
 
             except Exception as e:
                 results["failed"] += 1
                 results["by_language"][lang_code]["failed"] += 1
-                print(f"Row {row_num: 3} [{lang_code}]: [ERROR] - {e}")
+                print(f"Row {row_num:3} [{lang_code}]: [ERROR] - {e}")
                 failures.append(
                     {
                         "row": row_num,
@@ -160,9 +160,9 @@ def run_csv_file(csv_path):
 
     if results["total"] > 0:
         pass_rate = (results["passed"] / results["total"]) * 100
-        print(f"Total Tests: {results['total']}")
-        print(f"Passed: {results['passed']} ({pass_rate: .1f}%)")
-        print(f"Failed: {results['failed']} ({100 - pass_rate: .1f}%)")
+        print(f"Total Tests:  {results['total']}")
+        print(f"Passed:       {results['passed']} ({pass_rate:.1f}%)")
+        print(f"Failed:       {results['failed']} ({100-pass_rate:.1f}%)")
 
         print("\nBy Language:")
         print("-" * 40)
@@ -178,7 +178,7 @@ def run_csv_file(csv_path):
                 else "[FAIL]"
             )
             print(
-                f"{status} {stats['name']: 10} ({lang: 5}): {stats['passed']}/{stats['total']} ({lang_pass_rate: .1f}%)"
+                f"{status} {stats['name']:10} ({lang:5}): {stats['passed']}/{stats['total']} ({lang_pass_rate:.1f}%)"
             )
 
     # Show worst failures
@@ -194,11 +194,11 @@ def run_csv_file(csv_path):
 
         for failure in worst:
             print(
-                f"\nRow {failure['row']} [{failure['lang']}] - Similarity: {failure['similarity']: .1%}"
+                f"\nRow {failure['row']} [{failure['lang']}] - Similarity: {failure['similarity']:.1%}"
             )
-            print(f"  Original: {failure['original'][:80]}")
-            print(f"  Expected: {failure['expected'][:80]}")
-            print(f"  Got: {failure.get('actual', 'ERROR')[:80]}")
+            print(f"  Original:  {failure['original'][:80]}")
+            print(f"  Expected:  {failure['expected'][:80]}")
+            print(f"  Got:       {failure.get('actual', 'ERROR')[:80]}")
 
     return results
 

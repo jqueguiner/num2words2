@@ -419,3 +419,4 @@ class Num2WordsJWTest(TestCase):
         # Test that the converter handles various input types
         self.assertEqual(num2words(100, lang="jw"), num2words("100", lang="jw"))
         self.assertEqual(num2words(1000, lang="jw"), num2words("1000", lang="jw"))
+

@@ -17,6 +17,7 @@
 
 from __future__ import unicode_literals
 
+from decimal import Decimal
 from unittest import TestCase
 
 from num2words2 import num2words
@@ -182,6 +183,17 @@ class Num2WordsBNTest(TestCase):
             num2words("999999999999999999.9", lang="bn"),
             "নয় হাজার নয়শত নিরানব্বই কোটি নিরানব্বই লাখ নিরানব্বই হাজার নয়শত নিরানব্বই কোটি নিরানব্বই লাখ নিরানব্বই হাজার নয়শত নিরানব্বই দশমিক নয়",
         )  # noqa: E501
+
+
+
+
+
+
+
+
+
+
+
 
     def test_negative_decimals(self):
         # Comprehensive test for negative decimals including -0.4

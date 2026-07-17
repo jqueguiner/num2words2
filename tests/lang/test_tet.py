@@ -249,6 +249,13 @@ haat atus lima neen nulu resin hitu",
             "damiliaun rihun atus ida haat nulu resin lima resin ruak",
         )
 
+
+
+
+
+
+
+
     def test_negative_decimals(self):
         # Comprehensive test for negative decimals including -0.4
         self.assertEqual(num2words(-0.4, lang="tet"), "menus mamuk vírgula haat")

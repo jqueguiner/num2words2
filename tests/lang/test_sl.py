@@ -403,6 +403,10 @@ class Num2WordsSLTest(TestCase):
         # Test large numbers with ordinal flag
         self.assertEqual(num2words(10001, lang="sl", ordinal=True), "desettisočprvi")
 
+
+
+
+
     def test_more_ordinals(self):
         """Test additional ordinal numbers."""
         # Test compound ordinals
@@ -521,6 +525,7 @@ class Num2WordsSLTest(TestCase):
             "minus ena evro petdeset centov",
         )
 
+
     def test_to_cardinal_float_negative_zero(self):
         """Test negative zero handling in float conversion."""
         # Test negative zero scenario
@@ -529,3 +534,5 @@ class Num2WordsSLTest(TestCase):
         self.assertEqual(
             num2words(-0.99, lang="sl"), "minus nič vejica devetindevetdeset"
         )
+
+

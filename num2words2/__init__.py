@@ -27,8 +27,6 @@ from __future__ import unicode_literals
 
 import decimal
 
-# The compiled core is mandatory: this package is a binder over it.
-from . import _rust as _RUST  # noqa: E402
 from .grouping import group_digits  # noqa: E402
 
 # Version information
@@ -39,6 +37,9 @@ except ImportError:
     __version__ = "unknown"
     __version_tuple__ = (0, 0, 0, "unknown", 0)
 
+
+# The compiled core is mandatory: this package is a binder over it.
+from . import _rust as _RUST  # noqa: E402
 
 _RUST_LANGS = frozenset(_RUST.supported_langs())
 _RUST_TYPES = frozenset(["cardinal", "ordinal", "ordinal_num", "year"])

@@ -32,13 +32,13 @@ def test_sentence_conversion():
     print("=" * 80)
 
     for sentence, lang, description in test_cases:
-        print(f"\n{description}: ")
-        print(f"  Input: {sentence}")
+        print(f"\n{description}:")
+        print(f"  Input:  {sentence}")
 
         try:
             if lang:
                 result = num2words_sentence(sentence, lang=lang)
-                print(f"  Lang: {lang}")
+                print(f"  Lang:   {lang}")
             else:
                 result = num2words_sentence(sentence)
                 print("  Lang:   Auto-detected")
@@ -66,8 +66,8 @@ def test_api_variations():
 
     print(f"Original: {sentence}")
     print(f"num2words_sentence: {num2words_sentence(sentence)}")
-    print(f"sentence_to_words: {sentence_to_words(sentence)}")
-    print(f"convert_sentence: {convert_sentence(sentence)}")
+    print(f"sentence_to_words:  {sentence_to_words(sentence)}")
+    print(f"convert_sentence:   {convert_sentence(sentence)}")
 
     # All should give the same result
     assert num2words_sentence(sentence) == sentence_to_words(sentence)
@@ -94,13 +94,13 @@ def test_edge_cases():
     ]
 
     for sentence, lang, description in edge_cases:
-        print(f"\n{description}: ")
-        print(f"  Input: {sentence}")
+        print(f"\n{description}:")
+        print(f"  Input:  {sentence}")
         try:
             result = num2words_sentence(sentence, lang=lang)
             print(f"  Output: {result}")
         except Exception as e:
-            print(f"  Error: {e}")
+            print(f"  Error:  {e}")
 
 
 if __name__ == "__main__":

@@ -506,3 +506,4 @@ class Num2WordsMSTest(TestCase):
         # Test that the converter handles various input types
         self.assertEqual(num2words(100, lang="ms"), num2words("100", lang="ms"))
         self.assertEqual(num2words(1000, lang="ms"), num2words("1000", lang="ms"))
+

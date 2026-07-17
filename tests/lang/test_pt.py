@@ -213,6 +213,13 @@ class Num2WordsPTTest(TestCase):
             "centésimo quadragésimo quinto milésimo milionésimo segundo",
         )
 
+
+
+
+
+
+
+
     def test_negative_decimals(self):
         # Comprehensive test for negative decimals including -0.4
         self.assertEqual(num2words(-0.4, lang="pt"), "menos zero vírgula quatro")

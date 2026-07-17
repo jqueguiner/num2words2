@@ -758,3 +758,4 @@ class Num2WordsHUTest(TestCase):
         # Test that the converter handles various input types
         self.assertEqual(num2words(100, lang="hu"), num2words("100", lang="hu"))
         self.assertEqual(num2words(1000, lang="hu"), num2words("1000", lang="hu"))
+

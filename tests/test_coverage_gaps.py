@@ -3,6 +3,7 @@ Additional tests to improve coverage for uncovered code paths.
 """
 
 from unittest import TestCase
+from unittest.mock import MagicMock, patch
 
 from num2words2 import num2words, num2words_sentence
 
