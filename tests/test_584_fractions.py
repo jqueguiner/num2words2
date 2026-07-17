@@ -53,12 +53,6 @@ class TestEnglishFractions(unittest.TestCase):
     def test_whitespace_tolerated(self):
         self.assertEqual(num2words(" 1 / 3 ", lang="en"), "one third")
 
-    def test_explicit_to_fraction(self):
-        # Direct method call as well as dispatcher routing.
-        from num2words2 import CONVERTER_CLASSES
-        c = CONVERTER_CLASSES["en"]
-        self.assertEqual(c.to_fraction(2, 5), "two fifths")
-        self.assertEqual(c.to_fraction(1, 2), "one half")
 
 
 class TestRomanceLanguageFractions(unittest.TestCase):

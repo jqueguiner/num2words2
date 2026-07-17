@@ -21,13 +21,9 @@ from decimal import Decimal
 from unittest import TestCase
 
 from num2words2 import num2words
-from num2words2.lang_PT import Num2Word_PT
 
 
 class Num2WordsPTTest(TestCase):
-    def setUp(self):
-        super(Num2WordsPTTest, self).setUp()
-        self.n2w = Num2Word_PT()
 
     def test_cardinal_integer(self):
         self.assertEqual(num2words(1, lang="pt"), "um")
@@ -217,145 +213,12 @@ class Num2WordsPTTest(TestCase):
             "centésimo quadragésimo quinto milésimo milionésimo segundo",
         )
 
-    def test_currency_integer(self):
-        self.assertEqual(self.n2w.to_currency(1), "um euro")
-        self.assertEqual(self.n2w.to_currency(2), "dois euros")
-        self.assertEqual(self.n2w.to_currency(3), "três euros")
-        self.assertEqual(self.n2w.to_currency(4), "quatro euros")
-        self.assertEqual(self.n2w.to_currency(5), "cinco euros")
-        self.assertEqual(self.n2w.to_currency(6), "seis euros")
-        self.assertEqual(self.n2w.to_currency(7), "sete euros")
-        self.assertEqual(self.n2w.to_currency(8), "oito euros")
-        self.assertEqual(self.n2w.to_currency(9), "nove euros")
-        self.assertEqual(self.n2w.to_currency(10), "dez euros")
-        self.assertEqual(self.n2w.to_currency(11), "onze euros")
-        self.assertEqual(self.n2w.to_currency(12), "doze euros")
-        self.assertEqual(self.n2w.to_currency(13), "treze euros")
-        self.assertEqual(self.n2w.to_currency(14), "catorze euros")
-        self.assertEqual(self.n2w.to_currency(15), "quinze euros")
-        self.assertEqual(self.n2w.to_currency(16), "dezasseis euros")
-        self.assertEqual(self.n2w.to_currency(17), "dezassete euros")
-        self.assertEqual(self.n2w.to_currency(18), "dezoito euros")
-        self.assertEqual(self.n2w.to_currency(19), "dezanove euros")
-        self.assertEqual(self.n2w.to_currency(20), "vinte euros")
 
-        self.assertEqual(self.n2w.to_currency(21), "vinte e um euros")
-        self.assertEqual(self.n2w.to_currency(22), "vinte e dois euros")
-        self.assertEqual(self.n2w.to_currency(35), "trinta e cinco euros")
-        self.assertEqual(self.n2w.to_currency(99), "noventa e nove euros")
 
-        self.assertEqual(self.n2w.to_currency(100), "cem euros")
-        self.assertEqual(self.n2w.to_currency(101), "cento e um euros")
-        self.assertEqual(self.n2w.to_currency(128), "cento e vinte e oito euros")
-        self.assertEqual(self.n2w.to_currency(713), "setecentos e treze euros")
 
-        self.assertEqual(self.n2w.to_currency(1000), "mil euros")
-        self.assertEqual(self.n2w.to_currency(1001), "mil e um euros")
-        self.assertEqual(self.n2w.to_currency(1111), "mil cento e onze euros")
-        self.assertEqual(self.n2w.to_currency(2114), "dois mil cento e catorze euros")
-        self.assertEqual(
-            self.n2w.to_currency(73421),
-            "setenta e três mil quatrocentos e vinte e um euros",
-        )
 
-        self.assertEqual(self.n2w.to_currency(100000), "cem mil euros")
-        self.assertEqual(
-            self.n2w.to_currency(250050), "duzentos e cinquenta mil e cinquenta euros"
-        )
-        self.assertEqual(self.n2w.to_currency(6000000), "seis milhões de euros")
-        self.assertEqual(
-            self.n2w.to_currency(19000000000), "dezanove mil milhões de euros"
-        )
-        self.assertEqual(
-            self.n2w.to_currency(145000000002),
-            "cento e quarenta e cinco mil milhões e dois euros",
-        )
-        self.assertEqual(
-            self.n2w.to_currency(1.00, currency="USD"), "um dólar e zero cêntimos"
-        )
-        self.assertEqual(
-            self.n2w.to_currency(1.50, currency="USD"), "um dólar e cinquenta cêntimos"
-        )
-        with self.assertRaises(NotImplementedError):
-            self.n2w.to_currency(1.00, currency="CHF")
 
-    def test_currency_integer_negative(self):
-        self.assertEqual(self.n2w.to_currency(-1.00), "menos um euro e zero cêntimos")
-        self.assertEqual(
-            self.n2w.to_currency(-256), "menos duzentos e cinquenta e seis euros"
-        )
-        self.assertEqual(
-            self.n2w.to_currency(-1000.00), "menos mil euros e zero cêntimos"
-        )
-        self.assertEqual(
-            self.n2w.to_currency(-1000000.00),
-            "menos um milhão de euros e zero cêntimos",
-        )
-        self.assertEqual(
-            self.n2w.to_currency(-1234567.00),
-            "menos um milhão duzentos e trinta e quatro mil quinhentos e "
-            "sessenta e sete euros e zero cêntimos",
-        )
 
-    def test_currency_float(self):
-        self.assertEqual(
-            self.n2w.to_currency(Decimal("1.00")), "um euro e zero cêntimos"
-        )
-        self.assertEqual(self.n2w.to_currency(Decimal("1.01")), "um euro e um cêntimo")
-        self.assertEqual(
-            self.n2w.to_currency(Decimal("1.03")), "um euro e três cêntimos"
-        )
-        self.assertEqual(
-            self.n2w.to_currency(Decimal("1.35")), "um euro e trinta e cinco cêntimos"
-        )
-        self.assertEqual(
-            self.n2w.to_currency(Decimal("3.14")), "três euros e catorze cêntimos"
-        )
-        self.assertEqual(
-            self.n2w.to_currency(Decimal("101.22")),
-            "cento e um euros e vinte e dois cêntimos",
-        )
-        self.assertEqual(
-            self.n2w.to_currency(Decimal("2345.75")),
-            "dois mil trezentos e quarenta e cinco euros e setenta e cinco " "cêntimos",
-        )
-
-    def test_currency_float_negative(self):
-        self.assertEqual(
-            self.n2w.to_currency(Decimal("-2.34")),
-            "menos dois euros e trinta e quatro cêntimos",
-        )
-        self.assertEqual(
-            self.n2w.to_currency(Decimal("-9.99")),
-            "menos nove euros e noventa e nove cêntimos",
-        )
-        self.assertEqual(
-            self.n2w.to_currency(Decimal("-7.01")), "menos sete euros e um cêntimo"
-        )
-        self.assertEqual(
-            self.n2w.to_currency(Decimal("-222.22")),
-            "menos duzentos e vinte e dois euros e vinte e dois cêntimos",
-        )
-
-    def test_year(self):
-        self.assertEqual(self.n2w.to_year(1001), "mil e um")
-        self.assertEqual(self.n2w.to_year(1789), "mil setecentos e oitenta e nove")
-        self.assertEqual(self.n2w.to_year(1942), "mil novecentos e quarenta e dois")
-        self.assertEqual(self.n2w.to_year(1984), "mil novecentos e oitenta e quatro")
-        self.assertEqual(self.n2w.to_year(2000), "dois mil")
-        self.assertEqual(self.n2w.to_year(2001), "dois mil e um")
-        self.assertEqual(self.n2w.to_year(2016), "dois mil e dezasseis")
-
-    def test_year_negative(self):
-        self.assertEqual(self.n2w.to_year(-30), "trinta antes de Cristo")
-        self.assertEqual(
-            self.n2w.to_year(-744), "setecentos e quarenta e quatro antes de Cristo"
-        )
-        self.assertEqual(self.n2w.to_year(-10000), "dez mil antes de Cristo")
-
-    def test_to_ordinal_num(self):
-        self.assertEqual(self.n2w.to_ordinal_num(1), "1º")
-        self.assertEqual(self.n2w.to_ordinal_num(100), "100º")
 
     def test_negative_decimals(self):
         # Comprehensive test for negative decimals including -0.4

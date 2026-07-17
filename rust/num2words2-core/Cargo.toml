@@ -2,6 +2,13 @@
 name = "num2words2-core"
 version.workspace = true
 edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+description = "Number-to-words conversion for 120+ languages (Rust port of num2words). 42 -> forty-two."
+keywords = ["num2words", "number", "cardinal", "spellout", "i18n"]
+categories = ["internationalization", "text-processing"]
 
 [dependencies]
 num-bigint = "0.4"

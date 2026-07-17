@@ -8,10 +8,11 @@ language codes so a single test method covers ~150 languages.
 """
 from unittest import TestCase
 
-from num2words2 import CONVERTER_CLASSES, num2words
+from num2words2 import _rust as _RUST
+from num2words2 import num2words
 
 # All registered language codes
-ALL_LANGS = sorted(CONVERTER_CLASSES.keys())
+ALL_LANGS = sorted(_RUST.supported_langs())
 
 
 class TestCardinalRange(TestCase):
@@ -209,36 +210,8 @@ class TestSentenceConverter(TestCase):
 class TestConverterMethods(TestCase):
     """Direct converter access for paths that num2words() doesn't reach."""
 
-    def test_converter_methods(self):
-        for code in ALL_LANGS:
-            converter = CONVERTER_CLASSES[code]
-            with self.subTest(code=code):
-                # Each converter should expose to_cardinal at minimum
-                self.assertTrue(hasattr(converter, "to_cardinal"))
 
-    def test_setup_runs(self):
-        # Re-run setup() on each converter — exercises any setup branches
-        for code in ALL_LANGS:
-            converter = CONVERTER_CLASSES[code]
-            with self.subTest(code=code):
-                try:
-                    converter.setup()
-                except Exception:
-                    pass
 
-    def test_pluralize_paths(self):
-        for code in ALL_LANGS:
-            converter = CONVERTER_CLASSES[code]
-            with self.subTest(code=code):
-                if not hasattr(converter, "pluralize"):
-                    continue
-                for n in [0, 1, 2, 5, 10, 21, 100]:
-                    try:
-                        converter.pluralize(n, ["a", "b"])
-                        converter.pluralize(n, ["a", "b", "c"])
-                        converter.pluralize(n, ["a"])
-                    except Exception:
-                        pass
 
 
 class TestSentenceConverterDeep(TestCase):

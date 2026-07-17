@@ -1,7 +1,6 @@
 from unittest import TestCase
 
 from num2words2 import num2words
-from num2words2.lang_AF import Num2Word_AF  # Needed for test_pluralize_method
 from tests.basetest import LangTest
 
 
@@ -230,10 +229,3 @@ class TestAF(LangTest, TestCase):  # Inherit from LangTest and TestCase
         self.assertRaises(TypeError, num2words, 3.14, ordinal=True, lang=self.lang)
         self.assertRaises(TypeError, num2words, 0.5, ordinal=True, lang=self.lang)
 
-    def test_pluralize_method(self):
-        converter = Num2Word_AF()
-        zar_major, zar_minor = converter.CURRENCY_FORMS["ZAR"]
-        self.assertEqual(converter.pluralize(1, zar_major), "rand")
-        self.assertEqual(converter.pluralize(2, zar_major), "rand")
-        self.assertEqual(converter.pluralize(1, zar_minor), "sent")
-        self.assertEqual(converter.pluralize(2, zar_minor), "sent")

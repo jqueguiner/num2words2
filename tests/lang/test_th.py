@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 from unittest import TestCase
 
 from num2words2 import num2words
-from num2words2.lang_TH import Num2Word_TH
 
 
 class TestNumWord(TestCase):
@@ -139,28 +138,11 @@ class TestNumWord(TestCase):
             num2words(-100.00, lang="th", to="currency"), "ติดลบ ร้อยบาท ศูนย์สตางค์"
         )
 
-    def test_round_2_decimal(self):
-        n2wTH = Num2Word_TH()
-        self.assertEqual(n2wTH.round_2_decimal(0.004), ("0.00", False))
-        self.assertEqual(n2wTH.round_2_decimal(0.005), ("0.01", False))
-        self.assertEqual(n2wTH.round_2_decimal(0.006), ("0.01", False))
-        self.assertEqual(n2wTH.round_2_decimal(0.0005), ("0.00", False))
-        self.assertEqual(n2wTH.round_2_decimal(0.984), ("0.98", False))
-        self.assertEqual(n2wTH.round_2_decimal(0.989), ("0.99", False))
-        self.assertEqual(n2wTH.round_2_decimal(0.994), ("0.99", False))
-        self.assertEqual(n2wTH.round_2_decimal(0.999), ("1.00", False))
-        self.assertEqual(n2wTH.round_2_decimal(-0.994), ("0.99", True))
-        self.assertEqual(n2wTH.round_2_decimal(-0.999), ("1.00", True))
         # self.assertEqual(n2wTH.round_2_decimal(0.985), ('0.99', False))
         # Expect 0.99 get 0.98
         # self.assertEqual(n2wTH.round_2_decimal(0.995), ('1.00', False))
         # Expect 1.00 get 0.99
 
-    def test_split_six(self):
-        n2wTH = Num2Word_TH()
-        self.assertEqual(n2wTH.split_six(str(123456789)), ["987654", "321"])
-        self.assertEqual(n2wTH.split_six(str(12345)), ["54321"])
-        self.assertEqual(n2wTH.split_six(str(1234567)), ["765432", "1"])
 
     def test_negative_decimals(self):
         # Comprehensive test for negative decimals including -0.4

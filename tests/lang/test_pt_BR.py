@@ -445,37 +445,6 @@ class Num2WordsPT_BRTest(TestCase):
         result = num2words(3.14, lang="pt-br", ordinal=True)
         self.assertIsNotNone(result)
 
-    def test_converter_methods(self):
-        """Test direct converter methods for better coverage."""
-        from num2words2.lang_PT_BR import Num2Word_PT_BR, negativeword
-
-        converter = Num2Word_PT_BR()
-
-        # Test direct cardinal conversion
-        self.assertIsNotNone(converter.to_cardinal(42))
-        self.assertIsNotNone(converter.to_cardinal(1337))
-
-        # Test setup method
-        converter.setup()
-
-        # Test negative word if exists
-        if hasattr(converter, "negword"):
-            self.assertIsNotNone(converter.negword)
-
-        # Test point word if exists
-        if hasattr(converter, "pointword"):
-            self.assertIsNotNone(converter.pointword)
-
-        # Test negativeword function
-        self.assertEqual(negativeword(converter), "menos ")
-
-        # Test thousand_separators
-        self.assertIn(3, converter.thousand_separators)
-        self.assertEqual(converter.thousand_separators[3], "milésimo")
-        self.assertEqual(converter.thousand_separators[6], "milionésimo")
-        self.assertEqual(converter.thousand_separators[9], "bilionésimo")
-        self.assertEqual(converter.thousand_separators[12], "trilionésimo")
-        self.assertEqual(converter.thousand_separators[15], "quatrilionésimo")
 
     def test_more_currency_cases(self):
         """Test additional currency cases."""
@@ -573,33 +542,6 @@ class Num2WordsPT_BRTest(TestCase):
             "menos um real e cinquenta centavos",
         )
 
-    def test_merge_special_cases(self):
-        """Test special cases in merge method."""
-        from num2words2.lang_PT_BR import Num2Word_PT_BR
-
-        converter = Num2Word_PT_BR()
-        converter.setup()
-
-        # Test cnum == 1 with nnum < 1000000 (should return just ntext)
-        result = converter.merge(("um", 1), ("mil", 1000))
-        self.assertEqual(result, ("mil", 1000))
-
-        # Test cnum == 1 with nnum == 1000000 (should become 'um')
-        result = converter.merge(("um", 1), ("milhão", 1000000))
-        self.assertEqual(result, ("um milhão", 1000000))
-
-        # Test 100 becoming 'cento'
-        result = converter.merge(("cem", 100), ("vinte", 20))
-        self.assertEqual(result, ("cento e vinte", 120))
-
-        # Test millions pluralization for cnum > 1
-        result = converter.merge(("dois", 2), ("milhão", 1000000))
-        self.assertEqual(result, ("dois milhões", 2000000))
-
-        # Test hundreds multiplication
-        converter.hundreds = {2: "duzentos", 3: "trezentos"}
-        result = converter.merge(("dois", 2), ("cem", 100))
-        self.assertEqual(result, ("duzentos", 200))
 
     def test_trillion_scale(self):
         """Test Brazilian short scale for trillions."""

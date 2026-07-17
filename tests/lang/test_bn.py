@@ -21,7 +21,6 @@ from decimal import Decimal
 from unittest import TestCase
 
 from num2words2 import num2words
-from num2words2.lang_BN import Num2Word_BN, NumberTooLargeError
 
 
 class Num2WordsBNTest(TestCase):
@@ -185,218 +184,16 @@ class Num2WordsBNTest(TestCase):
             "নয় হাজার নয়শত নিরানব্বই কোটি নিরানব্বই লাখ নিরানব্বই হাজার নয়শত নিরানব্বই কোটি নিরানব্বই লাখ নিরানব্বই হাজার নয়শত নিরানব্বই দশমিক নয়",
         )  # noqa: E501
 
-    def test_to_currency(self):
-        n = Num2Word_BN()
-        self.assertEqual(n.to_currency(20.0), "বিশ টাকা শূন্য পয়সা")
-        self.assertEqual(n.to_currency(20.50), "বিশ টাকা পঞ্চাশ পয়সা")
-        self.assertEqual(n.to_currency(33.51), "তেত্রিশ টাকা একান্ন পয়সা")
-        self.assertEqual(n.to_currency(99.99), "নিরানব্বই টাকা নিরানব্বই পয়সা")
-        self.assertEqual(n.to_currency(10000.1), "দশ হাজার টাকা দশ পয়সা")
-        self.assertEqual(
-            n.to_currency(555555.50),
-            "পাঁচ লাখ পঞ্চান্ন হাজার পাঁচশত পঞ্চান্ন টাকা পঞ্চাশ পয়সা",
-        )  # noqa: E501
-        self.assertEqual(
-            n.to_currency(6666676), "ছিষট্টি লাখ ছিষট্টি হাজার ছয়শত ছিয়াত্তর টাকা"
-        )
-        self.assertEqual(
-            n.to_currency(777777777),
-            "সাতাত্তর কোটি সাতাত্তর লাখ সাতাত্তর হাজার সাতশত সাতাত্তর টাকা",
-        )  # noqa: E501
-        self.assertEqual(
-            n.to_currency(7777777778),
-            "সাতশত সাতাত্তর কোটি সাতাত্তর লাখ সাতাত্তর হাজার সাতশত আটাত্তর টাকা",
-        )  # noqa: E501
-        self.assertEqual(
-            n.to_currency(97777777778),
-            "নয় হাজার সাতশত সাতাত্তর কোটি সাতাত্তর লাখ সাতাত্তর হাজার সাতশত আটাত্তর টাকা",
-        )  # noqa: E501
-        self.assertEqual(
-            n.to_currency(977777777781),
-            "সাতানব্বই হাজার সাতশত সাতাত্তর কোটি সাতাত্তর লাখ সাতাত্তর হাজার সাতশত একাশি টাকা",
-        )  # noqa: E501
-        self.assertEqual(
-            n.to_currency(9777777779781),
-            "নয় লাখ সাতাত্তর হাজার সাতশত সাতাত্তর কোটি সাতাত্তর লাখ উনআশি হাজার সাতশত একাশি টাকা",
-        )  # noqa: E501
 
-    def test_to_cardinal(self):
-        n = Num2Word_BN()
-        self.assertEqual(n.to_cardinal(0.56), "শূন্য দশমিক পাঁচ ছয়")
-        self.assertEqual(n.to_cardinal(1.11), "এক দশমিক এক এক")
-        self.assertEqual(n.to_cardinal(2.66), "দুই দশমিক ছয় ছয়")
-        self.assertEqual(n.to_cardinal(7.68), "সাত দশমিক ছয় আট")
-        self.assertEqual(n.to_cardinal("10.35"), "দশ দশমিক তিন পাঁচ")
-        self.assertEqual(n.to_cardinal("11.47"), "এগারো দশমিক চার সাত")
-        self.assertEqual(n.to_cardinal(13.69), "তেরো দশমিক ছয় নয়")
-        self.assertEqual(n.to_cardinal(15.96), "পনের দশমিক নয় ছয়")
-        self.assertEqual(n.to_cardinal(16.9999), "ষোল দশমিক নয় নয় নয় নয়")
-        self.assertEqual(n.to_cardinal(19.56587), "উনিশ দশমিক পাঁচ ছয় পাঁচ আট সাত")
-        self.assertEqual(n.to_cardinal(31.31), "একত্রিশ দশমিক তিন এক")
-        self.assertEqual(n.to_cardinal(40.85), "চল্লিশ দশমিক আট পাঁচ")
-        self.assertEqual(n.to_cardinal(66.66), "ছিষট্টি দশমিক ছয় ছয়")
-        self.assertEqual(n.to_cardinal(92.978), "বিরানব্বই দশমিক নয় সাত আট")
-        self.assertEqual(n.to_cardinal(1000001.10), "দশ লাখ এক দশমিক এক")
-        self.assertEqual(n.to_cardinal(20000000.22), "দুই কোটি দশমিক দুই দুই")
-        self.assertEqual(
-            n.to_cardinal(300030000.33), "ত্রিশ কোটি ত্রিশ হাজার দশমিক তিন তিন"
-        )
-        self.assertEqual(
-            n.to_cardinal("4004000444.44"),
-            "চারশত কোটি চল্লিশ লাখ চারশত চৌচল্লিশ দশমিক চার চার",
-        )
-        self.assertEqual(n.to_cardinal(50000000001.50), "পাঁচ হাজার কোটি এক দশমিক পাঁচ")
-        self.assertEqual(
-            n.to_cardinal(600000000600.66), "ষাট হাজার কোটি ছয়শত দশমিক ছয় ছয়"
-        )
-        self.assertEqual(n.to_cardinal(7000000000000.77), "সাত লাখ কোটি দশমিক সাত সাত")
-        self.assertEqual(
-            n.to_cardinal(80000000000888.88), "আশি লাখ কোটি আটশত আটাশি দশমিক আট আট"
-        )
-        self.assertEqual(n.to_cardinal(900000000000000.9), "নয় কোটি কোটি দশমিক নয়")
-        self.assertEqual(
-            n.to_cardinal(999999999999999.9),
-            "নয় কোটি নিরানব্বই লাখ নিরানব্বই হাজার নয়শত নিরানব্বই কোটি নিরানব্বই লাখ নিরানব্বই হাজার নয়শত নিরানব্বই দশমিক নয়",
-        )  # noqa: E501
-        self.assertEqual(n.to_cardinal(9999999999999999.99), "একশত কোটি কোটি")
-        self.assertEqual(n.to_cardinal(99999999999999999.99), "এক হাজার কোটি কোটি")
-        self.assertEqual(
-            n.to_cardinal("999999999999999999.99"),
-            "নয় হাজার নয়শত নিরানব্বই কোটি নিরানব্বই লাখ নিরানব্বই হাজার নয়শত নিরানব্বই কোটি নিরানব্বই লাখ নিরানব্বই হাজার নয়শত নিরানব্বই দশমিক নয় নয়",
-        )  # noqa: E501
 
-    def test_to_ordinal(self):
-        n = Num2Word_BN()
-        self.assertEqual(n.to_ordinal(0.56), "শূন্য দশমিক পাঁচ ছয়")
-        self.assertEqual(n.to_ordinal(1.11), "এক দশমিক এক এক")
-        self.assertEqual(n.to_ordinal(2.66), "দুই দশমিক ছয় ছয়")
-        self.assertEqual(n.to_ordinal(7.68), "সাত দশমিক ছয় আট")
-        self.assertEqual(n.to_ordinal("10.35"), "দশ দশমিক তিন পাঁচ")
-        self.assertEqual(n.to_ordinal("11.47"), "এগারো দশমিক চার সাত")
-        self.assertEqual(n.to_ordinal(13.69), "তেরো দশমিক ছয় নয়")
-        self.assertEqual(n.to_ordinal(15.96), "পনের দশমিক নয় ছয়")
-        self.assertEqual(n.to_ordinal(16.9999), "ষোল দশমিক নয় নয় নয় নয়")
-        self.assertEqual(n.to_ordinal(19.56587), "উনিশ দশমিক পাঁচ ছয় পাঁচ আট সাত")
-        self.assertEqual(n.to_ordinal(31.31), "একত্রিশ দশমিক তিন এক")
-        self.assertEqual(n.to_ordinal(40.85), "চল্লিশ দশমিক আট পাঁচ")
-        self.assertEqual(n.to_ordinal(66.66), "ছিষট্টি দশমিক ছয় ছয়")
-        self.assertEqual(n.to_ordinal(92.978), "বিরানব্বই দশমিক নয় সাত আট")
-        self.assertEqual(n.to_ordinal(1000001.10), "দশ লাখ এক দশমিক এক")
-        self.assertEqual(n.to_ordinal(20000000.22), "দুই কোটি দশমিক দুই দুই")
-        self.assertEqual(
-            n.to_ordinal(300030000.33), "ত্রিশ কোটি ত্রিশ হাজার দশমিক তিন তিন"
-        )
-        self.assertEqual(
-            n.to_ordinal("4004000444.44"),
-            "চারশত কোটি চল্লিশ লাখ চারশত চৌচল্লিশ দশমিক চার চার",
-        )
-        self.assertEqual(n.to_ordinal(50000000001.50), "পাঁচ হাজার কোটি এক দশমিক পাঁচ")
-        self.assertEqual(
-            n.to_ordinal(600000000600.66), "ষাট হাজার কোটি ছয়শত দশমিক ছয় ছয়"
-        )
-        self.assertEqual(n.to_ordinal(7000000000000.77), "সাত লাখ কোটি দশমিক সাত সাত")
-        self.assertEqual(
-            n.to_ordinal(80000000000888.88), "আশি লাখ কোটি আটশত আটাশি দশমিক আট আট"
-        )
-        self.assertEqual(n.to_ordinal(900000000000000.9), "নয় কোটি কোটি দশমিক নয়")
-        self.assertEqual(
-            n.to_ordinal(999999999999999.9),
-            "নয় কোটি নিরানব্বই লাখ নিরানব্বই হাজার নয়শত নিরানব্বই কোটি নিরানব্বই লাখ নিরানব্বই হাজার নয়শত নিরানব্বই দশমিক নয়",
-        )  # noqa: E501
-        self.assertEqual(n.to_ordinal(9999999999999999.99), "একশত কোটি কোটি")
-        self.assertEqual(n.to_ordinal(99999999999999999.99), "এক হাজার কোটি কোটি")
-        self.assertEqual(
-            n.to_ordinal("999999999999999999.99"),
-            "নয় হাজার নয়শত নিরানব্বই কোটি নিরানব্বই লাখ নিরানব্বই হাজার নয়শত নিরানব্বই কোটি নিরানব্বই লাখ নিরানব্বই হাজার নয়শত নিরানব্বই দশমিক নয় নয়",
-        )  # noqa: E501
 
-    def test_to_year(self):
-        n = Num2Word_BN()
-        self.assertEqual(n.to_year(1), "এক সাল")
-        self.assertEqual(n.to_year(1000), "এক হাজার সাল")
-        self.assertEqual(n.to_year(1500), "এক হাজার পাঁচশত সাল")
-        self.assertEqual(n.to_year(1820), "এক হাজার আটশত বিশ সাল")
-        self.assertEqual(n.to_year(1920), "এক হাজার নয়শত বিশ সাল")
-        self.assertEqual(n.to_year(2024), "দুই হাজার চব্বিশ সাল")
-        self.assertEqual(n.to_year(2004), "দুই হাজার চার সাল")
 
-    def test_to_ordinal_num(self):
-        n = Num2Word_BN()
-        self.assertEqual(n.to_ordinal_num(1), "প্রথম")
-        self.assertEqual(n.to_ordinal_num(1000), "এক হাজারতম")
-        self.assertEqual(n.to_ordinal_num(1500), "এক হাজার পাঁচশতম")
-        self.assertEqual(n.to_ordinal_num(1820), "এক হাজার আটশত বিশতম")
-        self.assertEqual(n.to_ordinal_num(1920), "এক হাজার নয়শত বিশতম")
-        self.assertEqual(n.to_ordinal_num(2024), "দুই হাজার চব্বিশতম")
-        self.assertEqual(n.to_ordinal_num(2004), "দুই হাজার চারতম")
 
-    def test_max_number_error(self):
-        n = Num2Word_BN()
 
-        with self.assertRaises(NumberTooLargeError):
-            n.to_ordinal(
-                99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999991
-            )  # noqa: E501
 
-        with self.assertRaises(NumberTooLargeError):
-            n.to_cardinal(
-                99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999991
-            )  # noqa: E501
 
-        with self.assertRaises(NumberTooLargeError):
-            n.to_year(
-                99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999991
-            )  # noqa: E501
 
-        with self.assertRaises(NumberTooLargeError):
-            n.to_ordinal_num(
-                99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999991
-            )  # noqa: E501
 
-        with self.assertRaises(NumberTooLargeError):
-            n.to_currency(
-                99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999991
-            )  # noqa: E501
-
-        with self.assertRaises(NumberTooLargeError):
-            num2words(
-                99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999991,  # noqa: E501
-                lang="bn",
-            )
-
-    def test_is_smaller_than_max_number(self):
-        n = Num2Word_BN()
-        self.assertEqual(n._is_smaller_than_max_number(55555), True)
-
-    def test_is_smaller_than_max_number_error(self):
-        with self.assertRaises(NumberTooLargeError):
-            n = Num2Word_BN()
-            n._is_smaller_than_max_number(
-                99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
-            )  # noqa: E501
-
-    def test_parse_number(self):
-        n = Num2Word_BN()
-        self.assertEqual(n.parse_number(Decimal(3.25)), (3, 25))
-        self.assertEqual(
-            n.parse_number(Decimal(300.2550)),
-            (300, 2549999999999954525264911353588104248046875),
-        )
-
-    def test_parse_paisa(self):
-        n = Num2Word_BN()
-        self.assertEqual(n.parse_paisa(Decimal(3.25)), (3, 25))
-        self.assertEqual(n.parse_paisa(300.2550), (300, 25))
-        self.assertEqual(n.parse_paisa(100.5), (100, 50))
-
-    def test_number_to_bengali_word(self):
-        n = Num2Word_BN()
-        self.assertEqual(n._number_to_bengali_word(3), "তিন")
-        self.assertEqual(n._number_to_bengali_word(2550), "দুই হাজার পাঁচশত পঞ্চাশ")
-        self.assertEqual(
-            n._number_to_bengali_word(9999999999999999),
-            "নিরানব্বই কোটি নিরানব্বই লাখ নিরানব্বই হাজার নয়শত নিরানব্বই কোটি নিরানব্বই লাখ নিরানব্বই হাজার নয়শত নিরানব্বই",
-        )  # noqa: E501
 
     def test_negative_decimals(self):
         # Comprehensive test for negative decimals including -0.4

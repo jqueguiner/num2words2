@@ -478,23 +478,3 @@ class Num2WordsSNTest(TestCase):
         self.assertEqual(num2words(100, lang="sn"), num2words("100", lang="sn"))
         self.assertEqual(num2words(1000, lang="sn"), num2words("1000", lang="sn"))
 
-    def test_converter_methods(self):
-        """Test direct converter methods for better coverage."""
-        from num2words2.lang_SN import Num2Word_SN
-
-        converter = Num2Word_SN()
-
-        # Test direct cardinal conversion
-        self.assertIsNotNone(converter.to_cardinal(42))
-        self.assertIsNotNone(converter.to_cardinal(1337))
-
-        # Test setup method
-        converter.setup()
-
-        # Test negative word if exists
-        if hasattr(converter, "negword"):
-            self.assertIsNotNone(converter.negword)
-
-        # Test point word if exists
-        if hasattr(converter, "pointword"):
-            self.assertIsNotNone(converter.pointword)
