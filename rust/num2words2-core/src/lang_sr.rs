@@ -1,0 +1,1061 @@
+//! Port of `lang_SR.py` (Serbian, Cyrillic script).
+//!
+//! Registry: `__init__.py` maps **both** `"sr"` and `"sr_Cyrl"` to
+//! `lang_SR.Num2Word_SR()`. (`"sr_Latn"` is a different class,
+//! `Num2Word_SR_LATN`, and is not this file's concern.)
+//!
+//! Shape: **self-contained**. `Num2Word_SR` subclasses `Num2Word_Base` but
+//! defines no `high_numwords`/`mid_numwords`/`low_numwords`, so the
+//! `hasattr` guard in `Num2Word_Base.__init__` never fires: Python builds
+//! neither `self.cards` nor `self.MAXVAL`. `to_cardinal` is overridden
+//! outright and drives `_int2word` over 3-digit chunks. Consequently
+//! `cards`/`maxval`/`merge` stay at their trait defaults here, and there is
+//! **no overflow check** — the only ceiling is the `SCALE` table, which
+//! raises `KeyError` rather than `OverflowError` (see below).
+//!
+//! `setup()` sets `negword = "минус"` and `pointword = "запета"`. The
+//! pointword is reached through the float/Decimal branch of `to_cardinal`,
+//! ported below as [`LangSr::cardinal_float_str`].
+//!
+//! Inherited from `Num2Word_Base` (unchanged by SR, so the trait defaults do
+//! the right thing):
+//!   * `to_ordinal_num(value) -> value`  → default `Ok(value.to_string())`
+//!   * `to_year(value)        -> self.to_cardinal(value)` → default delegates
+//!     through `&self`, picking up the `to_cardinal` override below. There is
+//!     no era/BC handling: `to_year(-500)` == `to_cardinal(-500)` ==
+//!     "минус петсто".
+//!
+//! # The float branch of `to_cardinal`
+//!
+//! Python's `to_cardinal` starts with `n = str(number).replace(",", ".")` and
+//! branches on `"." in n`. For integral input (`to_cardinal`, [`LangSr::to_cardinal`])
+//! `str(BigInt)` never contains `.` or `,`, so control reaches the `else` arm:
+//! `self._int2word(int(n), feminine)`. Non-integer input (a Python `float` or
+//! `Decimal`) reaches the `"." in n` arm, ported here as
+//! [`LangSr::to_cardinal_float`] — `pointword`, leading-zero "нула" prefixes and
+//! the whole-number rendering of the fraction included. Because SR overrides
+//! `to_cardinal` rather than `to_cardinal_float`, that override is what the
+//! dispatcher reaches for floats; SR never inherits `Num2Word_Base`'s
+//! digit-by-digit `to_cardinal_float`.
+//!
+//! Because the branch test is on the *string*, the full float entry
+//! ([`Lang::cardinal_float_entry`]) is overridden to send **every**
+//! float/Decimal — whole values included — through the string algorithm:
+//! `to_cardinal(5.0)` reads `str(5.0)` == "5.0", finds the ".", and renders
+//! "пет запета нула нула" where the base default would say "пет". Values
+//! whose Python string form has *no* "." fall to `int(n)`:
+//!
+//! * `Decimal("5")`, `Decimal("500")` — plain digits, integer path.
+//! * `1e+16`, `1e+20` (repr exponent form) and `Decimal("1E+2")` /
+//!   `Decimal("1E+20")` (spec `__str__` exponent form) — `int("1e+16")`
+//!   raises **ValueError** ("invalid literal for int() with base 10: ...").
+//!   That is Python's crash, corpus-pinned, and reproduced by
+//!   [`python_number_str`].
+//! * `Decimal("Infinity")` (string input "Infinity") — `int("Infinity")` is
+//!   the same ValueError; see the `str_to_number` override.
+//!
+//! `to_year` is Base's `self.to_cardinal(value)`, so the default
+//! `year_float_entry` (→ the overridden `cardinal_float_entry`) is already
+//! right. `to_ordinal` `int()`s the **value**, not the string — truncation
+//! toward zero — so `to_ordinal(2.5)` == "други" and `to_ordinal(1e+16)`
+//! *succeeds* ("десет билијардии") where the cardinal raises; see the
+//! `ordinal_float_entry` override below.
+//!
+//! # Grammatical kwargs
+//!
+//! `to_cardinal(self, number, feminine=False)` is the only SR signature with
+//! an extra kwarg. `feminine` flips the `ONES` gender column
+//! (`to_cardinal(2, feminine=True)` == "две") — except on the negative
+//! recursion, which drops it (quirk 5), and in the teens (one form only).
+//! Ported in `to_cardinal_kw`/`to_cardinal_float_kw`; only `bool` and `None`
+//! values are accepted (Python treats `feminine=None` as falsy via
+//! `feminine or SCALE[...]`; a truthy non-bool like `feminine=2` would
+//! `int()` to an out-of-range tuple index — those fall back to Python).
+//!
+//! # Faithfully reproduced Python quirks
+//!
+//! This is a port, not a rewrite. All of the following are exactly what
+//! Python emits; none are "fixed" here:
+//!
+//! 1. **`to_ordinal` is a lookup table plus a naive "и" suffix.** Only the
+//!    keys 1..=20, 30, 40, ..., 90, 100 and 1000 have real ordinal words.
+//!    Every other input falls through to `self.to_cardinal(num) + "и"`,
+//!    which produces non-words. Verified against the corpus:
+//!    `to_ordinal(0)` == "нулаи", `to_ordinal(21)` == "двадесет једани",
+//!    `to_ordinal(1100)` == "хиљада стои", `to_ordinal(2000)` ==
+//!    "две хиљадеи", `to_ordinal(10**9)` == "милијардаи". The Python source
+//!    even flags itself: "This is a simplified implementation".
+//! 2. **Negative ordinals are suffixed, not rejected.** `to_ordinal(-1)` ==
+//!    "минус једани". `Num2Word_Base` has an `errmsg_negord` message, but SR
+//!    never consults it, so no error is raised. (Contrast `lang_PL`, which
+//!    crashes with `ValueError` on every negative ordinal — SR does not,
+//!    because `_int2word` takes `abs()` *before* the string is chunked, so
+//!    the "-" never reaches `splitbyx`/`get_digits`.)
+//! 3. **`pluralize` treats `n % 100 == 10` as a teen.** The guard is
+//!    `if number % 100 < 10 or number % 100 > 20`, so a remainder of exactly
+//!    10 falls to the `else` and takes form 2. Hence `to_cardinal(10**10)`
+//!    == "десет милијарди" (genitive plural), not "десет милијарда".
+//! 4. **The "skip један" test compares the whole chunk, not the digit.**
+//!    Python writes `if not (chunk_len > 0 and chunk == 1)`. So the unit word
+//!    is suppressed only when the scaled chunk is *exactly* 1 — giving
+//!    "хиљада" for 1000 and "милион" for 10**6 — while 1001's low chunk
+//!    (chunk_len == 0) still renders "један": "хиљада један".
+//! 5. **`_int2word` drops `feminine` on the negative recursion.** Python:
+//!    `" ".join([self.negword, self._int2word(abs(number))])` — the
+//!    `feminine` argument is not forwarded, so `_int2word(-2, feminine=True)`
+//!    yields "минус два" rather than "минус две". Unreachable from the four
+//!    ported modes (they always pass `feminine=False`), but reproduced.
+//! 6. **`SCALE` is Serbian's de facto MAXVAL, and it raises `KeyError`.**
+//!    Keys run 0..=10, i.e. up to 10^30 ("квинтилион"), covering values below
+//!    10^33. At or above 10^33 a chunk index of 11+ is reached and Python
+//!    dies with `KeyError: 11`. See [`scale_at`] and the note on access order
+//!    in [`LangSr::int2word`].
+//! 7. **Long scale.** `SCALE[3]` is "милијарда" for 10^9 and `SCALE[4]` is
+//!    "билион" for 10^12, as the Python comments state explicitly.
+//!
+//! # The currency surface
+//!
+//! `Num2Word_SR` defines its **own** `CURRENCY_FORMS` class attribute, so the
+//! `lang_EUR.py`/`Num2Word_EN.__init__` shared-dict mutation documented in
+//! `PORTING_CURRENCY.md` does **not** reach it: SR knows exactly three codes
+//! (RUB, EUR, RSD) and nothing else. It defines neither `CURRENCY_ADJECTIVES`
+//! nor `CURRENCY_PRECISION`, so both stay at `Num2Word_Base`'s empty dicts —
+//! every code has precision `.get(code, 100)` == 100. SR therefore has **no**
+//! 3-decimal (KWD/BHD) and no 0-decimal (JPY) currency, and the `divisor == 1`
+//! branch of `Num2Word_Base.to_currency` is unreachable here. Verified live.
+//!
+//! Each `CURRENCY_FORMS` entry is a pair of **4-tuples**: three plural forms
+//! plus a trailing gender flag, e.g. `("dinar", "dinara", "dinara", False)`.
+//! `pluralize` only ever selects index 0..=2, so the flag is never a plural
+//! form; `_cents_verbose` reads it as `[1][-1]` to pick the cents' gender.
+//! See [`build_currency_forms`] for why the flag is carried as the *string*
+//! `"False"`/`"True"` rather than a `bool`.
+//!
+//! # Faithfully reproduced Python quirks (currency)
+//!
+//! 8. **`to_currency` ignores `currency=` entirely for `int` input, and can
+//!    never raise `NotImplementedError` there.** SR's override intercepts
+//!    `isinstance(val, int)` *before* any `CURRENCY_FORMS` lookup and appends a
+//!    hardcoded "динар"/"динара". So `to_currency(1, currency="JPY")` ==
+//!    "један динар", and even a nonexistent code succeeds:
+//!    `to_currency(1, currency="ZZZ")` == "један динар" (verified live). Only
+//!    the float/Decimal path reaches `Num2Word_Base.to_currency` and its
+//!    `KeyError` -> `NotImplementedError`. The corpus pins both halves: every
+//!    `currency:{USD,GBP,JPY,KWD,BHD,INR,CNY,CHF}` int row returns dinars while
+//!    every float row of the same code raises.
+//! 9. **The `elif` in that dinar rule is dead code.** Python writes
+//!    `if left % 10 == 1 and left % 100 != 11: "динар"` /
+//!    `elif 2 <= left % 10 <= 4 and not (12 <= left % 100 <= 14): "динара"` /
+//!    `else: "динара"` — the last two arms are byte-identical, so the elif can
+//!    never change the output. Collapsed to a single `else` here; see
+//!    [`LangSr::to_currency`].
+//! 10. **`_money_verbose` drops the unit's gender.** It is `Num2Word_Base`'s,
+//!    i.e. `self.to_cardinal(number)`, which passes `feminine=False`. So a
+//!    feminine unit still gets a masculine numeral: `to_currency(1.0, "RUB")`
+//!    == "један rublja, нула kopejki" — "једна rublja" would be the correct
+//!    Serbian. Only `_cents_verbose` consults the flag, so the *cents* half is
+//!    gendered correctly ("нула kopejki", "једна para"). Verified live.
+//! 11. **`to_cheque` prints the gender flag as the currency name.**
+//!    `Num2Word_Base.to_cheque` does `cr1, _cr2 = self.CURRENCY_FORMS[currency]`
+//!    then `unit = cr1[-1] if isinstance(cr1, tuple) else cr1`, intending "the
+//!    plural form". SR's `cr1` is a 4-tuple, so `cr1[-1]` is the trailing
+//!    **bool**, which `"%s"` renders as `False`/`True` and `.upper()` shouts:
+//!    `to_cheque(1234.56, "EUR")` ==
+//!    "ХИЉАДА ДВЕСТА ТРИДЕСЕТ ЧЕТИРИ AND 56/100 FALSE", and RUB (flag `True`)
+//!    ends in "TRUE". Pinned by the corpus; reproduced exactly.
+//!
+//! # Fractional cents (`cardinal_from_decimal`) — closed by dynamic dispatch
+//!
+//! Reached only when `(value * 100) % 1 != 0` on the currency path. Python
+//! evaluates `self.to_cardinal(float(right))`, which lands in
+//! **`Num2Word_SR.to_cardinal`'s float branch**. The trait default
+//! (`floatpath::cardinal_from_bigdecimal`) calls `lang.to_cardinal_float`
+//! *through the trait*, and SR overrides that hook with the very same string
+//! algorithm, so the fractional digits render as a whole number ("петсто
+//! шездесет седам"), not digit by digit — matching Python with no
+//! `cardinal_from_decimal` override. (Unpinned: no `sr` currency corpus row
+//! carries more than 2 decimals.)
+//!
+//! # Error variants
+//!
+//! Serbian's only in-scope failure is the `SCALE` `KeyError` of quirk 6,
+//! mapped to `N2WError::Key`. It is a Python crash rather than a deliberate
+//! raise, but the exception *type* is observable, so parity means
+//! reproducing it rather than tidying it into an `OverflowError`.
+//!
+//! On the currency side the only reachable raise is the deliberate
+//! `NotImplementedError` for an unknown code on the float path, which
+//! `currency::default_to_currency`/`default_to_cheque` already emit with
+//! Python's exact message from [`LangSr::lang_name`].
+
+use crate::base::{Kwargs, KwVal, Lang, N2WError, Result};
+use crate::currency::{default_to_currency, parse_currency_parts, CurrencyForms, CurrencyValue};
+use crate::floatpath::FloatValue;
+use crate::strnum::{python_decimal_parse, python_decimal_str, ParsedNumber};
+use num_bigint::BigInt;
+use num_integer::Integer;
+use num_traits::{FromPrimitive, One, Signed, ToPrimitive, Zero};
+use std::collections::HashMap;
+
+/// `ZERO[0]`.
+const ZERO: &str = "нула";
+
+/// `setup()`: `self.negword`.
+const NEGWORD: &str = "минус";
+
+/// `setup()`: `self.pointword`. Exposed via the `pointword()` trait method,
+/// but unreachable from the four ported modes: only the float branch of
+/// `to_cardinal` (out of scope) consumes it.
+const POINTWORD: &str = "запета";
+
+/// `ONES`: digit → (masculine, feminine). Python's dict has keys 1..=9 only;
+/// index 0 is a placeholder, unreachable behind the `digit_right > 0` guard.
+const ONES: [(&str, &str); 10] = [
+    ("", ""), // absent in Python
+    ("један", "једна"),
+    ("два", "две"),
+    ("три", "три"),
+    ("четири", "четири"),
+    ("пет", "пет"),
+    ("шест", "шест"),
+    ("седам", "седам"),
+    ("осам", "осам"),
+    ("девет", "девет"),
+];
+
+/// `TENS`: keys 0..=9, indexed by the *units* digit when the tens digit is 1.
+/// `TENS[0]` == "десет" (10), `TENS[1]` == "једанаест" (11), etc.
+const TENS: [&str; 10] = [
+    "десет",
+    "једанаест",
+    "дванаест",
+    "тринаест",
+    "четрнаест",
+    "петнаест",
+    "шеснаест",
+    "седамнаест",
+    "осамнаест",
+    "деветнаест",
+];
+
+/// `TWENTIES`: Python's dict has keys 2..=9 only; 0 and 1 are placeholders,
+/// unreachable behind the `digit_mid > 1` guard.
+const TWENTIES: [&str; 10] = [
+    "", // absent in Python
+    "", // absent in Python
+    "двадесет",
+    "тридесет",
+    "четрдесет",
+    "педесет",
+    "шездесет",
+    "седамдесет",
+    "осамдесет",
+    "деведесет",
+];
+
+/// `HUNDREDS`: Python's dict has keys 1..=9 only; index 0 is a placeholder,
+/// unreachable behind the `digit_left > 0` guard.
+const HUNDREDS: [&str; 10] = [
+    "", // absent in Python
+    "сто",
+    "двеста",
+    "триста",
+    "четиристо",
+    "петсто",
+    "шесто",
+    "седамсто",
+    "осамсто",
+    "деветсто",
+];
+
+/// `SCALE`: chunk index → (form0, form1, form2, is_feminine).
+///
+/// Keys 0..=10 exactly as in Python — 10^0 through 10^30. Index 11 and above
+/// is a `KeyError`; see quirk 6 in the module docs. The trailing `bool` is
+/// read as `SCALE[chunk_len][-1]` to pick the gender of the unit word, and is
+/// never a `pluralize` output (`pluralize` only ever returns index 0, 1 or 2).
+const SCALE: [(&str, &str, &str, bool); 11] = [
+    ("", "", "", false),
+    ("хиљада", "хиљаде", "хиљада", true), // 10^3
+    ("милион", "милиона", "милиона", false), // 10^6
+    ("милијарда", "милијарде", "милијарди", true), // 10^9 - long scale
+    ("билион", "билиона", "билиона", false), // 10^12
+    ("билијарда", "билијарде", "билијарди", true), // 10^15
+    ("трилион", "трилиона", "трилиона", false), // 10^18
+    ("трилијарда", "трилијарде", "трилијарди", true), // 10^21
+    ("квадрилион", "квадрилиона", "квадрилиона", false), // 10^24
+    ("квадрилијарда", "квадрилијарде", "квадрилијарди", true), // 10^27
+    ("квинтилион", "квинтилиона", "квинтилиона", false), // 10^30
+];
+
+/// The `ordinals` dict local to `to_ordinal`, in Python's insertion order.
+///
+/// Note the gaps: 21..=29, 31..=39, ..., and everything above 100 except
+/// 1000, are absent and fall through to the "и"-suffix path.
+const ORDINALS: [(i64, &str); 30] = [
+    (1, "први"),
+    (2, "други"),
+    (3, "трећи"),
+    (4, "четврти"),
+    (5, "пети"),
+    (6, "шести"),
+    (7, "седми"),
+    (8, "осми"),
+    (9, "девети"),
+    (10, "десети"),
+    (11, "једанаести"),
+    (12, "дванаести"),
+    (13, "тринаести"),
+    (14, "четрнаести"),
+    (15, "петнаести"),
+    (16, "шеснаести"),
+    (17, "седамнаести"),
+    (18, "осамнаести"),
+    (19, "деветнаести"),
+    (20, "двадесети"),
+    (30, "тридесети"),
+    (40, "четрдесети"),
+    (50, "педесети"),
+    (60, "шездесети"),
+    (70, "седамдесети"),
+    (80, "осамдесети"),
+    (90, "деведесети"),
+    (100, "стоти"),
+    (1000, "хиљадити"),
+    (0, ""), // padding; never matched — see `ordinal_word`
+];
+
+/// Python's `num in ordinals` → `ordinals[num]`.
+///
+/// The `(0, "")` padding row in [`ORDINALS`] is skipped explicitly: 0 is *not*
+/// a key in Python's dict (`to_ordinal(0)` == "нулаи", not ""), so matching it
+/// would be a behaviour change.
+fn ordinal_word(num: &BigInt) -> Option<&'static str> {
+    let n = num.to_i64()?;
+    if n == 0 {
+        return None;
+    }
+    ORDINALS
+        .iter()
+        .find(|(k, _)| *k == n)
+        .map(|(_, w)| *w)
+}
+
+/// `SCALE[idx]`. Missing keys are Python's `KeyError`; see quirk 6.
+fn scale_at(idx: usize) -> Result<&'static (&'static str, &'static str, &'static str, bool)> {
+    SCALE
+        .get(idx)
+        .ok_or_else(|| N2WError::Key(idx.to_string()))
+}
+
+/// Port of `utils.splitbyx(n, x)` with `format_int=True`.
+///
+/// `n` is always `str(abs(number))` here — `_int2word` takes `abs()` before
+/// chunking — so every chunk is a run of 1..=3 ASCII digits and therefore
+/// fits `u32` (max 999). The head chunk `n[:start]` is 1 or 2 digits (max 99).
+/// This is why SR, unlike PL, has no `int("-")` `ValueError` hazard.
+///
+/// The `parse` failure is mapped to Python's `int()` `ValueError` for
+/// completeness; the invariant above means it is unreachable in practice.
+fn splitbyx(n: &str, x: usize) -> Result<Vec<u32>> {
+    let chars: Vec<char> = n.chars().collect();
+    let length = chars.len();
+    let parse = |s: String| -> Result<u32> {
+        s.parse::<u32>().map_err(|_| {
+            N2WError::Value(format!("invalid literal for int() with base 10: '{}'", s))
+        })
+    };
+
+    let mut out: Vec<u32> = Vec::new();
+    if length > x {
+        let start = length % x;
+        if start > 0 {
+            out.push(parse(chars[..start].iter().collect())?);
+        }
+        let mut i = start;
+        while i < length {
+            let end = (i + x).min(length);
+            out.push(parse(chars[i..end].iter().collect())?);
+            i += x;
+        }
+    } else {
+        out.push(parse(n.to_string())?);
+    }
+    Ok(out)
+}
+
+/// Port of `utils.get_digits(n)`: `[int(x) for x in reversed(("%03d" % n)[-3:])]`.
+///
+/// Returns `[units, tens, hundreds]` — Python unpacks it as
+/// `digit_right, digit_mid, digit_left`. `n <= 999` (see [`splitbyx`]), so
+/// `"%03d"` yields exactly 3 digits and the `[-3:]` slice is total.
+fn get_digits(n: u32) -> [usize; 3] {
+    let s = format!("{:03}", n);
+    let chars: Vec<char> = s.chars().collect();
+    let tail = &chars[chars.len() - 3..];
+    let mut a = [0usize; 3];
+    for (k, c) in tail.iter().rev().enumerate() {
+        a[k] = c.to_digit(10).unwrap_or(0) as usize;
+    }
+    a
+}
+
+/// Port of `Num2Word_SR.pluralize(number, forms)`.
+///
+/// `forms` is a `SCALE` row; only indices 0..=2 are ever selected, so the
+/// trailing gender flag is never returned. Reproduces quirk 3: a remainder of
+/// exactly 10 is *not* `< 10` and *not* `> 20`, so it takes form 2.
+///
+/// `number` is a non-negative chunk, so Rust's `%` matches Python's here.
+fn pluralize(
+    number: u32,
+    forms: &'static (&'static str, &'static str, &'static str, bool),
+) -> &'static str {
+    let form = if number % 100 < 10 || number % 100 > 20 {
+        if number % 10 == 1 {
+            0
+        } else if 1 < number % 10 && number % 10 < 5 {
+            1
+        } else {
+            2
+        }
+    } else {
+        2
+    };
+    match form {
+        0 => forms.0,
+        1 => forms.1,
+        _ => forms.2,
+    }
+}
+
+/// Python's `str(number)` for a float/Decimal input — the string
+/// `Num2Word_SR.to_cardinal` reads (`n = str(number).replace(",", ".")`).
+///
+/// * **float** — `repr(float)`. Fixed notation (`{:.*}` at the shim's
+///   repr-derived precision, so `str(Decimal("1.10"))`-style trailing zeros
+///   and `-0.0`'s sign survive) whenever Python's repr shows a decimal
+///   point; otherwise repr picked exponent form (`abs(v) >= 1e16`:
+///   "1e+16"), reconstructed by [`python_float_exp_repr`]. The exponent form
+///   is load-bearing: it has no ".", so `to_cardinal` falls through to
+///   `int("1e+16")` and raises ValueError — corpus-pinned, while
+///   `to_ordinal(1e+16)` (which `int()`s the *value*) succeeds.
+/// * **Decimal** — [`python_decimal_str`], the spec `__str__`: trailing
+///   zeros kept ("5.00" -> right "00", two leading zeros *plus*
+///   `int("00") == 0`, hence the tripled "нула"), scientific form for
+///   positive exponents ("1E+2", "1E+20" — again a ValueError from `int()`).
+///
+/// Known gap (unpinned): a float in `(0, 1e-4)` also reprs in exponent form
+/// ("1e-05"), but `FloatValue::has_visible_point` reports `true` for every
+/// finite fractional float, so such values take the fixed-notation arm here
+/// and render instead of raising. No `sr` corpus row reaches that range.
+fn python_number_str(v: &FloatValue) -> String {
+    match v {
+        FloatValue::Float { value, precision } => {
+            if v.has_visible_point() {
+                format!("{:.*}", *precision as usize, value)
+            } else {
+                python_float_exp_repr(*value)
+            }
+        }
+        FloatValue::Decimal { value, .. } => python_decimal_str(value),
+    }
+}
+
+/// Python's `repr(float)` for the exponent-form cases: shortest mantissa
+/// (Rust's `{:e}` is shortest-round-trip, the same contract), "e", an
+/// explicit sign and a >= 2-digit exponent — `1e16` -> "1e+16", `1.5e20` ->
+/// "1.5e+20". Non-finite values print as Python does ("inf"/"-inf"/"nan");
+/// `int()` on those strings raises the same ValueError as on "1e+16".
+fn python_float_exp_repr(v: f64) -> String {
+    if v.is_nan() {
+        return "nan".to_string();
+    }
+    if v.is_infinite() {
+        return if v.is_sign_negative() { "-inf" } else { "inf" }.to_string();
+    }
+    let s = format!("{:e}", v);
+    match s.split_once('e') {
+        Some((mant, exp)) => {
+            let e: i64 = exp.parse().unwrap_or(0);
+            let sign = if e < 0 { "-" } else { "+" };
+            format!("{}e{}{:02}", mant, sign, e.abs())
+        }
+        None => s,
+    }
+}
+
+/// Extract SR's `feminine=` kwarg. Python's signature is
+/// `to_cardinal(self, number, feminine=False)`; the flag only ever feeds
+/// `feminine or SCALE[chunk_len][-1]` followed by `int(is_feminine)`, so:
+///
+/// * absent / `False` / explicit `None` (falsy) -> masculine column;
+/// * `True` -> feminine column;
+/// * any *other* key, or a non-bool value (`feminine=2` would `int()` to a
+///   tuple index Python crashes on) -> `NotImplemented`, so the dispatcher
+///   falls back to the original Python and its genuine semantics.
+fn feminine_kwarg(kw: &Kwargs) -> Result<bool> {
+    if !kw.only(&["feminine"]) {
+        return Err(N2WError::Fallback("kwargs".into()));
+    }
+    match kw.get("feminine") {
+        Option::None | Some(KwVal::None) => Ok(false),
+        Some(KwVal::Bool(b)) => Ok(*b),
+        Some(_) => Err(N2WError::Fallback("kwargs".into())),
+    }
+}
+
+/// `Num2Word_SR.CURRENCY_FORMS`, verbatim — RUB, EUR, RSD and nothing else.
+///
+/// # Why the gender flag is a `"False"`/`"True"` string
+///
+/// Python's entries are pairs of **4-tuples**: `("dinar", "dinara", "dinara",
+/// False)`. That trailing element is a `bool`, and it is read from two places
+/// that want two different things out of it:
+///
+/// * `Num2Word_SR._cents_verbose` reads `CURRENCY_FORMS[cur][1][-1]` and uses
+///   it as the `feminine` argument — its intended purpose.
+/// * `Num2Word_Base.to_cheque` reads `cr1[-1]` believing it is the plural unit
+///   name, and interpolates it into a `"%s"` — quirk 11. Python renders the
+///   bool as the text `False`/`True`, which `.upper()` then shouts.
+///
+/// `CurrencyForms` stores `Vec<String>`, so keeping the flag as the exact text
+/// Python's `"%s"` produces reproduces the cheque bug through the *unmodified*
+/// `currency::default_to_cheque` (which takes `forms.unit.last()`), while
+/// [`LangSr::cents_verbose`] recovers the boolean by comparing against
+/// `"True"`. Storing a real `bool` would need a parallel table and a
+/// `to_cheque` override to reprint it — more code, same bytes.
+///
+/// The arity is load-bearing beyond that: [`LangSr::pluralize`] indexes 0..=2,
+/// so dropping the third form would silently change output.
+fn build_currency_forms() -> HashMap<&'static str, CurrencyForms> {
+    let mut m: HashMap<&'static str, CurrencyForms> = HashMap::new();
+    m.insert(
+        "RUB",
+        CurrencyForms::new(
+            &["rublja", "rublje", "rublji", "True"],
+            &["kopejka", "kopejke", "kopejki", "True"],
+        ),
+    );
+    m.insert(
+        "EUR",
+        CurrencyForms::new(
+            &["evro", "evra", "evra", "False"],
+            &["cent", "centa", "centi", "False"],
+        ),
+    );
+    m.insert(
+        "RSD",
+        CurrencyForms::new(
+            &["dinar", "dinara", "dinara", "False"],
+            &["para", "pare", "para", "True"],
+        ),
+    );
+    m
+}
+
+pub struct LangSr {
+    /// Built once in [`LangSr::new`] and only ever read. `Num2Word_SR` reads
+    /// `CURRENCY_FORMS` as a class attribute, so rebuilding it per call would
+    /// be both wrong in spirit and measurably slower than the Python.
+    currency_forms: HashMap<&'static str, CurrencyForms>,
+}
+
+impl Default for LangSr {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl LangSr {
+    pub fn new() -> Self {
+        LangSr {
+            currency_forms: build_currency_forms(),
+        }
+    }
+
+    /// Port of `Num2Word_SR._int2word(number, feminine=False)`.
+    ///
+    /// **`SCALE` access order is load-bearing** (quirk 6). Python touches
+    /// `SCALE` in exactly two places per chunk, and both are conditional:
+    ///
+    /// 1. `SCALE[chunk_len][-1]`, only inside the `elif digit_right > 0`
+    ///    branch *and* only when the "skip један" test lets it through. So a
+    ///    chunk whose tens digit is 1 (the `if digit_mid == 1` arm) never
+    ///    reaches it.
+    /// 2. `pluralize(chunk, SCALE[chunk_len])`, only when
+    ///    `chunk_len > 0 and chunk != 0`.
+    ///
+    /// In practice the ceiling is sharp at 10^33: the leading chunk of
+    /// `str(number)` is never zero, so the highest chunk index always clears
+    /// the `chunk != 0` guard of access 2 and raises. (Verified: 3000 random
+    /// values in 10^33..10^45 all raise, including ones whose leading chunk
+    /// takes the `digit_mid == 1` arm and thus skips access 1.) The guards are
+    /// still mirrored literally rather than hoisted into an up-front range
+    /// check, so that *where* the `KeyError` fires matches Python exactly.
+    fn int2word(&self, number: &BigInt, feminine: bool) -> Result<String> {
+        if number.is_negative() {
+            // Python: " ".join([self.negword, self._int2word(abs(number))])
+            // `feminine` is NOT forwarded — quirk 5, reproduced verbatim.
+            return Ok(format!("{} {}", NEGWORD, self.int2word(&number.abs(), false)?));
+        }
+
+        if number.is_zero() {
+            return Ok(ZERO.to_string());
+        }
+
+        let mut words: Vec<&str> = Vec::new();
+        let chunks = splitbyx(&number.to_string(), 3)?;
+        let mut chunk_len = chunks.len();
+
+        for chunk in chunks {
+            // `chunks` is non-empty, so this never underflows.
+            chunk_len -= 1;
+            let [digit_right, digit_mid, digit_left] = get_digits(chunk);
+
+            if digit_left > 0 {
+                words.push(HUNDREDS[digit_left]);
+            }
+
+            if digit_mid > 1 {
+                words.push(TWENTIES[digit_mid]);
+            }
+
+            if digit_mid == 1 {
+                words.push(TENS[digit_right]);
+            } else if digit_right > 0 {
+                // Python: `if not (chunk_len > 0 and chunk == 1)` — the test is
+                // on the whole chunk, not the digit (quirk 4).
+                if !(chunk_len > 0 && chunk == 1) {
+                    let is_feminine = feminine || scale_at(chunk_len)?.3;
+                    let gender_idx = usize::from(is_feminine);
+                    let ones = ONES[digit_right];
+                    words.push(if gender_idx == 0 { ones.0 } else { ones.1 });
+                }
+            }
+
+            if chunk_len > 0 && chunk != 0 {
+                words.push(pluralize(chunk, scale_at(chunk_len)?));
+            }
+        }
+
+        Ok(words.join(" "))
+    }
+
+    /// Port of `Num2Word_SR.to_cardinal(number, feminine=False)` for a
+    /// float/Decimal `number` — the whole method, both branches:
+    ///
+    /// ```python
+    /// n = str(number).replace(",", ".")
+    /// if "." in n:
+    ///     is_negative = n.startswith("-")
+    ///     abs_n = n[1:] if is_negative else n
+    ///     left, right = abs_n.split(".")
+    ///     leading_zero_count = len(right) - len(right.lstrip("0"))
+    ///     decimal_part = (ZERO[0] + " ") * leading_zero_count \
+    ///         + self._int2word(int(right), feminine)
+    ///     result = "%s %s %s" % (self._int2word(int(left), feminine),
+    ///                            self.pointword, decimal_part)
+    ///     if is_negative:
+    ///         result = self.negword + " " + result
+    ///     return result
+    /// else:
+    ///     return self._int2word(int(n), feminine)
+    /// ```
+    ///
+    /// Two properties set SR apart from the inherited digit-by-digit float
+    /// path and are load-bearing:
+    ///
+    /// 1. **The fraction is one whole number, not a digit sequence.**
+    ///    `int(right)` is fed to `_int2word`, so `2.675` -> "два запета
+    ///    шесто седамдесет пет" (675 as a number). SR never touches
+    ///    `float2tuple`, so the f64-artefact `< 0.01` heuristic is
+    ///    irrelevant: it reads `repr(2.675)` == "2.675" and parses "675".
+    /// 2. **Leading fraction zeros become "нула" words.** `0.01` splits to
+    ///    `right == "01"`, one leading zero, so `int("01") == 1` is prefixed
+    ///    by a single "нула": "нула запета нула један". `right == "0"`
+    ///    (from `1.0`) counts as one leading zero *and* `int("0") == 0` ->
+    ///    "нула", giving the doubled "нула нула".
+    ///
+    /// The `else` arm is where the exponent-form strings die: `int("1e+16")`
+    /// / `int("1E+2")` raise ValueError with Python's exact message.
+    ///
+    /// `feminine` comes from the kwarg surface (default `False`); the
+    /// negative recursion inside `int2word` still drops it (quirk 5).
+    fn cardinal_float_str(&self, value: &FloatValue, feminine: bool) -> Result<String> {
+        // n = str(number).replace(",", "."). The reconstruction never emits a
+        // comma, so the replace is a no-op; the sign is kept on the string so
+        // the `startswith("-")` test below matches Python byte for byte.
+        let n = python_number_str(value);
+
+        // Python's int() on a token of str(number). Reachable failures are
+        // the exponent forms ("1e+16", "1E+2", "inf") — exactly where Python
+        // raises ValueError, message included.
+        let to_int = |s: &str| -> Result<BigInt> {
+            s.parse::<BigInt>().map_err(|_| {
+                N2WError::Value(format!("invalid literal for int() with base 10: '{}'", s))
+            })
+        };
+
+        match n.find('.') {
+            Some(_) => {
+                let is_negative = n.starts_with('-');
+                // abs_n = n[1:] if is_negative else n. The "-" is one ASCII byte.
+                let abs_n = if is_negative { &n[1..] } else { &n[..] };
+                // left, right = abs_n.split("."). Exactly one "." is present.
+                let (left, right) = abs_n.split_once('.').unwrap();
+
+                // leading_zero_count = len(right) - len(right.lstrip("0")). A
+                // fully-zero `right` counts every char, matching lstrip("0")=="".
+                let leading_zero_count = right.chars().take_while(|&c| c == '0').count();
+
+                // decimal_part = (ZERO[0] + " ") * leading_zero_count
+                //                + self._int2word(int(right), feminine)
+                let mut decimal_part = format!("{} ", ZERO).repeat(leading_zero_count);
+                decimal_part.push_str(&self.int2word(&to_int(right)?, feminine)?);
+
+                // result = "%s %s %s" % (_int2word(int(left), feminine),
+                //                        pointword, decimal_part)
+                let mut result = format!(
+                    "{} {} {}",
+                    self.int2word(&to_int(left)?, feminine)?,
+                    POINTWORD,
+                    decimal_part
+                );
+
+                // if is_negative: result = self.negword + " " + result
+                if is_negative {
+                    result = format!("{} {}", NEGWORD, result);
+                }
+                Ok(result)
+            }
+            None => {
+                // else: return self._int2word(int(n), feminine). int(n) keeps
+                // the sign, and int2word renders "минус ..." for a negative.
+                self.int2word(&to_int(&n)?, feminine)
+            }
+        }
+    }
+}
+
+impl Lang for LangSr {
+    /// This language's own `to_currency(currency=...)` default,
+    /// read from the live Python signature. Only 44 of 156 use EUR.
+    fn default_currency(&self) -> &str {
+        "RSD"
+    }
+
+    /// This language's own `to_currency(separator=...)` default,
+    /// read from the live Python signature. Base's is ",", but only
+    /// 36 of 149 languages actually use it — most default to " " or a
+    /// conjunction, so inheriting Base's comma silently corrupts them.
+    fn default_separator(&self) -> &str {
+        ","
+    }
+
+    fn negword(&self) -> &str {
+        NEGWORD
+    }
+
+    fn pointword(&self) -> &str {
+        "запета"
+    }
+
+    /// Port of `Num2Word_SR.to_cardinal(number, feminine=False)`, integral arm.
+    ///
+    /// A plain call never passes `feminine=True` (the currency path does via
+    /// `_cents_verbose`, and the kwarg surface via `to_cardinal_kw`), so this
+    /// delegates with `feminine = false`. The float/Decimal branch lives in
+    /// [`LangSr::cardinal_float_str`].
+    fn to_cardinal(&self, value: &BigInt) -> Result<String> {
+        self.int2word(value, false)
+    }
+
+    /// Port of `Num2Word_SR.to_ordinal(number)`.
+    ///
+    /// Python's `try: num = int(number) / except (ValueError, TypeError):
+    /// return str(number)` guard cannot trigger for a `BigInt`, so it is
+    /// omitted. Everything outside the small `ordinals` table gets the naive
+    /// "и" suffix — quirks 1 and 2.
+    fn to_ordinal(&self, value: &BigInt) -> Result<String> {
+        if let Some(word) = ordinal_word(value) {
+            return Ok(word.to_string());
+        }
+        // Propagates the SCALE KeyError for huge inputs, as Python does.
+        let cardinal = self.to_cardinal(value)?;
+        Ok(format!("{}и", cardinal))
+    }
+
+    /// The raw float grammar — [`LangSr::cardinal_float_str`] with
+    /// `feminine=False`.
+    ///
+    /// `precision_override` (the base's issue-#580 `precision=` kwarg) is
+    /// **not** a parameter of `Num2Word_SR.to_cardinal`, which reads
+    /// `str(number)` and consults no per-language precision, so it is ignored
+    /// — matching Python, where setting `converter.precision` leaves this
+    /// method's output untouched. This hook also serves the fractional-cents
+    /// currency path (`cardinal_from_decimal` -> `cardinal_from_bigdecimal`
+    /// dispatches through the trait), mirroring Python's virtual
+    /// `self.to_cardinal(float(right))`.
+    fn to_cardinal_float(
+        &self,
+        value: &FloatValue,
+        _precision_override: Option<u32>,
+    ) -> Result<String> {
+        self.cardinal_float_str(value, false)
+    }
+
+    /// `to_cardinal(float/Decimal)` — the FULL entry, whole values included.
+    ///
+    /// SR overrides `to_cardinal` itself and branches on `"." in str(number)`,
+    /// so a whole value with a visible point still takes the float grammar:
+    /// `5.0` -> "пет запета нула нула", `Decimal("5.00")` -> "пет запета нула
+    /// нула нула", `-0.0` -> "минус нула запета нула нула". A pointless string
+    /// falls to `int(n)`: `Decimal("5")` -> "пет", but `1e+16` / `Decimal("1E+2")`
+    /// raise ValueError. The base default (whole -> int path) would get every
+    /// one of those wrong, hence this override.
+    fn cardinal_float_entry(
+        &self,
+        value: &FloatValue,
+        _precision_override: Option<u32>,
+    ) -> Result<String> {
+        self.cardinal_float_str(value, false)
+    }
+
+    /// `to_ordinal(float/Decimal)`. Python's `to_ordinal` opens with
+    /// `num = int(number)` — `int()` of the *value*, truncation toward zero —
+    /// so `2.5` -> 2 -> "други", `-1.5` -> -1 -> "минус једани", and `1e+16`
+    /// *succeeds* ("десет билијардии") where the cardinal raises ValueError.
+    ///
+    /// The `except (ValueError, TypeError): return str(number)` guard can
+    /// only fire here for `nan` (`int(nan)` is ValueError, so Python returns
+    /// `str(nan)` == "nan"); `int(inf)` raises OverflowError, which the guard
+    /// does **not** catch. Neither case has a corpus row; both are mirrored
+    /// for completeness.
+    fn ordinal_float_entry(&self, value: &FloatValue) -> Result<String> {
+        let num = match value {
+            FloatValue::Float { value: f, .. } => {
+                if f.is_nan() {
+                    return Ok("nan".to_string());
+                }
+                BigInt::from_f64(f.trunc()).ok_or_else(|| {
+                    N2WError::Overflow("cannot convert float infinity to integer".into())
+                })?
+            }
+            // int(Decimal) truncates toward zero; with_scale(0) drops the
+            // fractional digits the same way (see floatpath::float2tuple).
+            FloatValue::Decimal { value: d, .. } => d.with_scale(0).as_bigint_and_exponent().0,
+        };
+        self.to_ordinal(&num)
+    }
+
+    // `year_float_entry` is deliberately NOT overridden: Base's `to_year` is
+    // `self.to_cardinal(value)`, and the trait default routes through the
+    // overridden `cardinal_float_entry` above — so `to_year(5.0)` == "пет
+    // запета нула нула" and `to_year(1e+16)` raises ValueError, as pinned.
+    // `ordinal_num_float_entry` stays at the default too: SR never defines
+    // `to_ordinal_num`, and the dispatcher's getattr fallback echoes
+    // `str(value)` — exactly the default's repr echo.
+
+    /// `converter.str_to_number` — Base's `Decimal(value)`, which SR does not
+    /// override. The `Inf` interception reproduces what happens *next* on the
+    /// pinned path: `to_cardinal(Decimal("Infinity"))` reads `n = str(number)`
+    /// == "Infinity", finds no ".", and dies in `int("Infinity")` with
+    /// ValueError. The binding otherwise maps `ParsedNumber::Inf` to the base
+    /// integer path's OverflowError before any SR code runs, so the
+    /// ValueError must be raised here. (NaN needs no interception: the
+    /// binding's ValueError already matches `int("NaN")`'s type.)
+    ///
+    /// Known gap (unpinned): Python's `to_ordinal(Decimal("Infinity"))`
+    /// raises OverflowError (`int()` of the Decimal *object*), which this
+    /// entry-level interception turns into the cardinal path's ValueError.
+    /// The strings corpus pins Infinity under `to=cardinal` only.
+    fn str_to_number(&self, s: &str) -> Result<ParsedNumber> {
+        match python_decimal_parse(s)? {
+            ParsedNumber::Inf { negative } => Err(N2WError::Value(format!(
+                "invalid literal for int() with base 10: '{}Infinity'",
+                if negative { "-" } else { "" }
+            ))),
+            other => Ok(other),
+        }
+    }
+
+    // ---- grammatical kwargs ----------------------------------------------
+
+    /// `to_cardinal(number, feminine=...)` — the only SR signature with an
+    /// extra kwarg. `feminine=True` picks the feminine `ONES` column:
+    /// "једна", "две", "двадесет једна". The negative recursion still drops
+    /// the flag (quirk 5): `to_cardinal(-5, feminine=True)` == "минус пет".
+    fn to_cardinal_kw(&self, value: &BigInt, kw: &Kwargs) -> Result<String> {
+        let feminine = feminine_kwarg(kw)?;
+        self.int2word(value, feminine)
+    }
+
+    /// The float/Decimal side of the same kwarg: Python's `to_cardinal`
+    /// threads `feminine` into *both* `_int2word` calls of the "." branch.
+    fn to_cardinal_float_kw(
+        &self,
+        value: &FloatValue,
+        _precision_override: Option<u32>,
+        kw: &Kwargs,
+    ) -> Result<String> {
+        let feminine = feminine_kwarg(kw)?;
+        self.cardinal_float_str(value, feminine)
+    }
+
+    // ---- currency -------------------------------------------------------
+    //
+    // `Num2Word_SR` overrides exactly three things on this surface —
+    // `CURRENCY_FORMS`, `pluralize` and `_cents_verbose` — plus `to_currency`
+    // for its int shortcut. Everything else (`_money_verbose`, `_cents_terse`,
+    // `to_cheque`, and the whole float path) is `Num2Word_Base`'s, which the
+    // trait defaults already mirror, so it is deliberately not overridden:
+    //
+    //   * `currency_adjective` — `CURRENCY_ADJECTIVES` is `{}`; default `None`
+    //     is right, and `adjective=True` is a silent no-op exactly as in
+    //     Python (`if adjective and currency in self.CURRENCY_ADJECTIVES`).
+    //   * `currency_precision` — `CURRENCY_PRECISION` is `{}`; every code takes
+    //     the `.get(code, 100)` default of 100.
+    //   * `money_verbose` — Base's `self.to_cardinal(number)`, i.e. masculine
+    //     forms regardless of the unit's gender flag (quirk 10).
+    //   * `cents_terse` — Base's `"%0*d"`, width `len("100") - 1` == 2.
+    //   * `to_cheque` — Base's, bool-as-unit-name bug and all (quirk 11).
+
+    fn lang_name(&self) -> &str {
+        "Num2Word_SR"
+    }
+
+    fn currency_forms(&self, code: &str) -> Option<&CurrencyForms> {
+        self.currency_forms.get(code)
+    }
+
+    /// Port of `Num2Word_SR.pluralize(number, forms)` for the currency path.
+    ///
+    /// Identical rule to the private [`pluralize`] free function above, which
+    /// serves `_int2word`'s `SCALE` rows; Python has one method doing both
+    /// jobs, but the two call sites carry different types (`u32` + a `SCALE`
+    /// tuple vs. `BigInt` + a `CURRENCY_FORMS` tuple) and the `_int2word` path
+    /// is already verified against the corpus, so it is left untouched rather
+    /// than generalised underneath it.
+    ///
+    /// Reproduces quirk 3 here too: `number % 100 == 10` is neither `< 10` nor
+    /// `> 20`, so it falls to form 2 ("десет evra", not "десет evro").
+    ///
+    /// `mod_floor` rather than `%`: Python's `%` floors on negatives. `left`
+    /// and `right` both arrive non-negative from `parse_currency_parts`, so
+    /// the two agree in practice, but the port should not depend on that.
+    ///
+    /// Python indexes `forms[form]` directly, so a table entry with fewer than
+    /// three forms would raise IndexError. All three of SR's entries carry four
+    /// elements, so this is unreachable — mapped rather than panicking so the
+    /// exception type survives if the table ever changes.
+    fn pluralize(&self, n: &BigInt, forms: &[String]) -> Result<String> {
+        let ten = BigInt::from(10);
+        let m100 = n.mod_floor(&BigInt::from(100));
+        let m10 = n.mod_floor(&ten);
+
+        let form = if m100 < ten || m100 > BigInt::from(20) {
+            if m10.is_one() {
+                0
+            } else if m10 > BigInt::one() && m10 < BigInt::from(5) {
+                1
+            } else {
+                2
+            }
+        } else {
+            2
+        };
+        forms
+            .get(form)
+            .cloned()
+            .ok_or_else(|| N2WError::Index("tuple index out of range".into()))
+    }
+
+    /// Port of `Num2Word_SR._cents_verbose(number, currency)`:
+    /// `self._int2word(number, self.CURRENCY_FORMS[currency][1][-1])`.
+    ///
+    /// Note it calls `_int2word` directly rather than `to_cardinal`, and that
+    /// the gender flag is the subunit tuple's trailing element — so RSD's
+    /// `para` (flag `True`) gets feminine numerals ("једна para", "две pare")
+    /// while EUR's `cent` (flag `False`) stays masculine ("један cent").
+    ///
+    /// The `CURRENCY_FORMS[currency]` lookup is Python's `KeyError`, but it is
+    /// unreachable: `Num2Word_Base.to_currency` resolves `cr1, cr2` from the
+    /// same dict, and raises `NotImplementedError` on a miss, before this can
+    /// run. Same story for the `[-1]` IndexError on an empty tuple.
+    fn cents_verbose(&self, number: &BigInt, currency: &str) -> Result<String> {
+        let forms = self
+            .currency_forms
+            .get(currency)
+            .ok_or_else(|| N2WError::Key(format!("'{}'", currency)))?;
+        let flag = forms
+            .subunit
+            .last()
+            .ok_or_else(|| N2WError::Index("tuple index out of range".into()))?;
+        // The flag is stored as Python's own `"%s" % bool` text; see
+        // `build_currency_forms` for why.
+        self.int2word(number, flag.as_str() == "True")
+    }
+
+    /// Port of `Num2Word_SR.to_currency(val, currency="RSD", cents=True,
+    /// separator=",", adjective=False)`.
+    ///
+    /// Only the `isinstance(val, int)` shortcut is SR's own; every other value
+    /// is handed to `super().to_currency(...)` unchanged. That shortcut never
+    /// touches `CURRENCY_FORMS`, so it neither honours `currency=` nor raises
+    /// for an unknown code — quirk 8.
+    fn to_currency(
+        &self,
+        val: &CurrencyValue,
+        currency: &str,
+        cents: bool,
+        separator: Option<&str>,
+        adjective: bool,
+    ) -> Result<String> {
+        // `None` means the caller omitted `separator=`, so SR's own default
+        // (Base's ",", per the live signature) applies. Python passes whatever
+        // it resolved straight through to `super().to_currency`.
+        let separator = separator.unwrap_or(self.default_separator());
+
+        if let CurrencyValue::Int(_) = val {
+            // parse_currency_parts(val, is_int_with_cents=False). `right` is
+            // always 0 on this path and Python discards it; the divisor is
+            // likewise unused, so 100 just mirrors the Python default.
+            let (left, _right, is_negative) = parse_currency_parts(val, false, false, 100);
+
+            let mut words: Vec<String> = Vec::new();
+            if is_negative {
+                // Python hardcodes the literal here rather than reading
+                // `self.negword`. Same text, but kept distinct on purpose.
+                words.push("минус".to_string());
+            }
+            // `left` is already `abs(val)`, so this is `self.to_cardinal(left)`
+            // with `feminine=False` — the masculine "један динар", never "једна".
+            words.push(self.to_cardinal(&left)?);
+
+            // Python:
+            //     if left % 10 == 1 and left % 100 != 11:   -> "динар"
+            //     elif 2 <= left % 10 <= 4 and not (12 <= left % 100 <= 14):
+            //                                               -> "динара"
+            //     else:                                     -> "динара"
+            // The elif and the else emit the same word, so the elif cannot
+            // affect the result and is collapsed here (quirk 9). `left` is
+            // non-negative, so `%` and `mod_floor` agree; `mod_floor` is used
+            // to match Python's operator rather than rely on that.
+            let unit = if left.mod_floor(&BigInt::from(10)).is_one()
+                && left.mod_floor(&BigInt::from(100)) != BigInt::from(11)
+            {
+                "динар"
+            } else {
+                "динара"
+            };
+            words.push(unit.to_string());
+
+            return Ok(words.join(" "));
+        }
+
+        // Floats/Decimals: `super().to_currency(...)`, which is where an
+        // unknown code finally raises NotImplementedError.
+        default_to_currency(self, val, currency, cents, separator, adjective)
+    }
+}

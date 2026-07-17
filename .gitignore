@@ -25,3 +25,15 @@ Thumbs.db
 .env.local
 .env.*.local
 *.env
+
+# Compiled Rust extension — built per-platform by maturin, too large / not
+# portable to commit. Build with: maturin build --release  (see README).
+*.so
+*.abi3.so
+*.pyd
+*.dylib
+/wheels/
+*.whl
+
+# Vendored Rust crate build output
+/rust/target/

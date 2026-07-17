@@ -9,7 +9,7 @@
 [![Lint](https://github.com/jqueguiner/num2words2/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/jqueguiner/num2words2/actions/workflows/lint.yml)
 [![Coverage](https://coveralls.io/repos/github/jqueguiner/num2words2/badge.svg?branch=main)](https://coveralls.io/github/jqueguiner/num2words2?branch=main)
 
-`num2words2` is a modern, actively maintained fork of the original `num2words` library, optimized for LLM/AI/speech applications. It converts numbers like `42` to words like `forty-two` across **120+ languages and 170+ locale codes** (including regional variants like `pt_BR`, `fr_BE`, `sr_Latn`, and aviation/ICAO). This fork was created because the original Savoir-faire Linux repository was no longer being maintained at the pace required for the rapidly evolving AI, machine learning, and speech synthesis ecosystem.
+`num2words2` is a **Rust port of the `num2words` conversion engine with a Python binder**, optimized for LLM/AI/speech applications. It converts numbers like `42` to words like `forty-two` across **120+ languages and 170+ locale codes** (including regional variants like `pt_BR`, `fr_BE`, `sr_Latn`, and aviation/ICAO). Every conversion runs in a compiled Rust core; Python only normalises arguments and shapes the result. Output is byte-for-byte identical to the original pure-Python library (validated against a frozen ~150,000-case corpus) while running typically 4–12× faster (up to 26× on some languages, 150× on string parsing). The original project's issues and PRs are actively monitored, and valid requests are ported here after review.
 
 > **Documentation:** see the [GitHub Wiki](https://github.com/jqueguiner/num2words2/wiki) for installation, API, CLI, supported locales, sentence conversion, currency handling, and migration guidance. For the full in-repo API reference, see [`REFERENCE.md`](REFERENCE.md).
 
@@ -313,7 +313,7 @@ This project is licensed under the GNU Lesser General Public License v2.1 - see 
 - **pynum2word** (2003) - Created by Taro Ogawa
 - **Lithuanian support** (2011) - Added by Marius Grigaitis
 - **num2words** - Re-published by Virgil Dupras, Savoir-faire Linux
-- **num2words2** (2025) - Modern fork by Jean-Louis Queguiner for AI/ML applications
+- **num2words2** (2025) - Rust port (with a Python binder) by Jean-Louis Queguiner for AI/ML applications; tracks the original's issues/PRs, ported after review
 
 ## Author
 

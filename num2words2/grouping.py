@@ -18,6 +18,13 @@ Issue #66; ports the request in savoirfairelinux/num2words#547.
 
 from __future__ import unicode_literals
 
+# Independent of the package __init__ (no circular import): the extension
+# module is importable on its own. Absent -> pure-Python behaviour.
+try:
+    from . import _rust as _RUST
+except ImportError:  # pragma: no cover - depends on build
+    _RUST = None
+
 
 def group_digits(value, locale="western", separator=","):
     """Format ``value`` as a digit-grouped string.
@@ -35,6 +42,10 @@ def group_digits(value, locale="western", separator=","):
     """
     if not isinstance(value, int):
         raise TypeError("group_digits requires an int, got %r" % type(value))
+    # The isinstance check stays here: its TypeError message needs Python's
+    # %r of the type object. Everything after it is pure string work.
+    if _RUST is not None:
+        return _RUST.group_digits(value, locale, separator)
     sign = "-" if value < 0 else ""
     s = str(abs(value))
 

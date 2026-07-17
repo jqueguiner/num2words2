@@ -1,220 +1,154 @@
-name: Build and Release
+name: Release
+
+# Builds per-platform wheels with maturin and publishes them:
+#   * SLIM wheels (no lingua-rs models, ~2 MB) + sdist  -> PyPI
+#   * FULL wheels (embedded language-detection models, ~140 MB) -> GitHub Release
+# Triggered by pushing a version tag, e.g. `v1.0.10`.
 
 on:
   push:
-    branches:
-      - master
-      - main
-    tags:
-      - 'v*'
-  pull_request:
-    branches:
-      - master
-      - main
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to build (without leading v), e.g. 1.0.10"
+        required: true
+
+permissions:
+  contents: write   # create the GitHub Release + upload assets
+  id-token: write   # PyPI Trusted Publishing (OIDC)
 
 jobs:
+  # ---------------------------------------------------------------------------
+  version:
+    name: Resolve version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - id: v
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          fi
+
+  # ---------------------------------------------------------------------------
   build:
-    name: Build Distribution
-    runs-on: ubuntu-latest
-
+    name: ${{ matrix.variant }} · ${{ matrix.platform.target }}
+    needs: version
+    runs-on: ${{ matrix.platform.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [slim, full]
+        platform:
+          - { os: macos-14,       target: aarch64-apple-darwin }
+          - { os: macos-13,       target: x86_64-apple-darwin }
+          - { os: ubuntu-latest,  target: x86_64-unknown-linux-gnu,  manylinux: auto }
+          - { os: ubuntu-latest,  target: aarch64-unknown-linux-gnu, manylinux: auto }
+          - { os: windows-latest, target: x86_64-pc-windows-msvc }
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # For setuptools_scm
+      - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+      - name: Set version in pyproject
+        shell: bash
+        run: |
+          python - <<'PY'
+          import re, pathlib
+          p = pathlib.Path("pyproject.toml"); s = p.read_text()
+          s = re.sub(r'(?m)^version = ".*"$',
+                     'version = "${{ needs.version.outputs.version }}"', s, count=1)
+          p.write_text(s)
+          PY
 
-    - name: Install build dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install build setuptools wheel setuptools_scm
+      - name: Build wheel (${{ matrix.variant }})
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.platform.target }}
+          manylinux: ${{ matrix.platform.manylinux || '' }}
+          args: >-
+            --release
+            --out dist
+            ${{ matrix.variant == 'slim' && '--no-default-features' || '' }}
+          sccache: "true"
 
-    - name: Build distribution
-      run: |
-        python -m build
-        ls -la dist/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.variant }}-${{ matrix.platform.target }}
+          path: dist/*.whl
 
-    - name: Check build
-      run: |
-        pip install twine
-        twine check dist/*
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: python-package-distributions
-        path: dist/
-
-  test-package:
-    name: Test Built Package
-    needs: build
+  # ---------------------------------------------------------------------------
+  sdist:
+    name: Source distribution
+    needs: version
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Set version in pyproject
+        run: |
+          python - <<'PY'
+          import re, pathlib
+          p = pathlib.Path("pyproject.toml"); s = p.read_text()
+          s = re.sub(r'(?m)^version = ".*"$',
+                     'version = "${{ needs.version.outputs.version }}"', s, count=1)
+          p.write_text(s)
+          PY
+      - uses: PyO3/maturin-action@v1
+        with:
+          command: sdist
+          args: --out dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: dist/*.tar.gz
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-
-    - name: Download artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: python-package-distributions
-        path: dist/
-
-    - name: Test installation
-      run: |
-        pip install dist/*.whl
-        python -c "import num2words2; print('Version:', getattr(num2words2, '__version__', 'not set'))"
-        python -c "from num2words2 import num2words; print('English 42:', num2words(42, lang='en'))"
-        python -c "from num2words2 import num2words; print('Assamese 42:', num2words(42, lang='as'))"
-
-  release:
-    name: Create GitHub Release
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: [build, test-package]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Download artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: python-package-distributions
-        path: dist/
-
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # Full history needed to find previous tag
-
-    - name: Generate Release Notes
-      id: release_notes
-      env:
-        GH_TOKEN: ${{ github.token }}
-        TAG: ${{ github.ref_name }}
-      run: |
-        # Find the previous tag (excluding the current one) to scope the changelog.
-        PREV_TAG=$(git tag --sort=-creatordate | grep -v "^${TAG}$" | head -1 || true)
-        echo "Current tag: ${TAG}"
-        echo "Previous tag: ${PREV_TAG:-<none>}"
-
-        # Build the supported language list from the package itself.
-        python -m pip install --quiet -e .
-        LANG_COUNT=$(python -c "import num2words2; print(len(num2words2.CONVERTER_CLASSES))")
-        LANG_CODES=$(python -c "import num2words2; print(', '.join(sorted(num2words2.CONVERTER_CLASSES)))")
-
-        {
-          echo "## What's Changed"
-          echo
-          if [ -n "${PREV_TAG}" ]; then
-            git log --pretty=format:'- %s (%h)' "${PREV_TAG}..${TAG}" | grep -v "^$" || echo "_No commits since ${PREV_TAG}._"
-            echo
-            echo
-            echo "**Full Changelog**: https://github.com/${GITHUB_REPOSITORY}/compare/${PREV_TAG}...${TAG}"
-          else
-            git log --pretty=format:'- %s (%h)' "${TAG}" | head -50
-          fi
-
-          # Surface upstream contributor credits — extract any
-          # "savoirfairelinux/num2words#NNN by @user" mentions from commit
-          # bodies so original authors are visible in the release notes.
-          if [ -n "${PREV_TAG}" ]; then
-            range="${PREV_TAG}..${TAG}"
-          else
-            range="${TAG}"
-          fi
-          credits=$(git log --pretty=format:'%B' "${range}" \
-            | grep -oE 'savoirfairelinux/num2words#[0-9]+ by @[A-Za-z0-9_-]+' \
-            | sort -u || true)
-          if [ -n "${credits}" ]; then
-            echo
-            echo "## Credits"
-            echo
-            echo "Thank you to the upstream contributors whose work this release ports:"
-            echo
-            while IFS= read -r line; do
-              upstream_pr=$(echo "$line" | grep -oE '#[0-9]+' | tr -d '#')
-              author=$(echo "$line" | grep -oE '@[A-Za-z0-9_-]+')
-              echo "- ${author} — [savoirfairelinux/num2words#${upstream_pr}](https://github.com/savoirfairelinux/num2words/pull/${upstream_pr})"
-            done <<<"${credits}"
-          fi
-
-          echo
-          echo "## Languages Supported"
-          echo
-          echo "${LANG_COUNT} language codes registered:"
-          echo
-          echo "\`\`\`"
-          echo "${LANG_CODES}" | fold -s -w 80
-          echo "\`\`\`"
-
-          echo
-          echo "## Installation"
-          echo
-          echo '```bash'
-          echo "pip install num2words2==${TAG#v}"
-          echo '```'
-
-          echo
-          echo "## Usage"
-          echo
-          echo '```python'
-          echo 'from num2words2 import num2words'
-          echo "print(num2words(42, lang='en'))"
-          echo '```'
-        } > release_notes.md
-
-        echo "--- release notes ---"
-        cat release_notes.md
-
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        body_path: release_notes.md
-        files: dist/*
-        draft: false
-        prerelease: false
-
+  # ---------------------------------------------------------------------------
   publish-pypi:
-    name: Publish to PyPI
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: [build, test-package, release]
+    name: Publish slim wheels + sdist to PyPI
+    needs: [build, sdist]
     runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/project/num2words2/
-    permissions:
-      id-token: write
-
+    environment: pypi
     steps:
-    - name: Download artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: python-package-distributions
-        path: dist/
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-slim-*
+          path: dist
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdist
+          path: dist
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist
+          skip-existing: true
 
-    - name: Check package versions
-      run: |
-        ls -la dist/
-        for file in dist/*; do
-          echo "Package: $file"
-          if [[ $file == *"+g"* ]]; then
-            echo "ERROR: Local version identifier found in package name!"
-            echo "This usually means no proper git tag exists."
-            echo "Please create a release tag first: git tag -a v1.0.0 -m 'Release v1.0.0'"
-            exit 1
-          fi
-        done
+  # ---------------------------------------------------------------------------
+  github-release:
+    name: Attach all wheels to the GitHub Release
+    needs: [build, sdist]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Create/Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.whl
+            dist/*.tar.gz
+          generate_release_notes: true
+          body: |
+            Automated release built by maturin.
 
-    - name: Publish to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        skip-existing: true
+            * **PyPI** carries the slim wheels (~2 MB, no bundled
+              language-detection models) plus the source distribution.
+            * The **full wheels** attached here embed the lingua-rs models
+              (~140 MB) so `num2words_sentence(lang=None)` auto-detects
+              natively. Install one with `pip install <asset-url>`.
