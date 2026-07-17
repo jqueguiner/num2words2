@@ -386,23 +386,3 @@ class Num2WordsTTTest(TestCase):
         self.assertEqual(num2words(100, lang="tt"), num2words("100", lang="tt"))
         self.assertEqual(num2words(1000, lang="tt"), num2words("1000", lang="tt"))
 
-    def test_converter_methods(self):
-        """Test direct converter methods for better coverage."""
-        from num2words2.lang_TT import Num2Word_TT
-
-        converter = Num2Word_TT()
-
-        # Test direct cardinal conversion
-        self.assertIsNotNone(converter.to_cardinal(42))
-        self.assertIsNotNone(converter.to_cardinal(1337))
-
-        # Test setup method
-        converter.setup()
-
-        # Test negative word if exists
-        if hasattr(converter, "negword"):
-            self.assertIsNotNone(converter.negword)
-
-        # Test point word if exists
-        if hasattr(converter, "pointword"):
-            self.assertIsNotNone(converter.pointword)

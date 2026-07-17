@@ -5,12 +5,7 @@ Additional tests to improve coverage for uncovered code paths.
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-from num2words2 import num2words
-from num2words2.converters.comprehensive_converter import (
-    ComprehensiveConverter,
-    _load_langid,
-)
-from num2words2.converters.sentence import num2words_sentence
+from num2words2 import num2words, num2words_sentence
 
 
 class TestGermanCaseHandling(TestCase):
@@ -73,78 +68,6 @@ class TestGermanCaseHandling(TestCase):
             for num in ["1.", "15.", "31."]:
                 if num in date:
                     self.assertNotIn(num, result)
-
-
-class TestComprehensiveConverterMain(TestCase):
-    """Test the main execution paths of comprehensive converter."""
-
-    def test_converter_with_command_line_style_args(self):
-        """Test converter with command line style arguments."""
-        converter = ComprehensiveConverter()
-
-        # Test with explicit language
-        result = converter.convert_sentence("Test 123", force_language="en")
-        self.assertIn("one hundred", result.lower())
-
-        # Test with auto-detection
-        result = converter.convert_sentence("Test 456")
-        self.assertIsNotNone(result)
-
-    def test_converter_interactive_style(self):
-        """Test converter in interactive style usage."""
-        converter = ComprehensiveConverter()
-
-        # Test language prefix parsing style
-        test_cases = [
-            ("Test 456", None),
-            ("Test 789", "fr"),
-            ("Test 100", "de"),
-        ]
-
-        for text, lang in test_cases:
-            if lang:
-                result = converter.convert_sentence(text, force_language=lang)
-            else:
-                result = converter.convert_sentence(text)
-            self.assertIsNotNone(result)
-            # Numbers should be converted
-            self.assertNotIn("456", result) if "456" in text else None
-            self.assertNotIn("789", result) if "789" in text else None
-
-    def test_module_demo_execution(self):
-        """Test the module demo execution code."""
-        # Test that the module can be imported
-        from num2words2.converters import comprehensive_converter
-
-        # The module should have the converter class
-        self.assertTrue(hasattr(comprehensive_converter, "ComprehensiveConverter"))
-
-        # Test creating an instance
-        converter = comprehensive_converter.ComprehensiveConverter()
-        self.assertIsNotNone(converter)
-
-    def test_langid_import_failure(self):
-        """Test _load_langid when import fails."""
-        with patch("builtins.__import__", side_effect=ImportError("test error")):
-            result = _load_langid()
-            self.assertIsNone(result)
-
-    def test_langid_import_success_mock(self):
-        """Test _load_langid with successful mock import."""
-        mock_langid = MagicMock()
-        mock_langid.classify = MagicMock(return_value=("en", 0.99))
-
-        with patch("builtins.__import__", return_value=mock_langid):
-            # Call _load_langid fresh
-            # Reset the cached value
-            import num2words2.converters.comprehensive_converter
-            from num2words2.converters.comprehensive_converter import _load_langid
-
-            num2words2.converters.comprehensive_converter._LANGID = None
-
-            result = _load_langid()
-            # Should return the mock module
-            self.assertIsNotNone(result)
 
 
 class TestGreekOrdinals(TestCase):

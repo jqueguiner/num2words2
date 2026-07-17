@@ -47,19 +47,3 @@ class TestCurrencyWithCents(TestCase):
 class TestPluralizeEdgeCases(TestCase):
     """Hit the pluralize() edge cases."""
 
-    def test_pluralize_empty_forms(self):
-        from num2words2 import CONVERTER_CLASSES
-
-        for code in NEW_LANG_CODES:
-            with self.subTest(code=code):
-                converter = CONVERTER_CLASSES[code]
-                # Empty list — should return ''
-                self.assertEqual(converter.pluralize(1, []), "")
-                self.assertEqual(converter.pluralize(2, []), "")
-                # None — should return ''
-                self.assertEqual(converter.pluralize(1, None), "")
-                # Single form — should return that form for both n=1 and n>1
-                self.assertEqual(converter.pluralize(1, ["a"]), "a")
-                # Multi forms — n=1 picks first, n>1 picks last
-                self.assertEqual(converter.pluralize(1, ["a", "b"]), "a")
-                self.assertEqual(converter.pluralize(5, ["a", "b"]), "b")

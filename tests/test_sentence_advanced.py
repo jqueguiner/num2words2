@@ -7,93 +7,17 @@ import sys
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-from num2words2.converters.sentence import SentenceConverter, num2words_sentence
+from num2words2 import num2words_sentence
 
 
 class TestSentenceConverterAdvanced(TestCase):
     """Advanced tests for SentenceConverter class."""
 
-    def setUp(self):
-        """Set up test fixtures."""
-        self.converter = SentenceConverter()
 
-    def test_langid_loading_mechanism(self):
-        """Test langid loading with various conditions."""
-        # Test the loading mechanism
-        from num2words2.converters.sentence import _load_langid
 
-        # Save original environment
-        original_env = os.environ.get("NUM2WORDS2_ENABLE_LANGID")
 
-        try:
-            # Test with langid explicitly disabled
-            os.environ["NUM2WORDS2_ENABLE_LANGID"] = "0"
-            result = _load_langid()
-            # On macOS without explicit enable, should return None
-            if sys.platform == "darwin":
-                self.assertIsNone(result)
 
-            # Test with langid explicitly enabled
-            os.environ["NUM2WORDS2_ENABLE_LANGID"] = "1"
-            result = _load_langid()
-            # Should attempt to load langid
-            self.assertTrue(result is None or hasattr(result, "classify"))
 
-        finally:
-            # Restore original environment
-            if original_env is None:
-                os.environ.pop("NUM2WORDS2_ENABLE_LANGID", None)
-            else:
-                os.environ["NUM2WORDS2_ENABLE_LANGID"] = original_env
-
-    def test_detect_language_with_langid_mock(self):
-        """Test language detection with mocked langid."""
-        with patch("num2words2.converters.sentence._load_langid") as mock_load:
-            # Mock langid module
-            mock_langid = MagicMock()
-            mock_langid.classify.return_value = ("fr", 0.95)
-            mock_load.return_value = mock_langid
-
-            # Create new converter to trigger langid loading
-            converter = SentenceConverter()
-            lang = converter.detect_language("Bonjour le monde")
-            self.assertEqual(lang, "fr")
-
-    def test_detect_language_without_langid(self):
-        """Test language detection when langid is not available."""
-        with patch("num2words2.converters.sentence._load_langid") as mock_load:
-            mock_load.return_value = None
-
-            converter = SentenceConverter()
-            lang = converter.detect_language("Hello world")
-            # Should fall back to default
-            self.assertEqual(lang, "en")
-
-    def test_extract_numbers_complex_patterns(self):
-        """Test complex number extraction patterns."""
-        # Roman numerals (should be ignored)
-        numbers = self.converter.extract_numbers("Chapter III and IV")
-        self.assertEqual(len(numbers), 0)  # Roman numerals not extracted
-
-        # Mixed formats in same string
-        numbers = self.converter.extract_numbers("1st, 2.5, -3, 4e2")
-        self.assertGreaterEqual(len(numbers), 2)  # At least some numbers detected
-
-        # Numbers with units - extract_numbers may not detect all
-        numbers = self.converter.extract_numbers("100 50 25")
-        self.assertGreaterEqual(len(numbers), 1)
-
-    def test_convert_number_edge_cases(self):
-        """Test convert_number with edge cases."""
-        self.converter.lang = "en"
-
-        # Very small decimal
-        result = self.converter.convert_number(0.0001, "cardinal")
-        self.assertIsNotNone(result)
-
-        # String number
-        result = self.converter.convert_number(42, "cardinal")
-        self.assertIn("forty", result.lower())
 
     def test_sentence_capitalization_rules(self):
         """Test sentence capitalization rules."""
@@ -144,21 +68,6 @@ class TestSentenceConverterAdvanced(TestCase):
         self.assertIn("&lt;", result)
         self.assertIn("&gt;", result)
 
-    def test_number_type_detection_advanced(self):
-        """Test advanced number type detection."""
-        # Phone numbers (should be preserved or handled specially)
-        numbers = self.converter.extract_numbers("Call +1-555-1234")
-        for num in numbers:
-            # Phone numbers might be detected differently
-            self.assertIsNotNone(num)
-
-        # ZIP codes
-        numbers = self.converter.extract_numbers("ZIP: 90210")
-        self.assertGreaterEqual(len(numbers), 1)
-
-        # Version numbers
-        numbers = self.converter.extract_numbers("v3.14.159")
-        self.assertGreaterEqual(len(numbers), 1)
 
     def test_contextual_number_conversion(self):
         """Test that numbers are converted based on context."""

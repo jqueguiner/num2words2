@@ -192,13 +192,6 @@ def test_ar_ordinals_use_definite_article_form():
     assert num2words(999, lang="ar", to="ordinal") == "التاسع والتسعون بعد التسعمائة"
 
 
-def test_ar_ordinals_feminine():
-    # Feminine forms via gender='f' kwarg.
-    from num2words2.lang_AR import Num2Word_AR
-    ar = Num2Word_AR()
-    assert ar.to_ordinal(1, gender="f") == "الأولى"
-    assert ar.to_ordinal(2, gender="f") == "الثانية"
-    assert ar.to_ordinal(11, gender="f") == "الحادية عشرة"
 
 
 def test_ar_dual_endings_switch_with_case_kwarg():

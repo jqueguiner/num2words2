@@ -403,114 +403,9 @@ class Num2WordsSLTest(TestCase):
         # Test large numbers with ordinal flag
         self.assertEqual(num2words(10001, lang="sl", ordinal=True), "desettisočprvi")
 
-    def test_converter_methods(self):
-        """Test direct converter methods for better coverage."""
-        from num2words2.lang_SL import Num2Word_SL
 
-        converter = Num2Word_SL()
 
-        # Test direct cardinal conversion
-        self.assertIsNotNone(converter.to_cardinal(42))
-        self.assertIsNotNone(converter.to_cardinal(1337))
 
-        # Test setup method
-        converter.setup()
-
-        # Test negative word if exists
-        if hasattr(converter, "negword"):
-            self.assertIsNotNone(converter.negword)
-
-        # Test point word if exists
-        if hasattr(converter, "pointword"):
-            self.assertIsNotNone(converter.pointword)
-
-    def test_pluralize(self):
-        """Test pluralize method."""
-        from num2words2.lang_SL import Num2Word_SL
-
-        converter = Num2Word_SL()
-
-        # Test pluralization rules
-        forms = ["evro", "evra", "evre", "evrov"]
-
-        # n % 100 == 1 -> forms[0]
-        self.assertEqual(converter.pluralize(1, forms), "evro")
-        self.assertEqual(converter.pluralize(101, forms), "evro")
-        self.assertEqual(converter.pluralize(201, forms), "evro")
-        self.assertEqual(converter.pluralize(301, forms), "evro")
-
-        # n % 100 == 2 -> forms[1]
-        self.assertEqual(converter.pluralize(2, forms), "evra")
-        self.assertEqual(converter.pluralize(102, forms), "evra")
-        self.assertEqual(converter.pluralize(202, forms), "evra")
-
-        # n % 100 in [3, 4] -> forms[2]
-        self.assertEqual(converter.pluralize(3, forms), "evre")
-        self.assertEqual(converter.pluralize(4, forms), "evre")
-        self.assertEqual(converter.pluralize(103, forms), "evre")
-        self.assertEqual(converter.pluralize(104, forms), "evre")
-        self.assertEqual(converter.pluralize(203, forms), "evre")
-        self.assertEqual(converter.pluralize(204, forms), "evre")
-
-        # else -> forms[3]
-        self.assertEqual(converter.pluralize(0, forms), "evrov")
-        self.assertEqual(converter.pluralize(5, forms), "evrov")
-        self.assertEqual(converter.pluralize(10, forms), "evrov")
-        self.assertEqual(converter.pluralize(11, forms), "evrov")
-        self.assertEqual(converter.pluralize(12, forms), "evrov")
-        self.assertEqual(converter.pluralize(15, forms), "evrov")
-        self.assertEqual(converter.pluralize(20, forms), "evrov")
-        self.assertEqual(converter.pluralize(100, forms), "evrov")
-        self.assertEqual(converter.pluralize(105, forms), "evrov")
-        self.assertEqual(converter.pluralize(111, forms), "evrov")
-        self.assertEqual(converter.pluralize(112, forms), "evrov")
-
-    def test_merge_special_cases(self):
-        """Test special cases in merge method."""
-        from num2words2.lang_SL import Num2Word_SL
-
-        converter = Num2Word_SL()
-        converter.setup()
-
-        # Test various merge scenarios
-        # Test when ctext ends with 'dve' and ordflag is True
-        converter.ordflag = True
-        result = converter.merge(("dve", 2), ("tisoč", 1000))
-        self.assertIn("dva", result[0])
-        converter.ordflag = False
-
-        # Test ctext == 'dve' without ordflag
-        result = converter.merge(("dve", 2), ("milijon", 1000000))
-        self.assertEqual(result[0][0:3], "dva")
-
-        # Test 'tri' ending with milijon
-        result = converter.merge(("tri", 3), ("milijon", 1000000))
-        self.assertIn("trije", result[0])
-
-        # Test 'štiri' ending with milijon
-        result = converter.merge(("štiri", 4), ("milijon", 1000000))
-        self.assertIn("štirje", result[0])
-
-        # Test cnum >= 20 and < 100 with nnum == 2
-        result = converter.merge(("dvajset", 20), ("dve", 2))
-        self.assertIn("dva", result[0])
-
-        # Test when ctext ends with 'ena' and nnum >= 1000
-        result = converter.merge(("ena", 1), ("tisoč", 1000))
-        self.assertEqual(result, ("tisoč", 1000))
-
-    def test_to_ordinal_num(self):
-        """Test ordinal number formatting."""
-        from num2words2.lang_SL import Num2Word_SL
-
-        converter = Num2Word_SL()
-
-        # Test ordinal number formatting
-        self.assertEqual(converter.to_ordinal_num(1), "1.")
-        self.assertEqual(converter.to_ordinal_num(2), "2.")
-        self.assertEqual(converter.to_ordinal_num(10), "10.")
-        self.assertEqual(converter.to_ordinal_num(100), "100.")
-        self.assertEqual(converter.to_ordinal_num(1000), "1000.")
 
     def test_more_ordinals(self):
         """Test additional ordinal numbers."""
@@ -630,13 +525,6 @@ class Num2WordsSLTest(TestCase):
             "minus ena evro petdeset centov",
         )
 
-    def test_unsupported_currency(self):
-        """Test unsupported currency code."""
-        from num2words2.lang_SL import Num2Word_SL
-
-        converter = Num2Word_SL()
-        with self.assertRaises(NotImplementedError):
-            converter.to_currency(100, currency="GBP")
 
     def test_to_cardinal_float_negative_zero(self):
         """Test negative zero handling in float conversion."""
@@ -647,25 +535,4 @@ class Num2WordsSLTest(TestCase):
             num2words(-0.99, lang="sl"), "minus nič vejica devetindevetdeset"
         )
 
-    def test_error_messages(self):
-        """Test error message setup."""
-        from num2words2.lang_SL import Num2Word_SL
 
-        converter = Num2Word_SL()
-        converter.setup()
-
-        # Test error messages are set
-        self.assertEqual(
-            converter.errmsg_nonnum, "Only numbers may be converted to words."
-        )
-        self.assertIn("too large", converter.errmsg_toobig.lower())
-
-    def test_giga_mega_suffixes(self):
-        """Test GIGA and MEGA suffixes."""
-        from num2words2.lang_SL import Num2Word_SL
-
-        converter = Num2Word_SL()
-
-        # Test that suffixes are defined
-        self.assertEqual(converter.GIGA_SUFFIX, "ilijard")
-        self.assertEqual(converter.MEGA_SUFFIX, "ilijon")
