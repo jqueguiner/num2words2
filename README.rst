@@ -113,19 +113,43 @@ corpus of cardinals, ordinals, currency, years, fractions, floats and strings.
 Installation
 ------------
 
-Install from PyPI — the wheels bundle the Python binder and the compiled Rust
-extension, built per platform::
+Install from PyPI (Python 3.10+) — the wheel bundles the Python binder and the
+compiled Rust extension, built per platform::
 
     pip install num2words2
 
-Wheels for every version are also attached to the `GitHub Releases`_ page; the
-compiled extension is distributed **only** through those release wheels (it is not
+Prebuilt wheels are published for:
+
+* **Linux** — x86_64 and aarch64 (manylinux2014)
+* **macOS** — Apple Silicon (arm64); Intel (x86_64) from a later release
+* **Windows** — x86_64
+
+On any other platform, pip falls back to the source distribution and builds the
+extension locally — this needs a **stable Rust toolchain** (`rustup
+<https://rustup.rs>`_).
+
+Slim vs. full wheels
+~~~~~~~~~~~~~~~~~~~~~~
+
+``num2words2`` ships in two flavours:
+
+* **slim** (the PyPI default, ~2 MB) — everything except native
+  language-detection. ``num2words_sentence(lang=None)`` auto-detect is disabled;
+  pass an explicit ``lang`` and every converter works.
+* **full** (~140 MB) — embeds the lingua-rs models so
+  ``num2words_sentence(lang=None)`` auto-detects the language natively. Full
+  wheels are attached to each `GitHub Releases`_ entry; install one directly::
+
+      pip install https://github.com/jqueguiner/num2words2/releases/download/v1.0.18/num2words2-1.0.18-cp38-abi3-<platform>.whl
+
+The compiled extension is distributed **only** through these wheels (it is not
 committed to the repository).
 
 To build from source you need a stable Rust toolchain and `maturin
 <https://www.maturin.rs>`_::
 
-    maturin build --release
+    maturin build --release                        # full (bundles lingua models)
+    maturin build --release --no-default-features  # slim (~2 MB, no models)
 
 
 
