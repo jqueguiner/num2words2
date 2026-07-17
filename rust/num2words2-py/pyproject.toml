@@ -1,0 +1,12 @@
+[build-system]
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "num2words2-rust"
+requires-python = ">=3.8"
+classifiers = ["Programming Language :: Rust"]
+
+[tool.maturin]
+module-name = "num2words2._rust"
+features = ["pyo3/extension-module"]

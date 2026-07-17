@@ -1,16 +1,17 @@
 [build-system]
-requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
-build-backend = "setuptools.build_meta"
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
 
 [project]
 name = "num2words2"
-dynamic = ["version"]
+# Static base version. The release CI overrides it from the pushed git tag
+# (see .github/workflows/release.yml); bump here for local source builds.
+version = "1.0.10"
 license = "LGPL-2.1-only"
 license-files = ["COPYING"]
-description = "Modern, actively maintained fork of num2words optimized for LLM/AI/speech applications."
+description = "Rust port of the num2words conversion engine with a Python binder — number-to-words in 120+ languages, optimized for LLM/AI/speech."
 readme = "README.rst"
 requires-python = ">=3.10"
-dependencies = ["docopt>=0.6.2"]
 authors = [
     {name = "Jean-Louis Queguiner", email = "jean-louis.queguiner@gmail.com"}
 ]
@@ -19,7 +20,7 @@ maintainers = [
 ]
 keywords = ["number", "word", "numbers", "words", "convert", "conversion",
             "i18n", "localisation", "localization", "internationalisation",
-            "internationalization"]
+            "internationalization", "rust"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -29,7 +30,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
-    "Programming Language :: Python :: 3.15",
+    "Programming Language :: Rust",
     "Topic :: Software Development :: Internationalization",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Localization",
@@ -42,24 +43,19 @@ Documentation = "https://github.com/jqueguiner/num2words2/wiki"
 Repository = "https://github.com/jqueguiner/num2words2.git"
 "Bug Tracker" = "https://github.com/jqueguiner/num2words2/issues"
 
-[project.scripts]
-num2words2 = "num2words2.__main__:main"
-
-[tool.setuptools]
-packages = ["num2words2", "num2words2.converters"]
-include-package-data = true
-
-[tool.setuptools.package-data]
-num2words2 = ["*.py", "py.typed"]
-
-[tool.setuptools_scm]
-write_to = "num2words2/_version.py"
-version_scheme = "release-branch-semver"
-local_scheme = "no-local-version"
-write_to_template = '''# Auto-generated version file
-__version__ = "{version}"
-__version_tuple__ = {version_tuple}
-'''
+# ---- maturin: mixed Rust/Python project -------------------------------------
+# The compiled engine lives in ./rust (vendored crate `num2words2-py`, lib
+# `_rust`); the thin Python binder is ./num2words2. maturin bundles both into a
+# single per-platform wheel. Default build embeds lingua-rs language-detection
+# models (~140MB); pass `--no-default-features` for the slim (~2MB) wheel with
+# `num2words_sentence(lang=None)` auto-detection disabled.
+[tool.maturin]
+manifest-path = "rust/num2words2-py/Cargo.toml"
+python-source = "."
+module-name = "num2words2._rust"
+features = ["pyo3/extension-module"]
+strip = true
+include = ["num2words2/py.typed"]
 
 [tool.isort]
 profile = "black"

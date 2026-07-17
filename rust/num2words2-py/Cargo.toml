@@ -1,0 +1,42 @@
+[package]
+name = "num2words2-py"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+name = "_rust"
+crate-type = ["cdylib"]
+
+[dependencies]
+num2words2-core = { path = "../num2words2-core" }
+num-bigint = "0.4"
+bigdecimal = "0.4"
+regex = "1"
+pyo3 = { version = "0.23", features = ["extension-module", "abi3-py38", "num-bigint"] }
+[features]
+# lang-detect embeds lingua-rs models (~140MB of .so) to serve
+# num2words_sentence(lang=None) natively. Without it the binary stays ~2MB
+# and lang=None falls back to the original Python chain (langdetect ->
+# heuristics). Build the slim variant with:
+#   maturin build --release --no-default-features
+default = ["lang-detect"]
+lang-detect = ["dep:lingua"]
+
+# Language detection for num2words_sentence(lang=None). Feature-gated to the
+# languages lingua must tell apart: script-exclusive languages (zh/ja/ko/
+# ar/he/th/hi/el) are detected from Unicode ranges at zero model cost, so
+# only shared-alphabet (Latin + Cyrillic) languages ship models.
+[dependencies.lingua]
+version = "1.8"
+optional = true
+default-features = false
+# Script-exclusive languages (zh/ja/ko/ar/he/th/hi/el) are detected from
+# Unicode ranges in sentencepath.rs at zero model cost; lingua only has to
+# tell apart languages that share an alphabet (Latin + Cyrillic).
+features = [
+    "english", "french", "german", "spanish", "italian", "portuguese",
+    "dutch", "polish", "swedish", "danish", "bokmal", "turkish",
+    "hungarian", "czech", "slovak", "vietnamese", "lithuanian", "latvian",
+    "estonian", "finnish", "icelandic", "croatian",
+    "russian", "ukrainian", "bulgarian",
+]

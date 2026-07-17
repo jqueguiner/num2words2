@@ -34,29 +34,98 @@ num2words2 library - Convert numbers to words in multiple languages
    :alt: Coverage
 
 
-``num2words2`` is a modern, actively maintained fork of the original num2words library
-that converts numbers like ``42`` to words like ``forty-two``. It supports 120+ languages
-and 170+ locale codes (see ``REFERENCE.md`` for the full table) and can produce
-cardinals, ordinals, currency, year, fractions, bank-cheque format, and aviation/ICAO
-digit-by-digit phraseology. This fork was created to address the maintenance gap in
-the original project and optimize for modern AI/LLM/speech applications.
+``num2words2`` converts numbers like ``42`` to words like ``forty-two`` across
+120+ languages and 170+ locale codes (see ``REFERENCE.md`` for the full table),
+producing cardinals, ordinals, currency, year, fractions, bank-cheque format, and
+aviation/ICAO digit-by-digit phraseology.
+
+It is a **Rust port of the num2words conversion engine with a thin Python binder**.
+Every conversion runs in a compiled Rust core (PyO3/``abi3``); Python only normalises
+the arguments and shapes the result. The output is byte-for-byte identical to the
+original pure-Python library — validated against a frozen ~150,000-case corpus — while
+running typically **4–12× faster**, and up to **26×** on some languages and **150×**
+on string parsing (see `Performance`_).
 
 The project is hosted on GitHub_, and the full documentation is available in
 the Wiki_. Contributions are welcome.
 
 .. _GitHub: https://github.com/jqueguiner/num2words2
 .. _Wiki: https://github.com/jqueguiner/num2words2/wiki
+.. _GitHub Releases: https://github.com/jqueguiner/num2words2/releases
+
+Performance
+-----------
+
+Because the conversion engine is compiled Rust, ``num2words2`` is several times
+faster than the original pure-Python ``num2words``. Benchmarked against
+``num2words`` 0.5.14, Apple M-series, nanoseconds per call:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 34 22 22 14
+
+   * - Operation
+     - original
+     - num2words2
+     - speedup
+   * - int → cardinal (``8765``)
+     - 24,384 ns
+     - 2,099 ns
+     - 11.6×
+   * - float → cardinal (``1234.56``)
+     - 33,107 ns
+     - 3,367 ns
+     - 9.8×
+   * - ordinal
+     - 24,969 ns
+     - 2,407 ns
+     - 10.4×
+   * - currency
+     - 32,518 ns
+     - 3,345 ns
+     - 9.7×
+   * - year
+     - 13,484 ns
+     - 1,434 ns
+     - 9.4×
+   * - string input (``"1234"``)
+     - 335,862 ns
+     - 2,200 ns
+     - 152.6×
+   * - French cardinal
+     - 61,046 ns
+     - 2,359 ns
+     - 25.9×
+   * - German cardinal
+     - 63,046 ns
+     - 2,386 ns
+     - 26.4×
+   * - Russian cardinal
+     - 4,781 ns
+     - 1,001 ns
+     - 4.8×
+
+The speedup is largest where the original does heavy Python-level parsing (string
+inputs) or deep recursion (French, German); it never comes at the cost of accuracy —
+output is byte-for-byte identical to the original across a frozen ~150,000-case
+corpus of cardinals, ordinals, currency, years, fractions, floats and strings.
 
 Installation
 ------------
 
-The easiest way to install ``num2words2`` is to use pip::
+Install from PyPI — the wheels bundle the Python binder and the compiled Rust
+extension, built per platform::
 
     pip install num2words2
 
-Otherwise, you can download the source package and then execute::
+Wheels for every version are also attached to the `GitHub Releases`_ page; the
+compiled extension is distributed **only** through those release wheels (it is not
+committed to the repository).
 
-    python setup.py install
+To build from source you need a stable Rust toolchain and `maturin
+<https://www.maturin.rs>`_::
+
+    maturin build --release
 
 
 
@@ -268,15 +337,15 @@ added Lithuanian support, but didn't take over maintenance of the project.
 Virgil Dupras from Savoir-faire Linux based himself on Marius Grigaitis' improvements
 and re-published ``pynum2word`` as ``num2words``.
 
-``num2words2`` Fork
--------------------
+Relationship to ``num2words``
+-----------------------------
 
-``num2words2`` is a modern fork of the original ``num2words`` library, created to address
-the maintenance gap and optimize for modern AI/LLM/speech applications. This fork:
+``num2words2`` is **not a divergent fork**. It is a Rust port of the ``num2words``
+conversion engine with a Python binder, kept output-compatible with the original.
 
-* Provides active maintenance aligned with rapidly evolving AI/ML ecosystem
-* Fixes critical bugs affecting machine learning pipelines
-* Adds enhanced language support for global AI applications
-* Maintains backward compatibility with the original library
+The original project's issues and pull requests are actively monitored. Valid,
+relevant fixes and features are reviewed and then ported into this project's Rust
+core, with byte-parity re-verified against the frozen corpus. ``num2words2`` therefore
+tracks upstream improvements while delivering them natively — and several times faster.
 
 Jean-Louis Queguiner

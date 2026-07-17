@@ -14,167 +14,19 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301 USA
+"""num2words2 — a thin Python binder over the Rust conversion core.
 
+Every conversion is served by the compiled `_rust` extension: this module
+normalises the language code, maps the public keyword arguments onto the
+core's entry points, and applies the two string-level post-processing steps
+(`style=`, `cents=`) that are presentation, not conversion. There is no
+pure-Python conversion fallback — the core is authoritative, and an input it
+declines raises rather than silently diverging.
+"""
 from __future__ import unicode_literals
 
 import decimal
 
-from . import (
-    lang_AF,
-    lang_AM,
-    lang_AR,
-    lang_AS,
-    lang_AZ,
-    lang_BA,
-    lang_BAN,
-    lang_BE,
-    lang_BG,
-    lang_BM,
-    lang_BN,
-    lang_BO,
-    lang_BR,
-    lang_BS,
-    lang_CA,
-    lang_CE,
-    lang_CEB,
-    lang_CKB,
-    lang_CNH,
-    lang_CS,
-    lang_CY,
-    lang_DA,
-    lang_DE,
-    lang_DV,
-    lang_EL,
-    lang_EN,
-    lang_EN_AERO,
-    lang_EN_IN,
-    lang_EN_NE,
-    lang_EN_NG,
-    lang_EN_NP,
-    lang_EO,
-    lang_ES,
-    lang_ES_CO,
-    lang_ES_CR,
-    lang_ES_GT,
-    lang_ES_HN,
-    lang_ES_NI,
-    lang_ES_VE,
-    lang_ET,
-    lang_EU,
-    lang_FA,
-    lang_FF,
-    lang_FI,
-    lang_FIL,
-    lang_FO,
-    lang_FR,
-    lang_FR_BE,
-    lang_FR_CH,
-    lang_FR_DZ,
-    lang_GL,
-    lang_GU,
-    lang_HA,
-    lang_HAW,
-    lang_HE,
-    lang_HI,
-    lang_HMN,
-    lang_HR,
-    lang_HT,
-    lang_HU,
-    lang_HY,
-    lang_ID,
-    lang_IS,
-    lang_IT,
-    lang_JA,
-    lang_JW,
-    lang_KA,
-    lang_KI,
-    lang_KK,
-    lang_KM,
-    lang_KN,
-    lang_KO,
-    lang_KOK,
-    lang_KSW,
-    lang_KU,
-    lang_KY,
-    lang_KZ,
-    lang_LA,
-    lang_LB,
-    lang_LG,
-    lang_LIJ,
-    lang_LN,
-    lang_LO,
-    lang_LT,
-    lang_LUS,
-    lang_LV,
-    lang_MG,
-    lang_MI,
-    lang_MK,
-    lang_ML,
-    lang_MN,
-    lang_MR,
-    lang_MS,
-    lang_MT,
-    lang_MY,
-    lang_NE,
-    lang_NL,
-    lang_NN,
-    lang_NO,
-    lang_OC,
-    lang_OM,
-    lang_OR,
-    lang_PA,
-    lang_PAP,
-    lang_PL,
-    lang_PLI,
-    lang_PS,
-    lang_PT,
-    lang_PT_BR,
-    lang_RM,
-    lang_RM_PUTER,
-    lang_RM_SURMIRAN,
-    lang_RM_SURSILV,
-    lang_RM_SUTSILV,
-    lang_RM_VALLADER,
-    lang_RO,
-    lang_RU,
-    lang_RW,
-    lang_SA,
-    lang_SD,
-    lang_SI,
-    lang_SK,
-    lang_SL,
-    lang_SN,
-    lang_SO,
-    lang_SQ,
-    lang_SR,
-    lang_SR_LATN,
-    lang_SU,
-    lang_SV,
-    lang_SW,
-    lang_TA,
-    lang_TE,
-    lang_TET,
-    lang_TG,
-    lang_TH,
-    lang_TI,
-    lang_TK,
-    lang_TL,
-    lang_TR,
-    lang_TT,
-    lang_UK,
-    lang_UR,
-    lang_UZ,
-    lang_UZ_CYR,
-    lang_VI,
-    lang_WO,
-    lang_XH,
-    lang_YI,
-    lang_YO,
-    lang_ZH_CN,
-    lang_ZH_HK,
-    lang_ZH_TW,
-    lang_ZU,
-)
 from .grouping import group_digits  # noqa: E402
 
 # Version information
@@ -186,28 +38,23 @@ except ImportError:
     __version_tuple__ = (0, 0, 0, "unknown", 0)
 
 
-def maxval(lang="en"):
-    """Return the maximum integer ``num2words(..., lang=lang)`` can convert.
+# The compiled core is mandatory: this package is a binder over it.
+from . import _rust as _RUST  # noqa: E402
 
-    Issue #582 ports savoirfairelinux/num2words#582. Useful for input
-    validation in apps that need to know the per-language ceiling before
-    calling :func:`num2words`.
-    """
-    if lang not in CONVERTER_CLASSES:
-        # Reuse the same prefix-fallback the dispatcher does so callers
-        # don't have to know the canonical key.
-        nl = lang.replace("-", "_")
-        if nl in CONVERTER_CLASSES:
-            lang = nl
-        elif nl[:2] in CONVERTER_CLASSES:
-            lang = nl[:2]
-        else:
-            raise NotImplementedError("No MAXVAL for lang=%r" % lang)
-    converter = CONVERTER_CLASSES[lang]
-    return getattr(converter, "MAXVAL", None)
+_RUST_LANGS = frozenset(_RUST.supported_langs())
+_RUST_TYPES = frozenset(["cardinal", "ordinal", "ordinal_num", "year"])
+# The core's "declined" signal (see rust/num2words2-py/src/lib.rs). It is
+# distinct from NotImplementedError so a genuine NotImplementedError raise
+# propagates natively; here, with no Python conversion path behind it, a
+# decline is surfaced as NotImplementedError to the caller.
+_RUST_FALLBACK = _RUST.RustFallback
+
+# bn raises NumberTooLargeError past its MAX_NUMBER. The class used to live in
+# lang_BN.py; the pure binder defines it in the core and re-exports it here so
+# `from num2words2 import NumberTooLargeError` (and `except`) keep working.
+NumberTooLargeError = _RUST.NumberTooLargeError
 
 
-# Export main functions
 __all__ = [
     "num2words",
     "num2words_sentence",
@@ -215,199 +62,8 @@ __all__ = [
     "sentence_to_words",
     "group_digits",
     "maxval",
+    "NumberTooLargeError",
 ]
-
-
-CONVERTER_CLASSES = {
-    "af": lang_AF.Num2Word_AF(),
-    "am": lang_AM.Num2Word_AM(),
-    "ar": lang_AR.Num2Word_AR(),
-    "az": lang_AZ.Num2Word_AZ(),
-    "be": lang_BE.Num2Word_BE(),
-    "bg": lang_BG.Num2Word_BG(),
-    "bn": lang_BN.Num2Word_BN(),
-    "ca": lang_CA.Num2Word_CA(),
-    "ce": lang_CE.Num2Word_CE(),
-    "cs": lang_CS.Num2Word_CS(),
-    "cy": lang_CY.Num2Word_CY(),
-    "da": lang_DA.Num2Word_DA(),
-    "de": lang_DE.Num2Word_DE(),
-    "dv": lang_DV.Num2Word_DV(),
-    "el": lang_EL.Num2Word_EL(),
-    "en": lang_EN.Num2Word_EN(),
-    # Aviation/ICAO digit-by-digit reading. The canonical key follows
-    # BCP 47 private-use shape (mapped via the dispatcher's hyphen-to-
-    # underscore normalisation): the BCP 47 tag 'en-x-aero-icao' resolves
-    # to the 'en_x_aero_icao' key below. The shorter 'en_Aero_ICAO' is
-    # the recommended in-code form. 'en_AERO' (and lowercase variants)
-    # are kept as aliases for back-compat with v1.0.14.
-    "en_Aero_ICAO": lang_EN_AERO.Num2Word_EN_AERO(),
-    "en_aero_icao": lang_EN_AERO.Num2Word_EN_AERO(),
-    "en_x_aero_icao": lang_EN_AERO.Num2Word_EN_AERO(),
-    "en_AERO": lang_EN_AERO.Num2Word_EN_AERO(),
-    # Service-specific aviation profiles (per the upstream issue's request
-    # to "implement the different variations depending on ICAO, FAA,
-    # US Navy, US Army"). Modern services have converged on the ICAO
-    # digit table for joint operations, so today these all produce the
-    # same output as the ICAO profile — they're separate entry points
-    # so callers can document *which* standard they're targeting and so
-    # historical/tactical variants can diverge later without breaking
-    # callers. Issue savoirfairelinux/num2words#478.
-    "en_Aero_FAA": lang_EN_AERO.Num2Word_EN_AERO_FAA(),
-    "en_Aero_USN": lang_EN_AERO.Num2Word_EN_AERO_USN(),
-    "en_Aero_US_Navy": lang_EN_AERO.Num2Word_EN_AERO_USN(),
-    "en_Aero_US_Army": lang_EN_AERO.Num2Word_EN_AERO_US_Army(),
-    "en_Aero_NATO": lang_EN_AERO.Num2Word_EN_AERO_NATO(),
-    "en_IN": lang_EN_IN.Num2Word_EN_IN(),
-    "en_NE": lang_EN_NE.Num2Word_EN_NE(),
-    "en_NG": lang_EN_NG.Num2Word_EN_NG(),
-    "en_NP": lang_EN_NP.Num2Word_EN_NP(),
-    "eo": lang_EO.Num2Word_EO(),
-    "es": lang_ES.Num2Word_ES(),
-    "es_CO": lang_ES_CO.Num2Word_ES_CO(),
-    "es_CR": lang_ES_CR.Num2Word_ES_CR(),
-    "es_GT": lang_ES_GT.Num2Word_ES_GT(),
-    "es_HN": lang_ES_HN.Num2Word_ES_HN(),
-    "es_NI": lang_ES_NI.Num2Word_ES_NI(),
-    "es_VE": lang_ES_VE.Num2Word_ES_VE(),
-    "et": lang_ET.Num2Word_ET(),
-    "fa": lang_FA.Num2Word_FA(),
-    "fi": lang_FI.Num2Word_FI(),
-    "fr": lang_FR.Num2Word_FR(),
-    "fr_BE": lang_FR_BE.Num2Word_FR_BE(),
-    "fr_CH": lang_FR_CH.Num2Word_FR_CH(),
-    "fr_DZ": lang_FR_DZ.Num2Word_FR_DZ(),
-    "ha": lang_HA.Num2Word_HA(),
-    "he": lang_HE.Num2Word_HE(),
-    "hi": lang_HI.Num2Word_HI(),
-    "hr": lang_HR.Num2Word_HR(),
-    "hu": lang_HU.Num2Word_HU(),
-    "hy": lang_HY.Num2Word_HY(),
-    "id": lang_ID.Num2Word_ID(),
-    "is": lang_IS.Num2Word_IS(),
-    "it": lang_IT.Num2Word_IT(),
-    "ja": lang_JA.Num2Word_JA(),
-    "kn": lang_KN.Num2Word_KN(),
-    "ko": lang_KO.Num2Word_KO(),
-    "kz": lang_KZ.Num2Word_KZ(),
-    "lt": lang_LT.Num2Word_LT(),
-    "lv": lang_LV.Num2Word_LV(),
-    "mn": lang_MN.Num2Word_MN(),
-    "ms": lang_MS.Num2Word_MS(),
-    "nl": lang_NL.Num2Word_NL(),
-    "no": lang_NO.Num2Word_NO(),
-    "pl": lang_PL.Num2Word_PL(),
-    "pt": lang_PT.Num2Word_PT(),
-    "pt_BR": lang_PT_BR.Num2Word_PT_BR(),
-    "rm": lang_RM.Num2Word_RM(),
-    "rm_puter": lang_RM_PUTER.Num2Word_RM_PUTER(),
-    "rm_surmiran": lang_RM_SURMIRAN.Num2Word_RM_SURMIRAN(),
-    "rm_sursilv": lang_RM_SURSILV.Num2Word_RM_SURSILV(),
-    "rm_sutsilv": lang_RM_SUTSILV.Num2Word_RM_SUTSILV(),
-    "rm_vallader": lang_RM_VALLADER.Num2Word_RM_VALLADER(),
-    "ro": lang_RO.Num2Word_RO(),
-    "ru": lang_RU.Num2Word_RU(),
-    "sk": lang_SK.Num2Word_SK(),
-    "sl": lang_SL.Num2Word_SL(),
-    "sn": lang_SN.Num2Word_SN(),
-    "sq": lang_SQ.Num2Word_SQ(),
-    "sr": lang_SR.Num2Word_SR(),
-    "sr_Cyrl": lang_SR.Num2Word_SR(),
-    "sr_Latn": lang_SR_LATN.Num2Word_SR_LATN(),
-    "sv": lang_SV.Num2Word_SV(),
-    "sw": lang_SW.Num2Word_SW(),
-    "ta": lang_TA.Num2Word_TA(),
-    "te": lang_TE.Num2Word_TE(),
-    "tet": lang_TET.Num2Word_TET(),
-    "tg": lang_TG.Num2Word_TG(),
-    "th": lang_TH.Num2Word_TH(),
-    "tr": lang_TR.Num2Word_TR(),
-    "uk": lang_UK.Num2Word_UK(),
-    "vi": lang_VI.Num2Word_VI(),
-    "zh": lang_ZH_CN.Num2Word_ZH_CN(),  # Default 'zh' to simplified Chinese
-    "zh_CN": lang_ZH_CN.Num2Word_ZH_CN(),
-    "zh_HK": lang_ZH_HK.Num2Word_ZH_HK(),
-    "zh_TW": lang_ZH_TW.Num2Word_ZH_TW(),
-    "as": lang_AS.Num2Word_AS(),
-    "ba": lang_BA.Num2Word_BA(),
-    "bo": lang_BO.Num2Word_BO(),
-    "br": lang_BR.Num2Word_BR(),
-    "bs": lang_BS.Num2Word_BS(),
-    "eu": lang_EU.Num2Word_EU(),
-    "fo": lang_FO.Num2Word_FO(),
-    "gl": lang_GL.Num2Word_GL(),
-    "gu": lang_GU.Num2Word_GU(),
-    "haw": lang_HAW.Num2Word_HAW(),
-    "ht": lang_HT.Num2Word_HT(),
-    "jw": lang_JW.Num2Word_JW(),
-    "ka": lang_KA.Num2Word_KA(),
-    "kk": lang_KK.Num2Word_KK(),
-    "km": lang_KM.Num2Word_KM(),
-    "la": lang_LA.Num2Word_LA(),
-    "lb": lang_LB.Num2Word_LB(),
-    "ln": lang_LN.Num2Word_LN(),
-    "lo": lang_LO.Num2Word_LO(),
-    "mg": lang_MG.Num2Word_MG(),
-    "mi": lang_MI.Num2Word_MI(),
-    "mk": lang_MK.Num2Word_MK(),
-    "ml": lang_ML.Num2Word_ML(),
-    "mr": lang_MR.Num2Word_MR(),
-    "mt": lang_MT.Num2Word_MT(),
-    "my": lang_MY.Num2Word_MY(),
-    "ne": lang_NE.Num2Word_NE(),
-    "nn": lang_NN.Num2Word_NN(),
-    "oc": lang_OC.Num2Word_OC(),
-    "pa": lang_PA.Num2Word_PA(),
-    "ps": lang_PS.Num2Word_PS(),
-    "sa": lang_SA.Num2Word_SA(),
-    "sd": lang_SD.Num2Word_SD(),
-    "si": lang_SI.Num2Word_SI(),
-    "so": lang_SO.Num2Word_SO(),
-    "su": lang_SU.Num2Word_SU(),
-    "tk": lang_TK.Num2Word_TK(),
-    "tl": lang_TL.Num2Word_TL(),
-    "tt": lang_TT.Num2Word_TT(),
-    "ur": lang_UR.Num2Word_UR(),
-    "uz": lang_UZ.Num2Word_UZ(),
-    "uz_Cyrl": lang_UZ_CYR.Num2Word_UZ_CYRILLIC(),
-    "uz_cyr": lang_UZ_CYR.Num2Word_UZ_CYRILLIC(),
-    "wo": lang_WO.Num2Word_WO(),
-    "yi": lang_YI.Num2Word_YI(),
-    "yo": lang_YO.Num2Word_YO(),
-    # Newly added languages
-    "ban": lang_BAN.Num2Word_BAN(),
-    "bm": lang_BM.Num2Word_BM(),
-    "ceb": lang_CEB.Num2Word_CEB(),
-    "ckb": lang_CKB.Num2Word_CKB(),
-    "cnh": lang_CNH.Num2Word_CNH(),
-    "ff": lang_FF.Num2Word_FF(),
-    "fil": lang_FIL.Num2Word_FIL(),
-    "hmn": lang_HMN.Num2Word_HMN(),
-    "ki": lang_KI.Num2Word_KI(),
-    "kok": lang_KOK.Num2Word_KOK(),
-    "ksw": lang_KSW.Num2Word_KSW(),
-    "ku": lang_KU.Num2Word_KU(),
-    "ky": lang_KY.Num2Word_KY(),
-    "lg": lang_LG.Num2Word_LG(),
-    "lij": lang_LIJ.Num2Word_LIJ(),
-    "lus": lang_LUS.Num2Word_LUS(),
-    "om": lang_OM.Num2Word_OM(),
-    "or": lang_OR.Num2Word_OR(),
-    "pap": lang_PAP.Num2Word_PAP(),
-    "pli": lang_PLI.Num2Word_PLI(),
-    "rw": lang_RW.Num2Word_RW(),
-    "ti": lang_TI.Num2Word_TI(),
-    "xh": lang_XH.Num2Word_XH(),
-    "zu": lang_ZU.Num2Word_ZU(),
-    # Language code aliases
-    "jp": lang_JA.Num2Word_JA(),  # Alias for Japanese
-    "cn": lang_ZH_CN.Num2Word_ZH_CN(),  # Alias for Chinese (Simplified)
-    "nb": lang_NO.Num2Word_NO(),  # Alias for Norwegian Bokmål
-    "jv": lang_JW.Num2Word_JW(),  # Alias for Javanese (modern ISO 639-1)
-    "miz": lang_LUS.Num2Word_LUS(),  # Alias for Mizo
-    "cz": lang_CS.Num2Word_CS(),  # Pre-ISO-639 code for Czech (ISO is 'cs')
-    "dk": lang_DA.Num2Word_DA(),  # Pre-ISO-639 code for Danish (ISO is 'da')
-}
 
 CONVERTES_TYPES = [
     "cardinal", "ordinal", "ordinal_num", "year", "currency", "cheque",
@@ -416,146 +72,226 @@ CONVERTES_TYPES = [
 CONVERTER_TYPES = CONVERTES_TYPES  # Alias for compatibility
 
 
-def num2words(number, ordinal=False, lang="en", to="cardinal", **kwargs):
-    # We try the full language first
-    if lang not in CONVERTER_CLASSES:
-        normalized_lang = lang.replace("-", "_")
-        if normalized_lang in CONVERTER_CLASSES:
-            lang = normalized_lang
+def maxval(lang="en"):
+    """Return the maximum integer ``num2words(..., lang=lang)`` can convert.
+
+    Issue #582 ports savoirfairelinux/num2words#582.
+    """
+    return _RUST.maxval(lang)
+
+
+def _normalize_lang(lang):
+    """Resolve a caller's language code to a core key, mirroring the historic
+    dispatcher: exact match, then hyphen->underscore, then ``xx_YY`` casing,
+    then the bare two-letter prefix. Raises NotImplementedError if none match.
+    """
+    if lang in _RUST_LANGS:
+        return lang
+    nl = lang.replace("-", "_")
+    if nl in _RUST_LANGS:
+        return nl
+    parts = nl.split("_")
+    if len(parts) >= 2:
+        candidate = "%s_%s" % (parts[0].lower(), parts[1].upper())
+        if candidate in _RUST_LANGS:
+            return candidate
+        if parts[0] in _RUST_LANGS:
+            return parts[0]
+    if nl[:2] in _RUST_LANGS:
+        return nl[:2]
+    raise NotImplementedError()
+
+
+def _rust_kw_items(kwargs):
+    """kwargs -> [(k, v)] for the core boundary, or None when a value has a
+    type the boundary cannot carry (then the call is out of the core's
+    envelope and must raise)."""
+    items = []
+    for k, v in kwargs.items():
+        if v is None or isinstance(v, (bool, int, str)):
+            items.append((k, v))
+        elif isinstance(v, (list, tuple)) and all(
+                isinstance(x, str) for x in v):
+            items.append((k, list(v)))
         else:
-            parts = normalized_lang.split("_")
-            if len(parts) >= 2:
-                candidate = f"{parts[0].lower()}_{parts[1].upper()}"
-                if candidate in CONVERTER_CLASSES:
-                    lang = candidate
-                else:
-                    lang = parts[0]
-            else:
-                lang = normalized_lang
-    if lang not in CONVERTER_CLASSES:
-        # ... and then try only the first 2 letters
-        lang = lang[:2]
-    if lang not in CONVERTER_CLASSES:
-        raise NotImplementedError()
-    converter = CONVERTER_CLASSES[lang]
+            return None
+    return items
 
-    if isinstance(number, str):
-        # Recognize "n/d" fraction strings and route directly to the
-        # converter's to_fraction(). The pattern is strict: optional
-        # leading minus, integer numerator, single '/', integer
-        # denominator, no whitespace inside. Issue #75 ports
-        # savoirfairelinux/num2words#584.
-        stripped = number.strip()
-        if "/" in stripped and stripped.count("/") == 1:
-            num_part, den_part = stripped.split("/", 1)
-            num_part = num_part.strip()
-            den_part = den_part.strip()
-            try:
-                num_int = int(num_part)
-                den_int = int(den_part)
-            except ValueError:
-                pass
-            else:
-                return converter.to_fraction(num_int, den_int)
 
-        # If the string is a mix of text and numerals (e.g. "text 1"),
-        # route to num2words_sentence which extracts numerals and converts
-        # each in place. A pure-text string like "hello" still raises so
-        # we don't silently swallow caller errors. Issue #61 ports
-        # savoirfairelinux/num2words#281.
-        try:
-            number = converter.str_to_number(number)
-        except (decimal.InvalidOperation, ValueError):
-            if any(ch.isdigit() for ch in number):
-                return num2words_sentence(number, lang=lang, to=to, **kwargs)
-            raise
-
-    # backwards compatible
-    if ordinal:
-        to = "ordinal"
-
-    if to not in CONVERTES_TYPES:
-        raise NotImplementedError()
-
-    # precision= overrides the per-language fractional precision for this
-    # call. Issue #580 ports savoirfairelinux/num2words#580.
-    precision_override = kwargs.pop("precision", None)
-    saved_precision = None
-    if precision_override is not None and hasattr(converter, "precision"):
-        saved_precision = converter.precision
-        converter.precision = int(precision_override)
-
-    # cents='omit' on to='currency' drops the cents portion entirely. The
-    # legacy cents=True/False kwarg is kept as-is (False historically meant
-    # "use digits instead of words"). Issue #554 ports
-    # savoirfairelinux/num2words#554 / #190.
-    if to == "currency":
-        cents_kw = kwargs.get("cents")
-        if cents_kw == "omit":
-            kwargs["cents"] = True  # let downstream see a valid bool
-            if isinstance(number, float):
-                number = int(number)  # int path drops cents naturally
-        elif cents_kw == "verbose":
-            kwargs["cents"] = True
-        elif cents_kw == "terse":
-            kwargs["cents"] = False
-
-    # style='terse' on to='ordinal' drops the leading 'one' / 'un' / etc.
-    # Issue #535 ports savoirfairelinux/num2words#535 / #147.
-    style = kwargs.pop("style", None)
-
-    try:
-        result = getattr(converter, "to_{}".format(to))(number, **kwargs)
-    finally:
-        if saved_precision is not None:
-            converter.precision = saved_precision
-
+def _apply_style(result, style, to, lang):
+    """`style=` presentation post-processing (issues #535, #562). Operates on
+    the rendered string, so it is conversion-independent."""
     if style == "terse" and to == "ordinal" and isinstance(result, str):
-        # Drop a leading "one " / "un " / "uno " prefix that's stylistic.
-        # 100 → "one hundredth" → "hundredth"; 1000 → "one thousandth" →
-        # "thousandth"; the same applies to fr's "un millionième" but
-        # that's already handled in lang_FR's _BIG_UNITS.
         for prefix in ("one ", "un ", "uno "):
             if result.startswith(prefix) and len(result) > len(prefix):
                 result = result[len(prefix):]
                 break
     if style == "us" and lang.startswith("en") and isinstance(result, str):
-        # American English drops 'and' between hundreds and tens
-        # ("two hundred fifty" not "two hundred and fifty"). Issue #562
-        # ports savoirfairelinux/num2words#562 by @granvillebarker.
         result = result.replace(" and ", " ")
     return result
 
 
+def _normalize_cents(kwargs):
+    """`cents='omit'|'verbose'|'terse'` -> the legacy bool the core expects
+    (issue #554). Returns (cents_bool, drop_cents) where drop_cents means the
+    float value should be truncated to an int so no cents segment appears."""
+    cents_kw = kwargs.get("cents", True)
+    if cents_kw == "omit":
+        return True, True
+    if cents_kw == "verbose":
+        return True, False
+    if cents_kw == "terse":
+        return False, False
+    return cents_kw, False
+
+
+def num2words(number, ordinal=False, lang="en", to="cardinal", **kwargs):
+    # Captured before any normalisation: the core keys off the *arrival* type
+    # (a plain int vs a float/Decimal vs a str), not a post-parse value.
+    _plain_int = type(number) is int
+    _plain_num = isinstance(number, (float, decimal.Decimal))
+
+    lang = _normalize_lang(lang)
+    _style = kwargs.get("style")
+
+    # ---- string input: the core's from_string owns the whole pipeline
+    # (fraction strings, str_to_number incl. the ES "1ro" / pt_BR "ponto"
+    # handshakes, mixed text -> sentence, then the mode dispatch).
+    if isinstance(number, str):
+        _to_final = "ordinal" if ordinal else to
+        if _to_final not in CONVERTES_TYPES:
+            raise NotImplementedError()
+        _cents, _ = _normalize_cents(kwargs)
+        _extras = {k: v for k, v in kwargs.items()
+                   if k not in ("currency", "cents", "separator",
+                                "adjective", "style", "precision")}
+        _items = _rust_kw_items(_extras)
+        if _cents not in (True, False) or _items is None:
+            raise NotImplementedError()
+        try:
+            _kind, _out = _RUST.from_string(
+                lang, number, _to_final, kwargs.get("currency"), _cents,
+                kwargs.get("separator"), kwargs.get("adjective"), _items)
+        except _RUST_FALLBACK:
+            raise NotImplementedError()
+        if _kind != 0:
+            raise NotImplementedError()
+        return _apply_style(_out, _style, _to_final, lang)
+
+    # backwards compatible
+    if ordinal:
+        to = "ordinal"
+    if to not in CONVERTES_TYPES:
+        raise NotImplementedError()
+
+    _precision = kwargs.get("precision")
+    _extras = {k: v for k, v in kwargs.items()
+               if k not in ("style", "precision")}
+
+    # ---- integer modes with a plain int
+    if _plain_int and to in _RUST_TYPES:
+        _items = _rust_kw_items(_extras)
+        if _items is not None:
+            try:
+                if _items:
+                    result = getattr(_RUST, "to_%s_kw" % to)(
+                        lang, number, _items)
+                else:
+                    result = getattr(_RUST, "to_%s" % to)(lang, number)
+            except _RUST_FALLBACK:
+                raise NotImplementedError()
+            return _apply_style(result, _style, to, lang)
+
+    # ---- float / Decimal, all four integer modes
+    if _plain_num and to in _RUST_TYPES:
+        try:
+            _finite = float(number) == float(number) and float(
+                number) not in (float("inf"), float("-inf"))
+        except (OverflowError, ValueError):
+            _finite = False
+        _fitems = {k: v for k, v in _extras.items()
+                   if k not in ("currency", "cents", "separator", "adjective")}
+        _items = _rust_kw_items(_fitems)
+        if _finite and _items is not None:
+            _prec = abs(decimal.Decimal(str(number)).as_tuple().exponent)
+            _dec = str(number) if isinstance(number, decimal.Decimal) else ""
+            try:
+                result = _RUST.to_float(
+                    lang, to, float(number), _prec, _dec, str(number),
+                    _precision, _items)
+            except _RUST_FALLBACK:
+                raise NotImplementedError()
+            return _apply_style(result, _style, to, lang)
+
+    # ---- currency
+    if to == "currency" and isinstance(number, (int, float, decimal.Decimal)):
+        _cents, _drop = _normalize_cents(kwargs)
+        if _drop and isinstance(number, float):
+            number = int(number)  # int path drops cents naturally
+        if _cents in (True, False):
+            _citems = {k: v for k, v in _extras.items()
+                       if k not in ("currency", "cents", "separator",
+                                    "adjective")}
+            _items = _rust_kw_items(_citems)
+            if _items is not None:
+                _args = (
+                    lang, str(number), type(number) is int,
+                    isinstance(number, float) or "." in str(number),
+                    isinstance(number, float),
+                    kwargs.get("currency"), _cents,
+                    kwargs.get("separator"), kwargs.get("adjective"),
+                )
+                try:
+                    if _items:
+                        return _RUST.to_currency_kw(*_args, _items)
+                    return _RUST.to_currency(*_args)
+                except _RUST_FALLBACK:
+                    raise NotImplementedError()
+
+    if to == "cheque" and isinstance(number, (int, float, decimal.Decimal)):
+        try:
+            return _RUST.to_cheque(lang, str(number), kwargs.get("currency"))
+        except _RUST_FALLBACK:
+            raise NotImplementedError()
+
+    # to='fraction' with a non-string number: the historic dispatcher fed the
+    # value straight to converter.to_fraction(value). A single positional (the
+    # tuple ``(1, 2)``) raised TypeError where the method exists, or
+    # AttributeError where it does not (bn/dv/id have no to_fraction). Probe
+    # the core to tell them apart; genuine "n/d" fractions arrive as strings
+    # and are served by from_string above.
+    if to == "fraction":
+        try:
+            _RUST.to_fraction(lang, 1, 1)
+        except AttributeError:
+            raise
+        except Exception:  # noqa: BLE001 - probing for the method's existence
+            pass
+        raise TypeError(
+            "to_fraction() missing 1 required positional argument: "
+            "'denominator'")
+
+    raise NotImplementedError()
+
+
 def num2words_sentence(sentence, lang="en", to="cardinal", **kwargs):
+    """Convert every number in a sentence to words.
+
+    `lang=None` auto-detects (lingua-rs in the full build). Handles ordinals,
+    currency, dates, temperatures and plain numbers, splicing each conversion
+    back in place.
+
+    >>> num2words_sentence("I bought 6 apples")
+    'I bought six apples'
+    >>> num2words_sentence("The 1st place winner got $100")
+    'The first place winner got one hundred dollars, zero cents'
     """
-    Convert all numbers in a sentence to their word equivalents.
-
-    This function handles:
-    - Ordinal numbers (1st, 2nd, 3rd, etc.)
-    - Currency ($99.99)
-    - Dates (April 5, 2022)
-    - Temperature (-5 degrees)
-    - Regular numbers
-
-    Args:
-        sentence (str): The input sentence containing numbers
-        lang (str): Language code (default: 'en')
-        **kwargs: Additional arguments passed to the converter
-
-    Returns:
-        str: The sentence with all numbers converted to words
-
-    Examples:
-        >>> num2words_sentence("I bought 6 apples")
-        "I bought six apples"
-        >>> num2words_sentence("The 1st place winner got $100")
-        "The first place winner got one hundred dollars"
-    """
-    from .converters.sentence import SentenceConverter
-
-    converter = SentenceConverter()
-    return converter.convert(sentence, lang=lang, to=to)
+    if lang is None:
+        return _RUST.sentence_auto(sentence, to)
+    # The core's sentence converter does its own lang validation (and the
+    # same two-letter-prefix fallback), raising NotImplementedError for an
+    # unsupported language exactly as the historic dispatcher did.
+    return _RUST.sentence(sentence, lang, to)
 
 
 # Aliases for num2words_sentence

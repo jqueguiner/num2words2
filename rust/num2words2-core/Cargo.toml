@@ -1,0 +1,12 @@
+[package]
+name = "num2words2-core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+num-bigint = "0.4"
+num-traits = "0.2"
+num-integer = "0.1"
+# Python does Decimal(str(value)); the shim passes that exact string across,
+# so the core needs arbitrary-precision decimal parsing to match it.
+bigdecimal = "0.4"
