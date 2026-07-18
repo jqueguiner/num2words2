@@ -13,6 +13,15 @@
 
 > **Documentation:** see the [GitHub Wiki](https://github.com/jqueguiner/num2words2/wiki) for installation, API, CLI, supported locales, sentence conversion, currency handling, and migration guidance. For the full in-repo API reference, see [`REFERENCE.md`](REFERENCE.md).
 
+## Install
+
+Python: `pip install num2words2`. Rust: the compiled core is published on
+crates.io as [`num2words2-core`](https://crates.io/crates/num2words2-core):
+
+```bash
+cargo add num2words2-core
+```
+
 ## Why num2words2?
 
 The original `num2words` library by Savoir-faire Linux became unmaintained and couldn't keep up with the rapid pace of innovation in the AI/LLM/speech technology space. Modern applications like:
