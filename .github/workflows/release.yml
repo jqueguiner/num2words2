@@ -44,7 +44,10 @@ jobs:
         variant: [slim, full]
         platform:
           - { os: macos-14,       target: aarch64-apple-darwin }
-          - { os: macos-13,       target: x86_64-apple-darwin }
+          # Cross-compile the Intel wheel on the Apple-Silicon runner:
+          # GitHub's macos-13 (Intel) pool is deprecated and queues for hours,
+          # which stalled the whole Release (publish needs every build job).
+          - { os: macos-14,       target: x86_64-apple-darwin }
           - { os: ubuntu-latest,  target: x86_64-unknown-linux-gnu,  manylinux: auto }
           - { os: ubuntu-latest,  target: aarch64-unknown-linux-gnu, manylinux: auto }
           - { os: windows-latest, target: x86_64-pc-windows-msvc }
