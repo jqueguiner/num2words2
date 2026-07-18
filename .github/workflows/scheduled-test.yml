@@ -29,6 +29,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install tox tox-gh-actions
         pip install -r tests/requirements-test.txt
+        # Build the compiled `_rust` extension into the source tree so tox's
+        # `unittest discover` (run from the repo root) imports it instead of
+        # shadowing the package with the source dir, which has no _rust.
+        pip install -e .
 
     - name: Run tests with tox
       run: tox
